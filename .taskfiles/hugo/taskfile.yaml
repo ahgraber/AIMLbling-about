@@ -5,7 +5,6 @@ version: "3"
 vars:
   CONTENT_DIR: "./content/"
   BLOG_DIR: "{{ .CONTENT_DIR }}/blog"
-
 tasks:
   new:
     desc: Create a new draft post from template
