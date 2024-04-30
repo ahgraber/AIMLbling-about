@@ -5,17 +5,19 @@ version: "3"
 vars:
   CONTENT_DIR: "./content/"
   BLOG_DIR: "{{ .CONTENT_DIR }}/blog"
+
 tasks:
   new:
     desc: Create a new draft post from template
     cmds:
+      - git checkout -b blog/{{ .file }} main
       - hugo new content blog/{{ .file }}.md
       # NOTE: using gnu sed via nix; if using osx sed may have to use `sed -i ''`
       - |
         sed -i "/title: \"\"/c\title: '\{\{ title \"{{ .title }}\" \}\}'" {{ .BLOG_DIR }}/{{ .file }}.md
     vars:
       title: '{{ or ( .title | lower) (fail "Variable `title` is required") }}'
-      file: '{{ .title | replace " " "-" }}'
+      file: '{{ .title | lower | replace " " "-" }}'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
@@ -27,8 +29,29 @@ tasks:
         sed -i '/draft: true/c\draft: false' {{ .BLOG_DIR }}/{{ .file }}.md
       - |
         sed -i '/date: .*/c\date: {{ now.Format "2006-01-02" }}' {{ .BLOG_DIR }}/{{ .file }}.md
+      # - task: _pull_request
     vars:
-      file: '{{ or ( .file | trimSuffix ".md") (fail "Variable `file` is required") }}'
+      file: '{{ or ( .file | lower | trimSuffix ".md") (fail "Variable `file` is required") }}'
+
+  # _pull_request:
+  #   desc: Create a pull request from a draft branch
+  #   internal: true
+  #   cmds:
+  #     - gh pr create --title "Publish post - {{ .file }}" --body "Pull request body"
+  #   # dotenv: [".env"]
+  #   vars:
+  #     file: '{{ or ( .file | lower | trimSuffix ".md") (fail "Variable `file` is required") }}'
+  #   preconditions:
+  #     - {msg: "github cli ('gh') not found", sh: "type gh"}
+  #     - {msg: "Github auth not found.  Run `gh auth login --hostname github.com", sh: "gh auth status"}
+
+  catchup:
+    desc: Catch feature branch up to main
+    cmds:
+      - git stash # save any work-in-progress
+      - git fetch origin main # update remote
+      - git merge --ff-only origin/main # fastforward
+      - git stash pop # restore work-in-progress
 
   build:
     desc: Render all static site content
