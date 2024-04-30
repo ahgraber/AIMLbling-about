@@ -23,12 +23,23 @@ tasks:
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
+  catchup:
+    desc: Catch feature branch up to main
+    cmds:
+      - git stash # save any work-in-progress
+      - git fetch origin main # update remote
+      # - git merge --ff-only origin/main # fastforward
+      - git rebase origin/main
+      - git stash pop # restore work-in-progress
+
   publish:
     desc: Publish a draft post (set 'draft' to false and update the date)
+    summary: |
+      task hugo:publish path="<relative path to index.md>"
     cmds:
       # NOTE: using gnu sed via nix; if using osx sed may have to use `sed -i ''`
       - |
-        sed -i '/draft: true/c\draft: false' {{ .BLOG_DIR }}/{{ .file }}.md
+        sed -i '/draft: true/c\draft: false' {{ .path }}
       - |
         sed -i '/date: .*/c\date: {{ now.Format "2006-01-02" }}' {{ .BLOG_DIR }}/{{ .file }}.md
       # - task: _pull_request
