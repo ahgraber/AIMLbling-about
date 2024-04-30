@@ -11,13 +11,15 @@ tasks:
     desc: Create a new draft post from template
     cmds:
       - git checkout -b blog/{{ .file }} main
-      - hugo new content blog/{{ .file }}.md
+      - mkdir -p blog/{{ .name }}
+      - hugo new content blog/{{ .name }}/index.md
       # NOTE: using gnu sed via nix; if using osx sed may have to use `sed -i ''`
       - |
-        sed -i "/title: \"\"/c\title: '\{\{ title \"{{ .title }}\" \}\}'" {{ .BLOG_DIR }}/{{ .file }}.md
+        sed -i "/title: \"\"/c\title: '\{\{ title \"{{ .title }}\" \}\}'" {{ .BLOG_DIR }}/{{ .name }}/index.md
+    requires:
+      vars: ['title']
     vars:
-      title: '{{ or ( .title | lower) (fail "Variable `title` is required") }}'
-      file: '{{ .title | lower | replace " " "-" }}'
+      name: '{{ or .title | lower | replace " " "-" }}'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
