@@ -22,6 +22,15 @@ tasks:
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
+  catchup:
+    desc: Catch feature branch up to main
+    cmds:
+      - git stash # save any work-in-progress
+      - git fetch origin main # update remote
+      # - git merge --ff-only origin/main # fastforward
+      - git rebase origin/main
+      - git stash pop # restore work-in-progress
+
   publish:
     desc: Publish a draft post (set 'draft' to false and update the date)
     summary: |
