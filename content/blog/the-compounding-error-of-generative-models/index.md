@@ -37,7 +37,7 @@ If every step has an error rate of `1%`, the probability of encountering an erro
 If every step has an error rate of `5%`, you have a 64% chance of encountering an error after 20 steps!
 
 {{< callout type="info" >}}
-That last sentence contained 28 tokens (using ChatGPT 4's tokenizer)!
+  That last sentence contained 28 tokens (using ChatGPT 4's tokenizer)!
 {{< /callout >}}
 
 Does that mean we get lucky every time we use ChatGPT and receive a response that's longer than a few words?
@@ -83,7 +83,7 @@ Does that mean we get lucky every time we use ChatGPT and receive a response tha
 ## Rebuttal
 
 {{< callout type="question" >}}
-I've used ChatGPT, and it doesn't seem like it makes a mistake in the majority of sentences...
+  I've used ChatGPT, and it doesn't seem like it makes a mistake in the majority of sentences...
 {{< /callout >}}
 
 Astute observation!  There are a few things at play here...
@@ -138,18 +138,17 @@ the astonishing capability of LLMs to sound "human" in their generation or be cr
 (when combined with autoregressive generation) in their propensity to hallucinate.
 
 {{< callout type="info" >}}
-Previously in this article, I said:
+  Previously in this article, I said:
 
-> a GPT picks token that is most likely going to come next.
+  > a GPT picks token that is most likely going to come next.
 
-This is an approach known as _greedy search_.
-If ChatGPT used greedy sampling, each generation would be deterministic - that is, guaranteed to be the same - based on the prior context.
-For example, given "An apple", the model might _always_ return "is a fruit".
+  This is an approach known as _greedy search_.
+  If ChatGPT used greedy sampling, each generation would be deterministic - that is, guaranteed to be the same - based on the prior context.
+  For example, given "An apple", the model might _always_ return "is a fruit".
 
-This is not to say that "is", "a", "fruit" are the correct next tokens (per our discussion of error), but that these are the tokens the model believes to be most likely (or maybe _least wrong_).
+  This is not to say that "is", "a", "fruit" are the correct next tokens (per our discussion of error), but that these are the tokens the model believes to be most likely (or maybe _least wrong_).
 
-Because language is flexible and we don't want our LLMs to sound like robots, we tend to select next tokens from the probability distribution of likely next tokens instead of picking the singular most-likely token.[^3]
-
+  Because language is flexible and we don't want our LLMs to sound like robots, we tend to select next tokens from the probability distribution of likely next tokens instead of picking the singular most-likely token.[^3]
 {{< /callout >}}
 
 As one might expect, using a stochastic (random, nondeterministic sampling technique) to select the next token tends to decrease performance in all tasks except for open-ended generation. [^4]
@@ -172,7 +171,7 @@ One of its key features is LCEL (LangChain Expression Language), a method of tem
 _chained_, or strung together in sequence, to accomplish some task.
 
 {{< callout type="question" >}}
-I see -- so if the LLM makes an error early in the chain, the error influence later generations?
+  I see -- so if the LLM makes an error early in the chain, the error influence later generations?
 {{< /callout >}}
 
 Right!  And, if the LLM has a 1% chance of making a mistake, we're back to our problem of compounding errors.
