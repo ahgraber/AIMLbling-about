@@ -1,3 +1,13 @@
+:root {
+  --primary-hue: 212deg;
+  --primary-saturation: 100%;
+}
+
+.dark {
+  --primary-hue: 48deg;
+  --primary-saturation: 100%;
+}
+
 /* Material Design Colors, Color Palette from https://materialui.co/colors */
 /* Amber colorway */
 .hx-border-amber-200 {
