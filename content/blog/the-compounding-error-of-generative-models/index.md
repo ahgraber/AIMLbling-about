@@ -1,13 +1,13 @@
 ---
 title: The Compounding Error of Generative Models
-date: 2024-04-26T20:30:03-04:00
+date: 2024-04-30
 tags: [
   "LLMs",
   "generative ai",
 ]
 series: []
 math: true
-draft: true
+draft: false
 ---
 Yann LeCun believes autoregressive models inherently suffer from a kind of 'generational drift'[^1] due to compounding errors.
 Coming from LeCun - Chief AI Scientist at Meta and famed for his work on convolutional neural networks and image recognition -
