@@ -1,7 +1,4 @@
 ---
-katex: false # enables katex on every page
-math: true # enables mathjax on every page.  otherwise set to false and define per page
-
 # theme settings
 author: "Alex Graber"
 license:
@@ -27,7 +24,7 @@ blog:
     sortOrder: desc # or "asc"
 
 editURL:
-  enable: true
+  enable: false
   base: "https://github.com/ahgraber/aimlbling-about/edit/main/content"
 
 page:
