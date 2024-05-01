@@ -23,15 +23,6 @@ tasks:
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
-  catchup:
-    desc: Catch feature branch up to main
-    cmds:
-      - git stash # save any work-in-progress
-      - git fetch origin main # update remote
-      # - git merge --ff-only origin/main # fastforward
-      - git rebase origin/main
-      - git stash pop # restore work-in-progress
-
   publish:
     desc: Publish a draft post (set 'draft' to false and update the date)
     summary: |
@@ -61,16 +52,18 @@ tasks:
   #     - {msg: "github cli ('gh') not found", sh: "type gh"}
   #     - {msg: "Github auth not found.  Run `gh auth login --hostname github.com", sh: "gh auth status"}
 
-
-  build:
-    desc: Render all static site content
-    cmd: hugo
-    # cmd: nix build '.?submodules=1'
-    preconditions:
-      - {msg: "Hugo not found", sh: "type hugo"}
+  # build:
+  #   desc: Build hugo image
 
   demo:
     desc: Serve the site (with drafts enabled)
     cmd: hugo serve -D
+    preconditions:
+      - {msg: "Hugo not found", sh: "type hugo"}
+
+  serve:
+    desc: Render all static site content
+    cmd: hugo
+    # cmd: nix build '.?submodules=1'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}

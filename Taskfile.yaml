@@ -20,3 +20,12 @@ dotenv: [".env"]
 
 tasks:
   default: task -l
+
+  catchup:
+    desc: Catch feature branch up to main
+    cmds:
+      - git stash # save any work-in-progress
+      - git fetch origin main # update remote
+      # - git merge --ff-only origin/main # fastforward
+      - git rebase origin/main
+      - git stash pop # restore work-in-progress
