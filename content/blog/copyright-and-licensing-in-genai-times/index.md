@@ -14,6 +14,7 @@ draft: true
       - <https://katedowninglaw.com/2023/07/27/evaluating-generative-ai-licensing-terms/>
       - <https://katedowninglaw.com/2023/07/13/ai-licensing-cant-balance-open-with-responsible/>
       - <https://katedowninglaw.com/2023/01/26/an-ip-attorneys-reading-of-the-stable-diffusion-class-action-lawsuit/>
+    - [Major U.S. newspapers sue Microsoft, OpenAI for copyright infringement](https://www.axios.com/2024/04/30/microsoft-openai-lawsuit-copyright-newspapers-alden-global)
     - [Udio & the age of multi-modal AI (Practical AI #265)](https://changelog.com/practicalai/265#t=697)
       - on cameras:
         > there was a time when there was a question of whether or not if you took a picture with a camera -- right, you just click the button...
