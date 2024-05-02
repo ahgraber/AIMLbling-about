@@ -11,6 +11,6 @@ COPY . .
 RUN --mount=type=cache,target=/tmp/hugo_cache \
     hugo
 
-FROM ghcr.io/nginxinc/nginx-unprivileged:1.25.5-bookworm
+FROM ghcr.io/nginxinc/nginx-unprivileged:1.26.0-bookworm@sha256:b1dab22cb3186e156b812aea2e37d216276e62effe6b7c5e7e4b93b6fe72bd22
 COPY --from=build /src/public /usr/share/nginx/html
 EXPOSE 8080
