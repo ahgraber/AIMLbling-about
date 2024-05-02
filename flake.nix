@@ -22,6 +22,9 @@
           packages = [
             pkgs.hugo
             pkgs.dart-sass
+            # pkgs.podman
+            pkgs.colima
+            pkgs.qemu
           ];
           # imports = [ (pkgs.devshell.importTOML ./devshell.toml) ];
         };

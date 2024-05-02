@@ -1,11 +1,7 @@
 [submodule "themes/hextra"]
 	path = themes/hextra
-	url = git@github.com:imfing/hextra.git
+	url = https://github.com/imfing/hextra.git
 # [submodule "giscus"]
 # 	path = giscus
 # 	url = https://github.com/giscus/giscus.git
 # 	branch = main
-
-# [submodule "themes/typo"]
-# 	path = themes/typo
-# 	url = git@github.com:tomfran/typo.git

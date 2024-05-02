@@ -44,7 +44,7 @@ Once the site has been built, build the docker image:
 cp -r $(nix-store -qR result/)/public ./public
 # build image
 podman build \
-  -t ghcr.io/ahgraber/aimlbling-about:$(date +"%Y.%m.%d.%H%M%S") \
+  -t ghcr.io/ahgraber/aimlbling-about:$(date +"%Y.%m.%d-%H%M") \
   -t ghcr.io/ahgraber/aimlbling-about:latest \
   .
 ```

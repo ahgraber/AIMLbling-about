@@ -1,0 +1,92 @@
+---
+# Sample workflow for building and deploying a Hugo site to GitHub Pages
+name: Build Hugo container image
+
+on: # yamllint disable-line rule:truthy
+  # # Runs on PRs into the default branch on specified paths
+  pull_request:
+    branches: ["main"]
+    paths: ["content/**", "assets/**", "config/**", "layouts/**", "static/**"]
+  # # Runs on pushes targeting the default branch
+  # push:
+  #   branches: ["main"]
+  # # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# yamllint disable rule:colons
+env: # define 'static' vars here
+  platforms:   "linux/amd64,linux/arm64"
+  gh_registry: ghcr.io/ahgraber
+  image_name:  aimlbling-about
+  owner:       ahgraber
+# yamllint enable
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+    steps:
+      # https://stackoverflow.com/questions/70483902/how-to-actually-clean-up-the-repository-on-self-hosted-runner-after-github-actio
+      - name: Cleanup build folder 🧹
+        shell: bash
+        run: |
+          cd ${{ github.workspace }}
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - name: Checkout Repo 🛒
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry ✅
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current date 🗓
+        id: date
+        shell: bash
+        run: |
+          DATE=$(date +'%Y.%m.%d-%H%M')
+          echo "DATE: ${DATE}"
+          echo "date=${DATE}" >> $GITHUB_OUTPUT
+
+      - name: Build Image 🛠
+        id: build
+        uses: ./.github/actions/build-image-action
+        with:
+          # yamllint disable rule:colons
+          platforms:      ${{ env.platforms }}
+          gh_registry:    ${{ env.gh_registry }}
+          image_name:     ${{ env.image_name }}
+          image_tag:      ${{ steps.date.outputs.date }}
+          owner:          ${{ env.owner }}
+          # yamllint enable
+
+  release:
+    needs: [publish]
+    if: ${{ needs.publish.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create tag
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { VERSION } = process.env
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${VERSION}`,
+              sha: context.sha
+            })
+        env:
+          VERSION: ${{ needs.publish.date.outputs.date }}

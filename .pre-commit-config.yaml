@@ -70,7 +70,12 @@ repos:
     hooks:
       - id: dockerlint
         stages: [commit]
-        # args: [--ignore, DL3025, --ignore, DL3018]
+        args:
+          - --ignore
+          - DL3025
+          - --ignore
+          - DL3018 # apk version pins
+
   ## shellcheck requires docker to run
   # - repo: https://github.com/koalaman/shellcheck-precommit
   #   rev: v0.8.0

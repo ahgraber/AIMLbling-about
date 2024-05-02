@@ -1,6 +1,13 @@
 # ignore dirs
+
 .github/
+.taskfiles/
 node_modules/
 
 # ignore dotfiles
+
 .*
+
+# include .gitignore'd things
+
+!.git/
