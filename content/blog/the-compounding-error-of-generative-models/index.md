@@ -148,10 +148,10 @@ the astonishing capability of LLMs to sound "human" in their generation or be cr
 
   This is not to say that "is", "a", "fruit" are the correct next tokens (per our discussion of error), but that these are the tokens the model believes to be most likely (or maybe _least wrong_).
 
-  Because language is flexible and we don't want our LLMs to sound like robots, we tend to select next tokens from the probability distribution of likely next tokens instead of picking the singular most-likely token.[^3]
+  Because language is flexible and we don't want our LLMs to sound like robots, we tend to select next tokens from the probability distribution of likely next tokens instead of picking the singular most-likely token.
 {{< /callout >}}
 
-As one might expect, using a stochastic (random, nondeterministic sampling technique) to select the next token tends to decrease performance in all tasks except for open-ended generation. [^4]
+As one might expect, using a stochastic (random, nondeterministic sampling technique) [^3] to select the next token tends to decrease performance in all tasks except for open-ended generation. [^4]
 This makes sense - models are trained to predict the best next token, and adding random noise in support of flexibility
 acts in opposition to that goal.
 And while future tokens might be able to readjust an error in generation, the error is set once generated and influences all future tokens that use the context.
