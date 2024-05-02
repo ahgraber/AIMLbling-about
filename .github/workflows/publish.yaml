@@ -58,14 +58,13 @@ jobs:
 
       - name: Extract metadata 🏷️
         id: meta
-        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175 # v4
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            # set date 'version' tag
-            type=raw,value={{date 'YYYY.MM.DD-HHmm' tz='America/New_York'}}
-            # set latest tag for main branch
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            # set date tag for versioning and 'latest' tag
+            type=raw,value={{date 'YYYY.MM.DDHHmm' tz='America/New_York'}},priority=1000
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Login to GitHub Container Registry ✅
         uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3
