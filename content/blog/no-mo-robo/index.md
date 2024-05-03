@@ -1,6 +1,6 @@
 ---
 title: No Mo Robo
-date: 2024-04-30T16:18:05-04:00
+date: 2024-05-03
 tags: [
  'copyright',
  'generative ai',
@@ -8,7 +8,7 @@ tags: [
  'opinion',
 ]
 series: []
-draft: true
+draft: false
 ---
 ## Web crawlers & search
 
