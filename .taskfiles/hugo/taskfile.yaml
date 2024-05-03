@@ -66,7 +66,7 @@ tasks:
 
   demo:
     desc: Serve the site (with drafts enabled)
-    cmd: hugo serve -D
+    cmd: hugo server -D --disableFastRender
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
