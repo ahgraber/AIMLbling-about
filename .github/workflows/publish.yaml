@@ -1,0 +1,101 @@
+---
+# Sample workflow for building and deploying a Hugo site to GitHub Pages
+name: Build Hugo container image
+
+on: # yamllint disable-line rule:truthy
+  # pull_request: # Runs on PRs into the default branch on specified paths
+  #   branches: ["main"]
+  #   paths: ["content/**", "assets/**", "config/**", "layouts/**", "static/**"]
+  push: # Runs on pushes targeting the default branch; merged PRs result in pushes
+    branches: ["main"]
+    paths: ["content/**", "assets/**", "config/**", "layouts/**", "static/**"]
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+# yamllint disable rule:colons
+env: # define 'static' vars here
+  platforms:   "linux/amd64,linux/arm64"
+# yamllint enable
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: read
+      packages: write
+    steps:
+      # https://stackoverflow.com/questions/70483902/how-to-actually-clean-up-the-repository-on-self-hosted-runner-after-github-actio
+      - name: Cleanup build folder 🧹
+        shell: bash
+        run: |
+          cd ${{ github.workspace }}
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - name: Checkout Repo 🛒
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+        with:
+          submodules: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU 🦤
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3
+
+      - name: Set up Docker Buildx 🐳
+        id: buildx
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3
+
+      # - name: Get current date 🗓
+      #   id: date
+      #   shell: bash
+      #   run: |
+      #     DATE=$(TZ=America/New_York date +'%Y.%m.%d-%H%M')
+      #     echo "DATE: ${DATE}"
+      #     echo "date=${DATE}" >> $GITHUB_OUTPUT
+
+      - name: Extract metadata 🏷️
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            # set date tag for versioning and 'latest' tag
+            type=raw,value={{date 'YYYY.MM.DDHHmm' tz='America/New_York'}},priority=1000
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Login to GitHub Container Registry ✅
+        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }} # ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          # logout: false
+
+      ### https://github.com/docker/build-push-action
+      ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
+      - name: Build image 🛠
+        id: build
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          platforms: ${{ env.platforms }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          context: .  # explicitly include checked-out context with .git/ dir
+          file: ./Dockerfile
+          push: true
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+
+      - name: Inspect image digest 🔬
+        shell: bash
+        run: |
+          echo "IMAGE DIGEST: ${{ steps.build.outputs.digest }}"
+
+      - name: Inspect new image 🔬
+        shell: bash
+        run: |
+          docker pull ${{ fromJson(steps.meta.outputs.json).tags[0] }}@${{ steps.build.outputs.digest }}

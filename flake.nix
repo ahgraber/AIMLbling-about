@@ -5,7 +5,6 @@
   inputs.devshell.url = "github:numtide/devshell";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
-
   outputs = { self, devshell, flake-utils, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system: {
       devShells.default =
@@ -23,6 +22,9 @@
           packages = [
             pkgs.hugo
             pkgs.dart-sass
+            # pkgs.podman
+            pkgs.colima
+            pkgs.qemu
           ];
           # imports = [ (pkgs.devshell.importTOML ./devshell.toml) ];
         };

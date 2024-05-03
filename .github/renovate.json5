@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "docker:enableMajor",
+    ":automergeDigest",
+    ":automergeBranch",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":enablePreCommit",
+    ":semanticCommits",
+    ":skipStatusChecks",
+    ":timezone(America/New_York)",
+  ],
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
+  "ignorePaths": [
+    "/public/**",
+    "/resources/**",
+    "/themes/**"
+  ],
+}

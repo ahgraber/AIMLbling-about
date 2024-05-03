@@ -32,10 +32,13 @@ tasks:
       - |
         sed -i '/draft: true/c\draft: false' {{ .path }}
       - |
-        sed -i '/date: .*/c\date: {{ now.Format "2006-01-02" }}' {{ .BLOG_DIR }}/{{ .file }}.md
+        sed -i '/date: .*/c\date: {{ now.Format "2006-01-02" }}' {{ .path }}
+      - echo "Branch is ready for PR"
       # - task: _pull_request
-    vars:
-      file: '{{ or ( .file | lower | trimSuffix ".md") (fail "Variable `file` is required") }}'
+    requires:
+      vars: ["path"]
+    preconditions:
+      - {msg: "File not found", sh: "test -f {{ .path }}"}
 
   # _pull_request:
   #   desc: Create a pull request from a draft branch
@@ -49,24 +52,19 @@ tasks:
   #     - {msg: "github cli ('gh') not found", sh: "type gh"}
   #     - {msg: "Github auth not found.  Run `gh auth login --hostname github.com", sh: "gh auth status"}
 
-  catchup:
-    desc: Catch feature branch up to main
-    cmds:
-      - git stash # save any work-in-progress
-      - git fetch origin main # update remote
-      - git merge --ff-only origin/main # fastforward
-      - git stash pop # restore work-in-progress
-
-  build:
-    desc: Render all static site content
-    cmd: hugo
-    # cmd: nix build '.?submodules=1'
-    preconditions:
-      - {msg: "Hugo not found", sh: "type hugo"}
+  # build:
+  #   desc: Build hugo image
 
   demo:
     desc: Serve the site (with drafts enabled)
     cmd: hugo server -D --disableFastRender
+    preconditions:
+      - {msg: "Hugo not found", sh: "type hugo"}
+
+  serve:
+    desc: Render all static site content
+    cmd: hugo
+    # cmd: nix build '.?submodules=1'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 

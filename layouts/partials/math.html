@@ -1,15 +1,15 @@
 {{ if or (.Site.Params.math) .Params.math }}
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <script>
-    MathJax = {
-      tex: {
-        // must match config in markup.yaml
-        displayMath: [
-          ["\\[", "\\]"],
-          ["$$", "$$"],
-        ], // block
-        inlineMath: [["\\(", "\\)"]], // inline
-      },
-    }
-  </script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      // must match config in markup.yaml
+      displayMath: [
+        ["\\[", "\\]"],
+        ["$$", "$$"],
+      ], // block
+      inlineMath: [["\\(", "\\)"]], // inline
+    },
+  }
+</script>
 {{ end }}
