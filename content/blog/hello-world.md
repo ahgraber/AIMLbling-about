@@ -1,5 +1,5 @@
 ---
-title: Hello World
+title: Hello World!
 date: 2024-04-22
 tags: [
   'meta',
@@ -9,11 +9,13 @@ tags: [
 ]
 draft: false
 ---
-<!-- markdownlint-disable MD001 MD025 MD026 -->
-# Hello World!
-<!-- markdownlint-enable -->
 
-That's perhaps too flippant of a start...  Let me try again:
+I'm Alex Graber, an AI/ML Engineer at the Project Management Institute
+where I work on [Infinity](https://www.pmi.org/about/press-media/press-releases/pmi-introduces-pmi-infinity-the-all-new-ai-powered-resource-for-project-professionals),
+a tool and product for Project Managers, powered by AI.
+
+Prior work includes Data Science and ML positions where I focused on
+business analytics and MLOps.
 
 ## In which I organize my thoughts
 

@@ -27,6 +27,8 @@ editURL:
   enable: false
   base: "https://github.com/ahgraber/aimlbling-about/edit/main/content"
 
+enableInlineShortcodes: true
+
 page:
   # full (100%), wide (90rem), normal (1280px)
   width: &width wide
