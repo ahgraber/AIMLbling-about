@@ -27,8 +27,6 @@ editURL:
   enable: false
   base: "https://github.com/ahgraber/aimlbling-about/edit/main/content"
 
-enableInlineShortcodes: true
-
 page:
   # full (100%), wide (90rem), normal (1280px)
   width: &width wide
@@ -53,6 +51,13 @@ search:
   flexsearch:
     # index page by: content | summary | heading | title
     index: content
+#
+# analytics:
+#   # https://github.com/umami-software/umami
+#   umami:
+#     server: https://server-url
+#     # script: umami.js
+#     id: "site-id"
 # comments:
 #   enable: false
 #   type: giscus

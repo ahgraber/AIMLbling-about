@@ -13,10 +13,16 @@ languageCode: en-US
 defaultContentLanguage: "en"
 timeZone: America/New_York
 theme: hextra
-#
-# module:
-#   imports:
-#     - path: github.com/imfing/hextra
+
+outputs:
+  home: [HTML]
+  page: [HTML]
+  section: [HTML, RSS]
+
+module:
+  hugoVersion:
+    extended: true
+    min: "0.112.0"
 #
 # services:
 #   googleAnalytics:

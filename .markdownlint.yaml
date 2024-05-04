@@ -22,8 +22,6 @@ MD013:
   tables: false
   # Include headings
   headings: true
-  # Include headings
-  headers: true
   # Strict length checking
   strict: false
   # Stern length checking
@@ -32,3 +30,5 @@ MD013:
 MD024:
   # Allow heading duplication if under different parent headings
   siblings_only: true
+
+MD033: false

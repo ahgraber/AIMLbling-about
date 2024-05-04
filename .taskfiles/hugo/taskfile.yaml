@@ -61,16 +61,32 @@ tasks:
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
-  serve:
+  render:
     desc: Render all static site content
-    cmd: hugo
+    cmd: hugo --gc
     # cmd: nix build '.?submodules=1'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
-  serve:
-    desc: Render all static site content
-    cmd: hugo
-    # cmd: nix build '.?submodules=1'
+  _start:
+    desc: Start colima
+    internal: true
+    cmd: colima start
     preconditions:
-      - {msg: "Hugo not found", sh: "type hugo"}
+      - {msg: "Colima not found", sh: "type colima"}
+
+  run:
+    desc: Build site with colima/docker
+    deps:
+      - task: _start
+        # silent: true
+    cmds:
+      - |
+        docker build \
+          -t ghcr.io/ahgraber/aimlbling-about:$(date +"%Y.%m.%d%H%M") \
+          -t ghcr.io/ahgraber/aimlbling-about:latest \
+          .
+      - docker run --rm -p 8080:8080 ghcr.io/ahgraber/aimlbling-about:latest
+      - echo "Run `colima stop` to clean up!"
+    preconditions:
+      - {msg: "Docker not found", sh: "type docker"}
