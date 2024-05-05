@@ -1,6 +1,8 @@
-# [abiosoft/colima: Container runtimes on macOS (and Linux) with minimal setup](https://github.com/abiosoft/colima)
+# Containerize
 
-## Containerize
+Using [abiosoft/colima: Container runtimes on macOS (and Linux) with minimal setup](https://github.com/abiosoft/colima)
+
+## Local
 
 Start colima:
 
@@ -27,7 +29,7 @@ Stop colima:
 colima stop
 ```
 
-## Push test image to github
+## Push debug image to github
 
 Start colima:
 

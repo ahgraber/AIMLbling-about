@@ -11,13 +11,18 @@ COPY . .
 RUN --mount=type=cache,target=/tmp/hugo_cache \
     hugo --minify
 
-# FROM ghcr.io/nginxinc/nginx-unprivileged:1.26.0-bookworm@sha256:b1dab22cb3186e156b812aea2e37d216276e62effe6b7c5e7e4b93b6fe72bd22
-FROM docker.io/library/nginx:1.26
+FROM docker.io/library/nginx:1.26@sha256:ba9587717b056e1993b051f71cea30ddd5caf09ae2087b1eeb11329f52468e49
+# implement changes required to run NGINX as an less-privileged user
+RUN \
+    sed -i 's,/var/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
+ && sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf \
+ # nginx user must own the cache and etc directory to write cache and tweak the nginx config
+ && chown -R 101:0 /var/cache/nginx \
+ && chmod -R g+w /var/cache/nginx \
+ && chown -R 101:0 /etc/nginx \
+ && chmod -R g+w /etc/nginx
+
 COPY --chown=nginx:nginx --from=build /src/public /site
 COPY --chown=nginx:nginx ./docker/default.conf /etc/nginx/conf.d/
-# RUN \
-#     bash -c 'mkdir -p /var/cache/nginx/{client_temp,proxy_temp_path,fastcgi_temp,uwsgi_temp,scgi_temp}' \
-#     chown -R nginx:nginx /var/cache/nginx/
 
 USER nginx
-EXPOSE 80
