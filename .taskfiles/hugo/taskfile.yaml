@@ -63,7 +63,10 @@ tasks:
 
   render:
     desc: Render all static site content
-    cmd: hugo --gc
+    cmds:
+      - rm -r {{.ROOT_DIR}}/public
+      - rm -r {{.ROOT_DIR}}/resources
+      - hugo --gc
     # cmd: nix build '.?submodules=1'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
@@ -85,6 +88,7 @@ tasks:
         docker build \
           -t ghcr.io/ahgraber/aimlbling-about:$(date +"%Y.%m.%d%H%M") \
           -t ghcr.io/ahgraber/aimlbling-about:latest \
+          -f ./docker/Dockerfile \
           .
       - docker run --rm -p 8080:8080 ghcr.io/ahgraber/aimlbling-about:latest
       - echo "Run `colima stop` to clean up!"

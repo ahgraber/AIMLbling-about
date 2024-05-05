@@ -85,7 +85,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           context: .  # explicitly include checked-out context with .git/ dir
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
