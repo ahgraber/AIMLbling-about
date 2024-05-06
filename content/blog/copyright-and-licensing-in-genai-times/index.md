@@ -1,7 +1,11 @@
 ---
 title: Copyright and Licensing in GenAI Times
 date: 2024-04-30T16:03:13-04:00
-tags: ["generative ai", "copyright", "licencing"]
+tags:
+  - 'opinion'
+  - 'generative AI'
+  - 'LLMs'
+  - 'copyright'
 series: []
 draft: true
 ---
