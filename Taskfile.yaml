@@ -25,20 +25,19 @@ tasks:
     desc: Catch feature branch up to main
     interactive: true
     cmds:
-      - git stash # save any work-in-progress
+      - cmd: git stash # save any work-in-progress
       - defer: git stash pop # restore work-in-progress
-      - git fetch origin main # update remote
-      # - git merge origin/main
-      # - git rebase origin/main
+      - cmd: git fetch origin main # update remote
       - task: _rebase
-      - git push --force-with-lease
-      - echo "Caught up with main!"
+      - cmd: echo "git rebase successful"
+      # - cmd: git push --force-with-lease
+      - cmd: echo "Caught up with main!  To complete, use `git push --force-with-lease`"
 
   _rebase:
     desc: Git rebase on main
-    ignore_error: true
     interactive: true
     # internal: true
-    cmds:
-      - git rebase origin/main
-      - echo "git rebase successful"
+    cmd: |
+      git rebase origin/main --rebase-merges \
+      || (echo "Merge conflicts detected, exiting task. Use 'git rebase --continue'." \
+        && exit 1)
