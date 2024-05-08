@@ -7,3 +7,6 @@ draft: true
 ---
 
 On Openness (or, open-weights != open source)
+
+[Openness in Language Models: Open Source vs Open Weights vs Restricted Weights](https://promptengineering.org/llm-open-source-vs-open-weights-vs-restricted-weights/)
+[AI weights are not open "source" | Open Core Ventures](https://opencoreventures.com/blog/2023-06-27-ai-weights-are-not-open-source/)
