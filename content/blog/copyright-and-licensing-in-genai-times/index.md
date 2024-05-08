@@ -10,6 +10,8 @@ series: []
 draft: true
 ---
 
+- [AI weights are not open "source" | Open Core Ventures](https://opencoreventures.com/blog/2023-06-27-ai-weights-are-not-open-source/)
+-
 - [ ] copyright and generative AI
   - the problem
     - NYT case
