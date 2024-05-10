@@ -1,0 +1,20 @@
+﻿,Release Date,Name,MMLU (language),modifier,GSM8K (math),modifier,HumanEval (code),modifier
+Meta,18-Jul-23,llama-2-7B,34.1,5-shot,25.7,8-shot CoT,7.9,0-shot
+,,llama-2-13B,47.8,5-shot,77.4,8-shot CoT,14,0-shot
+,,llama-2-70B,52.9,5-shot,57.5,8-shot CoT,25.6,0-shot
+Google,21-Feb-24,Gemma 7B,64.3,5-shot,46.4,maj@1,32.3,0-shot
+Cohere,11-Mar-24,Command-R,59.3,5-shot,,,,
+Databricks,27-Mar-24,DBRX,73.7,5-shot,72.8,8-shot CoT,70.1,0-shot
+Mistral,17-Apr-24,8x22B,77.7,5-shot,90.8,8-shot CoT,45.1,0-shot
+Meta,18-Apr-24,llama-3-8B,68.4,5-shot,79.6,8-shot CoT,62.2,0-shot
+,,llama-3-70B,82,5-shot,93,8-shot CoT,71.7,0-shot
+Microsoft,22-Apr-24,Phi 3 mini,68.8,5-shot,82.5,0-shot CoT,59.1,0-shot
+,,Phi 3 small,75.3,5-shot,88.9,0-shot CoT,59.1,0-shot
+,,Phi 3 medium,78.2,5-shot,90.3,0-shot CoT,55.5,0-shot
+Snowflake,24-Apr-24,Arctic,,,74.2,?,64.3,?
+,,,,,,,,
+Anthropic,4-Mar-24,Claude 3 Haiku,75.2,5-shot,88.9,0-shot,75.9,0-shot
+,,Claude 3 Sonnet,79,5-shot,92.3,0-shot,73,0-shot
+,,Claude 3 Opus,86.8,5-shot,95,0-shot,84.9,0-shot
+OpenAI,14-Mar-23,GPT 3.5-turbo,70,5-shot,57.1,5-shot CoT,48.1,0-shot
+,14-Mar-23,GPT 4,86.4,5-shot,92,5-shot CoT,67,0-shot
