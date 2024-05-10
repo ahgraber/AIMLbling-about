@@ -41,7 +41,7 @@ navbar:
     width: 50
     height: 50
 footer:
-  width: full # *width
+  width: *width
   displayCopyright: true
   displayPoweredBy: true
 

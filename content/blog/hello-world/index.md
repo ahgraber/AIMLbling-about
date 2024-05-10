@@ -1,10 +1,17 @@
 ---
 title: Hello World!
 date: 2024-04-22
+authors:
+  - name: ahgraber
+    link: https://github.com/ahgraber
+    image: https://github.com/ahgraber.png
 tags:
   - 'meta'
   - 'blogumentation'
   - 'homelab'
+layout: single
+toc: true
+math: false
 draft: false
 ---
 

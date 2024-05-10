@@ -1,12 +1,18 @@
 ---
 title: The Compounding Error of Generative Models
 date: 2024-04-30
+authors:
+  - name: ahgraber
+    link: https://github.com/ahgraber
+    image: https://github.com/ahgraber.png
 tags:
   - 'agents'
   - 'generative AI'
   - 'prompts'
   - 'LLMs'
 series: []
+layout: single
+toc: true
 math: true
 draft: false
 ---
