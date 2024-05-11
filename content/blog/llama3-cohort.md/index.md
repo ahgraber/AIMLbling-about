@@ -1,6 +1,6 @@
 ---
 title: Cohort of Models
-date: 2024-05-09
+date: 2024-05-11
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -10,7 +10,7 @@ series: []
 layout: wide
 toc: false
 math: false
-draft: true
+draft: false
 ---
 The "open weights" or "open model" LLM ecosystem is thriving,
 with major new releases from Meta, Microsoft, Databricks, and Snowflake in the past two months.
