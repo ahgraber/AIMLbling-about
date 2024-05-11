@@ -1,12 +1,19 @@
 ---
 title: No Mo Robo
 date: 2024-05-03
+authors:
+  - name: ahgraber
+    link: https://github.com/ahgraber
+    image: https://github.com/ahgraber.png
 tags:
   - 'opinion'
   - 'generative AI'
   - 'LLMs'
   - 'copyright'
 series: []
+layout: single
+toc: true
+math: false
 draft: false
 ---
 ## Web crawlers & search

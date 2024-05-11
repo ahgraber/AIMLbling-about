@@ -1,6 +1,10 @@
 ---
 title: {{ replace .Name "-" " " | title }}
 date: {{ .Date }}
+authors:
+  - name: ahgraber
+    link: https://github.com/ahgraber
+    image: https://github.com/ahgraber.png
 tags:
   # meta
   - 'meta'
@@ -19,5 +23,8 @@ tags:
   - 'copyright'
   - 'privacy'
 series: []
+layout: single
+toc: true
+math: false
 draft: true
 ---

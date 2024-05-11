@@ -1,0 +1,21 @@
+﻿,Meta,,,Google,Cohere,Databricks,Mistral,Meta,,Microsoft,,,Snowflake,DeepSeek
+Release Date,18-Jul-23,,,21-Feb-24,11-Mar-24,27-Mar-24,17-Apr-24,18-Apr-24,,22-Apr-24,,,24-Apr-24,7-May-24
+Name,llama-2-7B,llama-2-13B,llama-2-70B,Gemma 7B,Command-R,DBRX,8x22B,llama-3-8B,llama-3-70B,Phi 3 mini,Phi 3 small,Phi 3 medium,Arctic,v2
+Training Tokens,2T,2T,2T,6T,_?_,12T,_?_,15T,80T,3.3T,4.8T,4.8T,3.5T,8.1T
+Tokenizer Vocabulary,32k,32k,32k,256k,256k,100k,32k,128k,128k,32k,100k,32k (?),32k,100k
+Context Length (training),4k,4k,4k,8k,8k,32k,4k,8k,8k,4k,4k,,4k,4k
+Hidden dimension,4096,5120,8192,3072,8192,6144,6144,4096,8192,3072,4096,5120,7168,5120
+FF dimension,11008,13824,28672,24576,,10752,16384,14336,28672,8192,_?_,_?_,4864,1536
+Positional Encoding,RoPE,RoPE,RoPE,RoPE,RoPE?,RoPE,RoPE,RoPE,RoPE,RoPE / LongRoPE,RoPE?,RoPE?,RoPE,RoPE
+Normalization,RMSNorm,RMSNorm,RMSNorm,RMSNorm,_?_,Layer,RMSNorm,RMSNorm,RMSNorm,RMSNorm,_?_,_?_,RMSNorm,RMSNorm
+Activation Function,SwiGLU,SwiGLU,SwiGLU,GeGLU,SiLU,GLU,SiLU,SwiGLU,SwiGLU,SiLU,_?_,_?_,SwiGLU,SwiGLU
+Attention,_?_,_?_,GQA,MQA,_?_,GQA,"SWA, GQA",GQA,GQA,SWA,GQA; BlockSparse,_?_,Attention-sinks SWA (TBD),MLA
+Heads,32,40,64,16,64,48,48,32,64,32,32,40,56,128
+Layers,32,40,80,28,40,40,56,32,80,32,32,40,35,60
+Alignment,"SFT, PPO","SFT, PPO","SFT, Rejection Sampling, PPO","SFT, RLHF",_?_,"SFT, _RLHF (implied)_","? SFT, DPO","SFT, Rejection Sampling, PPO, DPO","SFT, Rejection Sampling, PPO, DPO","SFT, DPO",_?_,_?_,SFT,"SFT, GRPO"
+MoE,no,no,no,no,no,yes,yes,no,no,no,no,no,hybrid,yes
+Experts,,,,,,16,8,,,,,,128,160+2
+Top-k,,,,,,4,2,,,,,,2,6
+Total Params,,,,,,132B,141B,,,,,,480B,236B
+**Parameters (active)**,**7B**,**13B**,**70B**,**7B**,**35B**,**36B**,**39B**,**8B**,**70B**,**3.8B**,**7B**,**14B**,**17B**,**21B**
+Context Length (inference),4k,4k,4k,8k,128k,32k,64k,8k,8k,4k; 128k,8k,_?_,4k; 32k with SWA,128k

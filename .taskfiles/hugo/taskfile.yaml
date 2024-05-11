@@ -33,7 +33,7 @@ tasks:
         sed -i '/draft: true/c\draft: false' {{ .path }}
       - |
         sed -i '/date: .*/c\date: {{ now.Format "2006-01-02" }}' {{ .path }}
-      - echo "Branch is ready for PR"
+      - echo "Commit this change, then branch is ready for PR!"
       # - task: _pull_request
     requires:
       vars: ["path"]
