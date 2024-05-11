@@ -11,7 +11,8 @@ Meta,18-Apr-24,llama-3-8B,68.4,5-shot,79.6,8-shot CoT,62.2,0-shot
 Microsoft,22-Apr-24,Phi 3 mini,68.8,5-shot,82.5,0-shot CoT,59.1,0-shot
 ,,Phi 3 small,75.3,5-shot,88.9,0-shot CoT,59.1,0-shot
 ,,Phi 3 medium,78.2,5-shot,90.3,0-shot CoT,55.5,0-shot
-Snowflake,24-Apr-24,Arctic,,,74.2,?,64.3,?
+Snowflake,24-Apr-24,Arctic,67.3,5-shot,74.2,?,64.3,?
+DeepSeek,7-May-24,v2,78.5,5-shot,79.2,0-shot CoT,48.8,0-shot
 ,,,,,,,,
 Anthropic,4-Mar-24,Claude 3 Haiku,75.2,5-shot,88.9,0-shot,75.9,0-shot
 ,,Claude 3 Sonnet,79,5-shot,92.3,0-shot,73,0-shot
