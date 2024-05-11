@@ -31,7 +31,7 @@ tasks:
       - task: _rebase
       - cmd: echo "git rebase successful"
       # - cmd: git push --force-with-lease
-      - cmd: echo "Caught up with main!  To complete, use `git push --force-with-lease`"
+      - cmd: echo "Caught up with main!  To complete, use '\033[0;36mgit push --force-with-lease\033[0m'"
 
   _rebase:
     desc: Git rebase on main

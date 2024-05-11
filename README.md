@@ -37,4 +37,4 @@ Once detected, it will automatically create a PR to deploy the new blog image to
 ## Integrations
 
 [ ] [giscus](https://giscus.app/) - a comments system powered by GitHub Discussions
-[ ] [umami analytics](https://umami.is/) - a simple, fast, privacy-focused alternative to Google Analytics
+[x] [umami analytics](https://umami.is/) - a simple, fast, **privacy-focused** alternative to Google Analytics

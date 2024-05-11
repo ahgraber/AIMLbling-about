@@ -20,9 +20,9 @@ goldmark:
   strikethrough: true
   table: true
   taskList: true
-renderer:
-  hardWraps: false # whether to replace newline characters within a paragraph with <br> elements.
-  unsafe: true # whether to render raw HTML mixed within the Markdown
-  # xhtml: false
-highlight:
-  noClasses: false
+  renderer:
+    hardWraps: false # whether to replace newline characters within a paragraph with <br> elements.
+    unsafe: true # whether to render raw HTML mixed within the Markdown
+    # xhtml: false
+  highlight:
+    noClasses: false
