@@ -22,6 +22,8 @@ draft: true
         To qualify, must be novel, nonobvious, and useful; composition of matter, machine, article of manufacture, or process/method
   - derivative works: when are these permitted?
 
+  - [OpenAI, Mass Scraper of Copyrighted Work, Claims Copyright Over Subreddit's Logo](https://www.404media.co/openai-files-copyright-claim-against-chatgpt-subreddit/)
+
   - NYT case
     - <https://katedowninglaw.com/2024/01/06/the-new-york-times-launches-a-very-strong-case-against-microsoft-and-openai/> && <https://news.ycombinator.com/item?id=38900197>
     - <https://katedowninglaw.com/2023/08/24/an-ip-attorneys-reading-of-the-llama-and-chatgpt-class-action-lawsuits/>
