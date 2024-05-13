@@ -19,10 +19,10 @@ overrides:
       singleQuote: false
   - files: "*.md"
     options:
-      parser: markdown
+      parser: "markdown"
       # proseWrap: "preserve"
   - files: "*.toml"
   - files: "*.yaml"
     options:
-      parser: yaml
+      parser: "yaml"
       proseWrap: "preserve"
