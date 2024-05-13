@@ -1,8 +1,6 @@
 ---
-<!-- prettier-ignore-start -->
 title: {{ replace .Name "-" " " | title }}
 date: {{ .Date }}
-<!-- prettier-ignore-end -->
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
