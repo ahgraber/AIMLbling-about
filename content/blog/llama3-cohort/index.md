@@ -70,6 +70,10 @@ Additionally, models are training on more tokens,
 moving from compute-optimal toward data-optimal frontiers of the Chinchilla laws.
 Microsoft explicitly state this in the Phi 3 technical paper,
 saying they "calibrate the training data to be closer to the "data optimal" regime for small models."[^phi]
+Meta echo this in the Llama 3 release announcement, saying
+"while the Chinchilla-optimal amount of training compute for an 8B parameter model corresponds to ~200B tokens, we found that model performance continues to improve even after the model is trained on two orders of magnitude more data.
+Both our 8B and 70B parameter models continued to improve log-linearly after we trained them on up to 15T tokens.
+_Larger models can match the performance of these smaller models with less training compute, but smaller models are generally preferred because they are much more efficient during inference_" (emphasis mine). [^llama3]
 
 {{< callout type="info" emoji="💡" >}}
   The Chinchilla "laws" describe the relationship between model size (parameters),
@@ -200,7 +204,6 @@ GPUs required, GPU class, FLOPs, and tCO2eq.
 - [Models - Hugging Face](https://huggingface.co/models)
 - [[2302.13971] LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)
 - [[2307.09288] Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
-- [Introducing Meta Llama 3: The most capable openly available LLM to date](https://ai.meta.com/blog/meta-llama-3/)
 - [gemma-report.pdf](https://storage.googleapis.com/deepmind-media/gemma/gemma-report.pdf)
 - [[2310.06825] Mistral 7B](https://arxiv.org/abs/2310.06825)
 - [[2401.04088] Mixtral of Experts](https://arxiv.org/abs/2401.04088)
@@ -224,6 +227,7 @@ GPUs required, GPU class, FLOPs, and tCO2eq.
 [^compute]: [Estimating Training Compute of Deep Learning Models – Epoch AI](https://epochai.org/blog/estimating-training-compute)
 [^dbrx]: [Introducing DBRX: A New State-of-the-Art Open LLM | Databricks Blog](https://www.databricks.com/blog/introducing-dbrx-new-state-art-open-llm)
 [^phi]: [[2404.14219] Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone](https://arxiv.org/abs/2404.14219)
+[^llama3]: [Introducing Meta Llama 3: The most capable openly available LLM to date](https://ai.meta.com/blog/meta-llama-3/)
 [^cost]: [The Inference Cost Of Search Disruption – Large Language Model Cost Analysis](https://www.semianalysis.com/p/the-inference-cost-of-search-disruption)
 [^law]: [Revised Chinchilla scaling laws – LLM compute and token requirements – Educating Silicon](https://www.educatingsilicon.com/2024/04/29/revised-chinchilla-scaling-laws-impact-on-llm-compute-and-token-requirements/)
 [^mqa]: [[1911.02150] Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/abs/1911.02150)
