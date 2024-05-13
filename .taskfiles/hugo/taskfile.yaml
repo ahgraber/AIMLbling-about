@@ -11,7 +11,6 @@ tasks:
     desc: Create a new draft post from template
     cmds:
       - git checkout -b blog/{{ .name }} main
-      - mkdir -p blog/{{ .name }}
       - hugo new content blog/{{ .name }}/index.md
       # NOTE: using gnu sed via nix; if using osx sed may have to use `sed -i ''`
       - |

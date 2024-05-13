@@ -1,7 +1,11 @@
-# prettier should ignore
-.vscode/
+# in addition to files in .gitignore, prettier should ignore
 .**/
-*.md
+.*
+# *.md
 # *.y*ml
-
 assets/css/custom.css
+node_modules
+**/node_modules
+**/lib
+**/package.json
+!/package.json
