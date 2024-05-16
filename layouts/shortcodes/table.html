@@ -39,10 +39,10 @@
     {{ range $rows }}
       <tr>
         {{ range . }}
-          {{ if (findRE "^\\d+$" .) }}
-            <td data-table-dtype="number">{{ . }}</td>
+          {{ if (findRE "^[\\d\\.,-]+$" .) }}
+            <td data-table-dtype="number" style="text-align:right">{{ . | markdownify }}</td>
           {{ else }}
-            <td data-table-dtype="text">{{ . | markdownify | emojify }}</td>
+            <td data-table-dtype="text" style="text-align:center">{{ . | markdownify | emojify }}</td>
           {{ end }}
         {{ end }}
       </tr>
