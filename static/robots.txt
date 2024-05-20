@@ -1,6 +1,3 @@
-User-agent: *
-Allow /
-
 # disallow
 User-agent: Amazonbot
 Disallow: /
@@ -57,3 +54,7 @@ Disallow: /
 
 User-agent: PerplexityBot
 Disallow: /
+
+# Default allow all others
+User-agent: *
+Allow /
