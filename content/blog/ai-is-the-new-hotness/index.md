@@ -1,6 +1,6 @@
 ---
 title: AI Is the New Hotness 🌎🔥
-date: 2024-05-12T10:47:00-04:00
+date: 2024-05-20
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -15,7 +15,7 @@ series: []
 layout: single
 toc: true
 math: true
-draft: true
+draft: false
 ---
 
 Meta provided insight into some of the costs of training LLMs in their Llama 2[^llama2] and Llama 3[^llama3] papers,
