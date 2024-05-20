@@ -48,6 +48,7 @@ AKS = "AKS"
 "arange" = "arange"  # e.g. `numpy.arange`
 keypair = "keypair"
 raison = "raison"
+ba = "ba"
 
 ## Specific rules for lockfiles
 [type.lock]
