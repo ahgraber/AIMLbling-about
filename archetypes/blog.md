@@ -1,6 +1,6 @@
 ---
-title: {{ replace .Name "-" " " | title }}
-date: {{ .Date }}
+title: { { replace .Name "-" " " | title } }
+date: { { .Date } }
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -9,6 +9,7 @@ tags:
   # meta
   - "meta"
   - "blogumentation"
+  - "experiment"
   - "listicle"
   - "opinion"
   # ai/ml
