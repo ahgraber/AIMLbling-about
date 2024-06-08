@@ -121,7 +121,8 @@ repos:
           (?x)^(
             ^.*(typos\.toml)$ |
             ^.*(\.sops\.yaml)$ |
-            ^.*(\.dat)$
+            ^.*(\.dat)$ |
+            ^.*(\.git.*)$
           )$
         stages: [commit]
   - repo: https://github.com/adrienverge/yamllint.git

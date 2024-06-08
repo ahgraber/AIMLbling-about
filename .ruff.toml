@@ -99,7 +99,7 @@ ignore = [
 # Avoid trying to fix extension types:
 unfixable = ["B"]
 
-[lint.per-file-ignores]
+[lint.extend-per-file-ignores]
 # # Ignore `E402` (import violations) in all `__init__.py` files,
 # # and in `path/to/file.py`.
 # "__init__.py" = ["E402"]
@@ -107,7 +107,7 @@ unfixable = ["B"]
 ".ci/*" = ["D"]
 "docs/*" = ["D"]
 "notebooks/*" = ["B018", "D", "S"]
-"tests/*" = ["D", "S101", "S301"]
+"**/tests/*" = ["D", "S101", "S301"]
 
 
 # --- ruff plugins --------------------
