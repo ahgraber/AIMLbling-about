@@ -1,0 +1,83 @@
+---
+title: How Robust Are LLMs to Typos (part 3)
+date: 2024-07-10
+tags:
+  # meta
+  - "experiment"
+  # ai/ml
+  - "generative AI"
+  - "prompts"
+  - "LLMs"
+series:
+  - "typos"
+draft: true
+math: true
+---
+
+This is part three of a four-part series (one, two, four) where I examine the influence typos have on LLM response
+quality.
+
+In this post, I'll use the typo generation function to induce typos with increasing frequency in the hopes of
+understanding how typos influence **embeddings**.
+
+If you recall, my hypothesis is that typo occurrence shifts a sentence away from its intended location in embedding
+space. Therefore, as the typo frequency increases, the typo-laden embedding will grow more dissimilar from the correct
+embedding.
+
+## Design
+
+Can't use perplexity for embedding models; use accuracy on MSMARCO(?) tests and/or distance metrics?
+
+## LLM experiments
+
+### Baseline setup
+
+Using perplexity - "the lower the perplexity of a prompt is, the better its performance on the task will be. This is
+based on the intuition that the more frequently the prompt (or very similar phrases) appears in the training data, the
+more the model is familiar with it and is able to perform the described task."[^promptperplexity]
+
+{{< callout type="info" >}} `Perplexity` is a representation of how _unlikely_ a given sequence is, given all sequences
+seen during training. It can be used to understand how confident the model is in predicting the next token in a
+sequence. A lower perplexity indicates that the prediction is more likely (i.e., the model is more confident).
+
+According to [Huggingface](https://huggingface.co/docs/transformers/en/perplexity), "perplexity is defined as the
+exponentiated average negative log-likelihood of a sequence."
+
+$$
+\text{given sequence } X = (x_0, x_1, \dots, x_n) \\\\
+\text{perplexity}(X) = \exp \left\( {-\frac{1}{n}\sum_i^n \log P(x_n|x_{<n}) } \right\)
+$$
+
+In plainer language, to calculate perplexity:
+
+1. Calculate the probability of each token in a sequence (given the preceding tokens)
+2. Normalize the probability across different sequence lengths by taking the geometric mean of the probabilities
+3. Take the reciprocal of the normalized probabilities
+
+{{< /callout >}}
+
+Using MMLU or tinyBenchmarks [^tinybench]:
+
+1. Run evals without typos; analyze perplexity of eval prompts & responses
+2. Perturb with varying levels of typos and run evals; analyze perplexity of eval prompts & responses
+   1. Find/replace with typos corpus
+   2. Find/replace with mechanistic rules
+
+## References
+
+<!-- [^promptbench] [^promptbench]
+[[2306.04528] PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts](https://arxiv.org/abs/2306.04528)
+[^noisy] [^noisy]:
+[[2311.00258] Noisy Exemplars Make Large Language Models More Robust: A Domain-Agnostic Behavioral Analysis](https://arxiv.org/abs/2311.00258)
+[^resilience] [^resilience]:
+[[2404.09754] Resilience of Large Language Models for Noisy Instructions](https://arxiv.org/abs/2404.09754)
+[^corpora]: [Corpora of misspellings for download](https://www.dcs.bbk.ac.uk/~ROGER/corpora.html) -->
+
+[^perturbation] [^perturbation]:
+[[2402.15833] Prompt Perturbation Consistency Learning for Robust Language Models](https://arxiv.org/abs/2402.15833)
+
+<!-- [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
+[^promptperplexity] [^promptperplexity]:
+[[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
+[^perplexity] [^perplexity]:
+[Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity) -->
