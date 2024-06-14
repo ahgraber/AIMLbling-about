@@ -1,5 +1,5 @@
 ---
-title: How Robust Are LLMs to Typos (part 1)
+title: How Robust Are LLMs to Typos? (part 1)
 date: 2024-05-20
 tags:
   # meta
@@ -14,12 +14,12 @@ draft: true
 math: true
 ---
 
-I keep telling folks at work that "prompts are fragile." Word choice and word order can have large impacts on the
-response, and every user input is a potential attack vector for the LLM equivalent of a SQL injection attack. But
+Recently, I've been reminding folks that "prompts are fragile." Word choice and word order can have large impacts on
+LLM responses, and every user input is a potential attack vector for the LLM equivalent of a SQL injection attack. But
 before I go off on _that_ tangent, having this repeated discussion got me thinking -- "Can I quantify how sensitive
 LLMs are to inputs?" and "I wonder how much typos effect response quality?"
 
-It seems intuitive that typos _should_ affect response quality, and recent whitepapers back up this
+It seems intuitive that typos _should_ affect response quality Recent whitepapers do back up this
 instinct[^promptbench] [^noisy]; however, it also appears as though the sheer scope of data provided during
 pre-training affords at least some resiliance to erroneous inputs[^resilience].
 
@@ -32,9 +32,9 @@ pre-training affords at least some resiliance to erroneous inputs[^resilience].
 <!-- markdownlint-enable -->
 
 This is part one of a four-part series (two, three, four) where I examine these questions. In this post, I'll lay out
-my plan of attack and explain how I plan to induce typos in a controlled manner for experimentation. In later posts,
-I'll use the typo generation function to induce typos with increasing frequency in the hopes of understanding how typos
-influence tokenization, embedding, and generation.
+my plan of attack and explain how I plan to induce typos in a controlled manner for experimentation. In later posts, I
+plan to use the typo generation function to induce typos with increasing frequency in the hopes of understanding how
+typos influence tokenization, embedding, and generation.
 
 ## Hypotheses
 
@@ -45,7 +45,7 @@ away from the distribution of the training data:
    additional, smaller tokens to represent the data... Unless the typos are so popular that they have made it into the
    vocabulary.
 2. Typo occurrence shifts a sentence away from its intended location in embedding space -- as the typo frequency
-   increases, the typo-laden embedding will grow more dissimilar from the correct embedding
+   increases, the typo-laden embedding will grow more dissimilar from the correct embedding.
 3. Typos increase error rates -- as typos alter the tokenization and embedding pipeline, the language model experiences
    distribution shift and cannot predict as well for the error-laden inputs. Text with typos will have higher
    perplexity than correct text, and questions with typos will have lower response accuracy than correct questions.
@@ -68,17 +68,17 @@ My preference is to build a tool that generates typos based on relationships min
 the following datasets that contain both "intentional" and "unintentional" errors from both handwritten and typed
 sources:
 
-- `birkbeck` contains 36,133 misspellings of 6,136 words. Handwritten.[^corpora]
-- `holbrook` contains 1791 misspellings of 1200 words. Handwritten.[^corpora]
-- `aspell` contains 531 misspellings of 450 words for GNU Aspell. Typed.[^corpora]
-- `wikipedia` contains 2,455 misspellings of 1,922 words. Typed.[^corpora]
-- `microsoft` contains before-and-after spelling-correction pairs derived automatically by processing keystroke logs
-  collected through Amazon's Mechanical Turk. Typed.[^microsoft]
-- `typokit` contains common typos and spelling mistakes and their fixes. Typed?[^typokit]
-- `github` is a large-scale dataset of misspellings and grammatical errors along with their corrections harvested from
-  GitHub. It contains more than 350k edits and 65M characters. Typed.[^github]
-- `commit messages` contains 7,375 typos developers made in source code identifiers, e.g. class names, function names,
-  variable names, and fixed them on GitHub. Typed.[^commit]
+- `birkbeck`[^corpora] contains 36,133 misspellings of 6,136 words. Handwritten.
+- `holbrook`[^corpora] contains 1791 misspellings of 1200 words. Handwritten.
+- `aspell`[^corpora] contains 531 misspellings of 450 words for GNU Aspell. Typed.
+- `wikipedia`[^corpora] contains 2,455 misspellings of 1,922 words. Typed.
+- `microsoft`[^microsoft] contains before-and-after spelling-correction pairs derived automatically by processing
+  keystroke logs collected through Amazon's Mechanical Turk. Typed.
+- `typokit`[^typokit] contains common typos and spelling mistakes and their fixes. Typed?
+- `github`[^github] is a large-scale dataset of misspellings and grammatical errors along with their corrections
+  harvested from GitHub. It contains more than 350k edits and 65M characters. Typed.
+- `commit messages`[^commit] contains 7,375 typos developers made in source code identifiers, e.g. class names,
+  function names, variable names, and fixed them on GitHub. Typed.
 
 After analyzing, the final collection contains 753,569 character-level edits/corrections for statistical summarization.
 
@@ -89,11 +89,11 @@ is_, and inferring probabilities of occurrence from these data. {{< /callout >}}
 
 ### Analysis
 
-In order to define the mapping from the erroneous to the correct string, followed the general approach from the paper
-"Spelling Correction with Denoising Transformer"[^denoise].
+In order to define the mapping from erroneous to correct, I followed the general approach from the paper "Spelling
+Correction with Denoising Transformer"[^denoise].
 
-I identify the type of typo using the four Damerau-Levenshtein edit operations (deletion, insertion, substitution, and
-transposition), and the relative location of the typo (i.e., `character_index` / `word_length`).
+I identified the type of typo using the four Damerau-Levenshtein edit operations (deletion, insertion, substitution,
+and transposition), and the typo's relative location (i.e., `character_index` / `word_length`).
 
 {{< figure
   src="images/editprob.png"
@@ -103,11 +103,13 @@ transposition), and the relative location of the typo (i.e., `character_index` /
   src="images/locations.png"
   caption="Likelihood that an error occurred at a given (relative) location in a word." >}}
 
-Then, for a given location and edit operation, I mine the likelihoods for character corrections.
+Then, for a given location and edit operation, I mined the likelihoods for character corrections.
 
 {{< figure
   src="images/correction-letters.png"
   caption="Overall correction matrix.  The generation function uses a similar matrix per location and edit operation." >}}
+
+### Generation
 
 To generate a typo, I invert the rules learned from the data - where the dataset starts with the typo and corrects it,
 I start with a correct word and induce a typo:
@@ -115,15 +117,17 @@ I start with a correct word and induce a typo:
 1. Probabilistically identify the typo location (index) and identify the character.
 2. Given the location, probabilistically select the edit operation.
 3. Given the edit operation and the character, induce the typo:
-   - If the edit is `delete`, we insert.
-   - If the edit is `insert`, we delete.
-   - If the edit is `substitute`, we invert the correction matrix and probabilistically select the new character to
-     swap in
-   - If the edit is `transpose`, we swap the character with its following neighbor.
+   - If the edit is `delete`, insert.
+   - If the edit is `insert`, delete.
+   - If the edit is `substitute`, invert the correction matrix and probabilistically select the new character to swap
+     in
+   - If the edit is `transpose`, swap the character with its following neighbor.
 
-For the sake of the upcoming experiments, I also add a modifier to introduce typos at a given rate per input sentence.
-A rate of `0.5` means that, on average, half of the words will have typos. However, this could be every-other-word, or
-multiple typos could be induced in an individual word.
+For the sake of the upcoming experiments, I also include the ability to introduce typos at a given rate per input
+sentence. A rate of `0.5` means that, on average, half of the words will have typos. However, this could be
+every-other-word, or multiple typos could be induced in an individual word.
+
+### Results
 
 <!-- markdownlint-disable MD033 -->
 <table>
@@ -207,16 +211,22 @@ errors.
 
 ## References
 
-[^promptbench] [^promptbench]
-[[2306.04528] PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts](https://arxiv.org/abs/2306.04528)
-[^noisy] [^noisy]:
-[[2311.00258] Noisy Exemplars Make Large Language Models More Robust: A Domain-Agnostic Behavioral Analysis](https://arxiv.org/abs/2311.00258)
-[^resilience] [^resilience]:
-[[2404.09754] Resilience of Large Language Models for Noisy Instructions](https://arxiv.org/abs/2404.09754) [^corpora]:
-[Corpora of misspellings for download](https://www.dcs.bbk.ac.uk/~ROGER/corpora.html) [^microsoft]:
-[Microsoft Research Spelling-Correction Data](https://www.microsoft.com/en-us/download/details.aspx?id=52418)
+[^promptbench]:
+    [[2306.04528] PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts](https://arxiv.org/abs/2306.04528)
+
+[^noisy]:
+    [[2311.00258] Noisy Exemplars Make Large Language Models More Robust: A Domain-Agnostic Behavioral Analysis](https://arxiv.org/abs/2311.00258)
+
+[^resilience]:
+    [[2404.09754] Resilience of Large Language Models for Noisy Instructions](https://arxiv.org/abs/2404.09754)
+
+[^corpora]: [Corpora of misspellings for download](https://www.dcs.bbk.ac.uk/~ROGER/corpora.html)
+[^microsoft]:
+    [Microsoft Research Spelling-Correction Data](https://www.microsoft.com/en-us/download/details.aspx?id=52418)
+
 [^typokit]: [Collection of common typos & spelling mistakes and their fixes](https://github.com/feramhq/typokit)
 [^github]:
-[GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors](https://github.com/mhagiwara/github-typo-corpus?tab=readme-ov-file)
-[^commit]: [src-d/datasets | Typos](https://github.com/src-d/datasets/blob/master/Typos/README.md) [^denoise]:
-[[2105.05977] Spelling Correction with Denoising Transformer](https://arxiv.org/pdf/2105.05977)
+    [GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors](https://github.com/mhagiwara/github-typo-corpus?tab=readme-ov-file)
+
+[^commit]: [src-d/datasets | Typos](https://github.com/src-d/datasets/blob/master/Typos/README.md)
+[^denoise]: [[2105.05977] Spelling Correction with Denoising Transformer](https://arxiv.org/pdf/2105.05977)

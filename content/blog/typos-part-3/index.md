@@ -1,5 +1,5 @@
 ---
-title: How Robust Are LLMs to Typos (part 3)
+title: How Robust Are LLMs to Typos? (part 3)
 date: 2024-07-10
 tags:
   # meta
@@ -65,19 +65,19 @@ Using MMLU or tinyBenchmarks [^tinybench]:
 
 ## References
 
-<!-- [^promptbench] [^promptbench]
-[[2306.04528] PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts](https://arxiv.org/abs/2306.04528)
-[^noisy] [^noisy]:
-[[2311.00258] Noisy Exemplars Make Large Language Models More Robust: A Domain-Agnostic Behavioral Analysis](https://arxiv.org/abs/2311.00258)
-[^resilience] [^resilience]:
-[[2404.09754] Resilience of Large Language Models for Noisy Instructions](https://arxiv.org/abs/2404.09754)
-[^corpora]: [Corpora of misspellings for download](https://www.dcs.bbk.ac.uk/~ROGER/corpora.html) -->
+<!-- [^promptbench]: [[2306.04528] PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts](https://arxiv.org/abs/2306.04528)
+[^noisy]: [[2311.00258] Noisy Exemplars Make Large Language Models More Robust: A Domain-Agnostic Behavioral Analysis](https://arxiv.org/abs/2311.00258)
+[^resilience]: [[2404.09754] Resilience of Large Language Models for Noisy Instructions](https://arxiv.org/abs/2404.09754)
+[^corpora]: [Corpora of misspellings for download](https://www.dcs.bbk.ac.uk/~ROGER/corpora.html)
+[^microsoft]: [Microsoft Research Spelling-Correction Data](https://www.microsoft.com/en-us/download/details.aspx?id=52418)
+[^typokit]: [Collection of common typos & spelling mistakes and their fixes](https://github.com/feramhq/typokit)
+[^github]: [GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors](https://github.com/mhagiwara/github-typo-corpus?tab=readme-ov-file)
+[^commit]: [src-d/datasets | Typos](https://github.com/src-d/datasets/blob/master/Typos/README.md)
+[^denoise]: [[2105.05977] Spelling Correction with Denoising Transformer](https://arxiv.org/pdf/2105.05977) -->
 
 [^perturbation] [^perturbation]:
 [[2402.15833] Prompt Perturbation Consistency Learning for Robust Language Models](https://arxiv.org/abs/2402.15833)
 
 <!-- [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
-[^promptperplexity] [^promptperplexity]:
-[[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
-[^perplexity] [^perplexity]:
-[Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity) -->
+[^promptperplexity]: [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
+[^perplexity]: [Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity) -->
