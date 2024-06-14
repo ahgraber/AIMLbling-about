@@ -101,6 +101,17 @@ def gh_parse_diff(src: str, tgt: str):
     return typos
 
 
+def collect_typo(typo: str, correction: str | Sequence):
+    """Add (typo, correction) pair to global list."""
+    global typos
+    if isinstance(correction, str):
+        typos[typo].extend([correction])
+    elif isinstance(correction, Sequence):
+        typos[typo].extend(correction)
+    else:
+        raise TypeError(f"Expected string or Sequence, got {correction}")
+
+
 # %%
 typos = defaultdict(list)
 
@@ -108,24 +119,20 @@ typos = defaultdict(list)
 for dat in Path("./data/").glob("*.dat"):
     parsed = dat_parse_misspellings(dat)
     for typo, correction in parsed.items():
-        typos[typo].extend(correction)
+        collect_typo(typo=typo, correction=correction)
 
 # microsoft
 with Path("./data/microsoft.txt").open("r", encoding="utf-8") as file:
     for line in file:
         typo, correction = line.split()
-        typos[typo].extend([correction])
+        collect_typo(typo=typo, correction=correction)
+
 
 # typokit
 for file in Path("./data/typokit/").glob("*.yaml"):
     y = yaml.safe_load(file.open("r", encoding="utf-8"))
     for typo, correction in y.items():
-        if isinstance(correction, str):
-            typos[typo].extend([correction])
-        elif isinstance(correction, Sequence):
-            typos[typo].extend(correction)
-        else:
-            raise TypeError(f"Expected string or Sequence, got {correction}")
+        collect_typo(typo=typo, correction=correction)
 
 # github
 with Path("./data/github.jsonl").open("r", encoding="utf-8") as file:
@@ -144,7 +151,14 @@ with Path("./data/github.jsonl").open("r", encoding="utf-8") as file:
                 tgt=edit["tgt"]["text"].strip(),
             )
             for typo, correction in parsed.items():
-                typos[typo].extend(correction)
+                collect_typo(typo=typo, correction=correction)
+
+ct = pd.read_csv(Path("./data/commit-typos.csv"))
+for row in ct[["wrong", "correct"]].to_dict(orient="records"):
+    typo = row["wrong"]
+    correction = row["correct"]
+    collect_typo(typo=typo, correction=correction)
+
 
 # %%
 # remove 'unknown' category from typos
@@ -214,10 +228,12 @@ df["fix_ascii"] = df["fix"].apply(lambda x: x in string.printable if (isinstance
 
 df = df[df["error_ascii"] & df["fix_ascii"]].drop(columns=["error_ascii", "fix_ascii"])
 
-df.to_csv(Path("./data/stats.csv"), index=False)
+print(f"This collection provides {len(df)} edits for statistical summarization.")
 
 # %%
-print(f"This collection provides {len(df)} edits for statistical summarization.")
+# save
+df.to_csv(Path("./data/stats.csv"), index=False)
+
 
 # %%
 # Edit Op Proportions
@@ -239,7 +255,7 @@ g = (
     )
     + scale_y_continuous(
         labels=percent_format(),
-        limits=(0, 0.5),
+        limits=(0, 1),
     )
     + theme_xkcd()
     + theme(figure_size=(6, 4))

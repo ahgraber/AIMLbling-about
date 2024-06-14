@@ -32,7 +32,7 @@ repo = subprocess.check_output(
 repo = Path(repo).resolve()
 
 # %%
-df = pd.read_csv(Path("./data/stats.csv"))
+data = pd.read_csv(Path("./data/stats.csv"))
 
 
 # %%
@@ -42,12 +42,12 @@ def ceil(x, precision=0):
 
 
 # %%
-df = (
-    df.drop(columns=["abs_pos"])
-    .assign(pct_pos=df["pct_pos"].apply(ceil, precision=2))
+data = (
+    data.drop(columns=["abs_pos"])
+    .assign(pct_pos=data["pct_pos"].apply(ceil, precision=2))
     .rename(columns={"pct_pos": "position"})
 )
-df.head()
+data.head()
 
 # %%
 # %% [markdown]
@@ -65,7 +65,7 @@ df.head()
 # get cumulative probabilities (e.g. probability at 66th percentile corresponds to a probability of making a typo in first 2/3 of the string)
 # index: location, value: probability
 pos2prob = (
-    df["position"]  # nowrap
+    data["position"]  # nowrap
     .value_counts(normalize=True)
     .sort_index()
     .cumsum()
@@ -75,7 +75,7 @@ pos2prob.head()
 
 # %%
 pos2op = (
-    df[["position", "op"]]  # nowrap
+    data[["position", "op"]]  # nowrap
     .groupby("position")
     .value_counts(normalize=True)
     .sort_index()
@@ -97,7 +97,7 @@ pos2op.head()
 
 # invert directionality to find probabilities to induce typos
 op2err = (
-    df[["op", "error", "fix"]]  # nowrap
+    data[["op", "error", "fix"]]  # nowrap
     .groupby(["op", "error"])
     .value_counts(["fix"], normalize=True)
     .sort_index(ascending=True)
@@ -112,9 +112,9 @@ def generate_typo(word: str):
     """Generate a realistic typo."""
     global pos2prob, pos2op, op2err  # pandas Series
 
+    # identify location to introduce typo
     loc = pos2prob[pos2prob < random.random()].index.max()
     loc = 0 if np.isnan(loc) else loc
-    # identify character based on position
     idx = int(loc * len(word))
     char = word[idx]
 
@@ -157,6 +157,23 @@ def generate_typo(word: str):
     return typo
 
 
+def induce_typos(seq: str, rate: float = 0.3):
+    """Induce typos against the given input sequence at the specified rate."""
+    # 0.5 means approx half of the words will have typos; multiple could occur per word
+
+    words = re.split(r"(\S+)", seq)
+    typos = words.copy()
+
+    # sample by index
+    targets = random.choices(range(len(words)), k=int(rate * len(words)))
+
+    for idx in targets:
+        if not words[idx].isspace() and words[idx]:
+            typos[idx] = generate_typo(words[idx])
+
+    return "".join(typos)
+
+
 # %%
 tests = [
     """It is a period of civil war.
@@ -189,27 +206,15 @@ freedom to the galaxy....""",
         elif x % 5 == 0:
             print("buzz")
         else:
-            print(x)
-""",
+            print(x)""",
 ]
 
 # set rate to induce typos at a given rate
 # 0.5 means approx half of the words will have typos
-# but multiple could occur per word
-RATE = 0.3
+# multiple typo may occur per word
 for test in tests:
-    # word: typo
-    words = re.split(r"(\S+)", test)
-    typos = words.copy()
-
-    # sample by index
-    targets = random.choices(range(len(words)), k=int(RATE * len(words)))
-
-    for idx in targets:
-        if not words[idx].isspace() and words[idx]:
-            typos[idx] = generate_typo(words[idx])
-    print("".join(typos))
-    print("\n")
+    typofied = induce_typos(seq=test, rate=0.3)
+    print(f"{typofied}\n")
 
 
 # %%
