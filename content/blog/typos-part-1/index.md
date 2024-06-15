@@ -1,6 +1,6 @@
 ---
 title: How Robust Are LLMs to Typos? (part 1)
-date: 2024-05-20
+date: 2024-06-14
 tags:
   # meta
   - "experiment"
@@ -10,7 +10,7 @@ tags:
   - "LLMs"
 series:
   - "typos"
-draft: true
+draft: false
 math: true
 ---
 
