@@ -119,7 +119,10 @@ repos:
         args: ["--config", ".typos.toml"]
         exclude: |
           (?x)^(
-            ^.*(\.typos\.toml)$
+            ^.*(typos\.toml)$ |
+            ^.*(\.sops\.yaml)$ |
+            ^.*(\.dat)$ |
+            ^.*(\.git.*)$
           )$
         stages: [commit]
   - repo: https://github.com/adrienverge/yamllint.git

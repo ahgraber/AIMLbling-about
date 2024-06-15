@@ -9,6 +9,7 @@ tags:
   # meta
   - "meta"
   - "blogumentation"
+  - "experiment"
   - "listicle"
   - "opinion"
   # ai/ml
