@@ -14,10 +14,10 @@ draft: true
 math: true
 ---
 
-Recently, I've been reminding folks that "prompts are fragile." Word choice and word order can have large impacts on
-LLM responses, and every user input is a potential attack vector for the LLM equivalent of a SQL injection attack. But
-before I go off on _that_ tangent, having this repeated discussion got me thinking -- "Can I quantify how sensitive
-LLMs are to inputs?" and "I wonder how much typos effect response quality?"
+A recent theme in conversations at work is that "prompts are fragile." Word choice and word order can have large
+impacts on LLM responses, and every user input is a potential attack vector for the LLM equivalent of a SQL injection
+attack. But before I go off on _that_ tangent, having this repeated discussion got me thinking -- "Can I quantify how
+sensitive LLMs are to inputs?" and "I wonder how much typos effect response quality?"
 
 It seems intuitive that typos _should_ affect response quality Recent whitepapers do back up this
 instinct[^promptbench] [^noisy]; however, it also appears as though the sheer scope of data provided during
@@ -31,10 +31,10 @@ pre-training affords at least some resiliance to erroneous inputs[^resilience].
 
 <!-- markdownlint-enable -->
 
-This is part one of a four-part series (two, three, four) where I examine these questions. In this post, I'll lay out
-my plan of attack and explain how I plan to induce typos in a controlled manner for experimentation. In later posts, I
-plan to use the typo generation function to induce typos with increasing frequency in the hopes of understanding how
-typos influence tokenization, embedding, and generation.
+This is part one of a four-part series <!--(two, three, four)--> where I examine these questions. In this post, I'll
+lay out my plan of attack and explain how I plan to induce typos in a controlled manner for experimentation. In later
+posts, I plan to use the typo generation function to induce typos with increasing frequency in the hopes of
+understanding how typos influence tokenization, embedding, and generation.
 
 ## Hypotheses
 
@@ -45,7 +45,7 @@ away from the distribution of the training data:
    additional, smaller tokens to represent the data... Unless the typos are so popular that they have made it into the
    vocabulary.
 2. Typo occurrence shifts a sentence away from its intended location in embedding space -- as the typo frequency
-   increases, the typo-laden embedding will grow more dissimilar from the correct embedding.
+   increases, the typo-laden embedding will grow more dissimilar to the correct embedding.
 3. Typos increase error rates -- as typos alter the tokenization and embedding pipeline, the language model experiences
    distribution shift and cannot predict as well for the error-laden inputs. Text with typos will have higher
    perplexity than correct text, and questions with typos will have lower response accuracy than correct questions.
@@ -58,15 +58,13 @@ tokenizer and LLM training sets. {{< /callout >}}
 
 ### Dataset
 
-I approach this under the intution that a typos can be caused either "intentionally" (i.e., the spelling was
-intentionally selected, given a mistaken belief about the correct spelling or an incorrect guess), or "unintentionally"
-(i.e., a fumble-fingered error while typing). The pedants in the audience likely differentiate "misspellings" from
-"typos" or "misprints", but for the sake of my sanity (and simplicity), all character-level errors in this experiment
-are referred to as a `typo`.
+My preference is to build a function that generates typos based on relationships mined from data. I approach this with
+the intution that a typos are caused either "intentionally" (i.e., the spelling was intentional, given a mistaken
+belief about the correct spelling or an incorrect guess), or "unintentionally" (i.e., a fumble-fingered error while
+typing). Put another way, the errors are either knowledge-based or mechanical.
 
-My preference is to build a tool that generates typos based on relationships mined from data. To that end, I've used
-the following datasets that contain both "intentional" and "unintentional" errors from both handwritten and typed
-sources:
+Given this intuition, I've gathered the following datasets that contain both "intentional" and "unintentional" errors
+from both handwritten and typed sources:
 
 - `birkbeck`[^corpora] contains 36,133 misspellings of 6,136 words. Handwritten.
 - `holbrook`[^corpora] contains 1791 misspellings of 1200 words. Handwritten.
@@ -75,22 +73,23 @@ sources:
 - `microsoft`[^microsoft] contains before-and-after spelling-correction pairs derived automatically by processing
   keystroke logs collected through Amazon's Mechanical Turk. Typed.
 - `typokit`[^typokit] contains common typos and spelling mistakes and their fixes. Typed?
-- `github`[^github] is a large-scale dataset of misspellings and grammatical errors along with their corrections
-  harvested from GitHub. It contains more than 350k edits and 65M characters. Typed.
+- `github`[^github] is a large-scale dataset of typos and grammatical errors along with their corrections harvested
+  from GitHub. It contains more than 350k edits and 65M characters. Typed.
 - `commit messages`[^commit] contains 7,375 typos developers made in source code identifiers, e.g. class names,
   function names, variable names, and fixed them on GitHub. Typed.
 
-After analyzing, the final collection contains 753,569 character-level edits/corrections for statistical summarization.
+After parsing the data, the final collection contains 753,569 character-level edits/corrections for statistical
+summarization and data mining.
 
-{{< callout type="warning" >}} Some of these data sets provide frequency information (Holbrook, Microsoft), while
-others are a (deduplicated) collection of common errors. This means the aggregate collection is **not** a
-representative sample of error frequencies; however, for the purpose of this exercise, _I will be acting as though it
-is_, and inferring probabilities of occurrence from these data. {{< /callout >}}
+{{< callout type="warning" >}} Some of these datasets provide frequency information (Holbrook, Microsoft), while others
+are a (deduplicated) collection of common errors. This means the aggregate collection is **not** a representative
+sample of error frequencies; however, for the purpose of this exercise, _I will be acting as though it is_, and
+inferring probabilities of occurrence from these data. {{< /callout >}}
 
 ### Analysis
 
-In order to define the mapping from erroneous to correct, I followed the general approach from the paper "Spelling
-Correction with Denoising Transformer"[^denoise].
+In order to define the mapping from erroneous to correct, I followed the general approach described in _Spelling
+Correction with Denoising Transformer_[^denoise].
 
 I identified the type of typo using the four Damerau-Levenshtein edit operations (deletion, insertion, substitution,
 and transposition), and the typo's relative location (i.e., `character_index` / `word_length`).
@@ -115,13 +114,13 @@ To generate a typo, I invert the rules learned from the data - where the dataset
 I start with a correct word and induce a typo:
 
 1. Probabilistically identify the typo location (index) and identify the character.
-2. Given the location, probabilistically select the edit operation.
-3. Given the edit operation and the character, induce the typo:
-   - If the edit is `delete`, insert.
-   - If the edit is `insert`, delete.
-   - If the edit is `substitute`, invert the correction matrix and probabilistically select the new character to swap
-     in
-   - If the edit is `transpose`, swap the character with its following neighbor.
+2. Given the location, probabilistically select the correction operation.
+3. Given the correction operation and the character, induce the typo:
+   - If the correction is `delete`, insert.
+   - If the correction is `insert`, delete.
+   - If the correction is `substitute`, invert the correction matrix and probabilistically select the new character to
+     swap in
+   - If the correction is `transpose`, swap the character with its following neighbor.
 
 For the sake of the upcoming experiments, I also include the ability to introduce typos at a given rate per input
 sentence. A rate of `0.5` means that, on average, half of the words will have typos. However, this could be
