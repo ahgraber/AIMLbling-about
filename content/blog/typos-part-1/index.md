@@ -42,8 +42,8 @@ Increasing the typo frequency is equivalent to introducing data drift, moving th
 away from the distribution of the training data:
 
 1. Typos increase token counts -- as the typo frequency rises, the tokenization will fit the data less well, requiring
-   additional, smaller tokens to represent the data... Unless the typos are so popular that they have made it into the
-   vocabulary.
+   additional, more granular tokens to represent the data... Unless the typos are so popular that they have made it
+   into the vocabulary.
 2. Typo occurrence shifts a sentence away from its intended location in embedding space -- as the typo frequency
    increases, the typo-laden embedding will grow more dissimilar to the correct embedding.
 3. Typos increase error rates -- as typos alter the tokenization and embedding pipeline, the language model experiences
