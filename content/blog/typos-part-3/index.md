@@ -26,42 +26,10 @@ embedding.
 
 ## Design
 
-Can't use perplexity for embedding models; use accuracy on MSMARCO(?) tests and/or distance metrics?
-
-## LLM experiments
-
-### Baseline setup
-
-Using perplexity - "the lower the perplexity of a prompt is, the better its performance on the task will be. This is
-based on the intuition that the more frequently the prompt (or very similar phrases) appears in the training data, the
-more the model is familiar with it and is able to perform the described task."[^promptperplexity]
-
-{{< callout type="info" >}} `Perplexity` is a representation of how _unlikely_ a given sequence is, given all sequences
-seen during training. It can be used to understand how confident the model is in predicting the next token in a
-sequence. A lower perplexity indicates that the prediction is more likely (i.e., the model is more confident).
-
-According to [Huggingface](https://huggingface.co/docs/transformers/en/perplexity), "perplexity is defined as the
-exponentiated average negative log-likelihood of a sequence."
-
-$$
-\text{given sequence } X = (x_0, x_1, \dots, x_n) \\\\
-\text{perplexity}(X) = \exp \left\( {-\frac{1}{n}\sum_i^n \log P(x_n|x_{<n}) } \right\)
-$$
-
-In plainer language, to calculate perplexity:
-
-1. Calculate the probability of each token in a sequence (given the preceding tokens)
-2. Normalize the probability across different sequence lengths by taking the geometric mean of the probabilities
-3. Take the reciprocal of the normalized probabilities
-
-{{< /callout >}}
-
-Using MMLU or tinyBenchmarks [^tinybench]:
-
-1. Run evals without typos; analyze perplexity of eval prompts & responses
-2. Perturb with varying levels of typos and run evals; analyze perplexity of eval prompts & responses
-   1. Find/replace with typos corpus
-   2. Find/replace with mechanistic rules
+1. use Sentence-Transformers model (specifically trained for similarities)
+2. hack Llama models to get sentence-level embeddings
+   [artificial intelligence - Sentence embeddings from LLAMA 2 Huggingface opensource - Stack Overflow](https://stackoverflow.com/questions/76926025/sentence-embeddings-from-llama-2-huggingface-opensource)
+3. Calculate cosine similarities
 
 ## References
 
