@@ -132,7 +132,7 @@ section-order = ["future", "standard-library", "third-party", "sci", "torch", "p
 
 [lint.isort.sections]
 "sci" = ["numpy", "pandas", "scipy", "sklearn", "statsmodels"]
-"torch" = ["datasets", "lightning", "torch", "torch*", "tokenizers", "transformers", "sentence-transformers"]
+"torch" = ["datasets", "lightning", "torch", "torch*", "tokenizers", "transformers", "sentence_transformers"]
 "llm" = ["langchain*", "llama-index*", "semantic_kernel"]
 "plot" = ["cmcrameri", "matplotlib", "mizani", "plotly", "plotnine", "seaborn"]
 
