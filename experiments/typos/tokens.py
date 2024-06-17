@@ -61,24 +61,6 @@ for model in model_id:
 
 
 # %%
-# temp/experimental plot
-(
-    typos_df[["rate", "llama2_deltapct", "llama3_deltapct"]]
-    .groupby("rate")
-    .mean()
-    .reset_index()
-    .plot(x="rate", y=["llama2_deltapct", "llama3_deltapct"])
-)
-
-# %%
-(
-    typos_df[["rate", "llama2_delta", "llama3_delta"]]
-    .groupby("rate")
-    .mean()
-    .reset_index()
-    .plot(x="rate", y=["llama2_delta", "llama3_delta"])
-)
-# %%
 plot_df = (
     typos_df[["rate", "llama2_delta", "llama3_delta"]]
     .rename(

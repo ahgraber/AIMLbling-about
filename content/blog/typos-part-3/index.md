@@ -29,7 +29,12 @@ embedding.
 1. use Sentence-Transformers model (specifically trained for similarities)
 2. hack Llama models to get sentence-level embeddings
    [artificial intelligence - Sentence embeddings from LLAMA 2 Huggingface opensource - Stack Overflow](https://stackoverflow.com/questions/76926025/sentence-embeddings-from-llama-2-huggingface-opensource)
+   [sentence-transformers/all-mpnet-base-v2 · Hugging Face](https://huggingface.co/sentence-transformers/all-mpnet-base-v2)
 3. Calculate cosine similarities
+
+## Results
+
+**bonus** - if asked, does the llm recover the original question?
 
 ## References
 
