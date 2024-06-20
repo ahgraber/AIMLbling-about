@@ -252,7 +252,7 @@ df = pd.DataFrame(
     {
         "questions": questions,
         "rate": 0,
-        "iter": 0,
+        "ver": 0,
     }
 )
 
@@ -267,7 +267,7 @@ for rate in rates:
                 {
                     "questions": typos,
                     "rate": rate,
-                    "iter": i,
+                    "ver": i,
                 }
             )
         )

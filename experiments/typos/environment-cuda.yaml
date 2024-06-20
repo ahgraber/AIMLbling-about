@@ -1,0 +1,95 @@
+---
+name: slm
+channels:
+  - conda-forge
+  - huggingface
+  - pytorch
+  - nvidia
+dependencies:
+  # see deprecation windows:
+  # https://scientific-python.org/specs/spec-0000/#support-window
+  - python[version='<3.12']
+  - cython
+  - pip
+  - ipykernel
+  - ipython
+  - ipywidgets
+  - joblib
+  - notebook
+  - numpy[version='<2.0']
+  - pandas[version='>=2.0,<2.1']
+  - openpyxl
+  - pandera
+  - scikit-learn
+  - scipy
+  - statsmodels
+  ### LLM
+  # - conda-forge::langchain[version='>=0.2.*']
+  # - conda-forge::llama-index[version='>=0.10.*']
+  - nltk
+  # - openai
+  # - openapi-core
+  # - openapi-schema-validator
+  - sentencepiece
+  - spacy
+  - tiktoken
+  - huggingface::datasets[version='<3']
+  - conda-forge::safetensors
+  - conda-forge::sentence-transformers
+  - conda-forge::huggingface_hub[version='<1.0']
+  - conda-forge::tokenizers[version='==0.19.1']
+  - conda-forge::transformers[version='==4.41.2']
+  - conda-forge::accelerate
+  # - conda-forge::flash-attn
+  # - conda-forge::xformers
+  - pytorch::pytorch[version='<3']
+  - pytorch::torchaudio
+  - pytorch::torchdata # <0.8 # development paused @0.7
+  - pytorch::torchtext # <0.17 # development paused @0.16
+  - pytorch::torchvision
+  - pytorch::pytorch-cuda
+  - conda-forge::torchmetrics<2
+  - conda-forge::tensorboard
+  - rust
+  ### LLM dependencies
+  # - aiofiles # semantic-kernel
+  # - aiohttp # semantic-kernel
+  - appdirs # ragas
+  # - motor # semantic-kernel
+  # - prance # semantic-kernel
+  - pysbd # ragas
+  # - regex # semantic-kernel
+  ### plotting
+  - cmcrameri
+  - matplotlib
+  - plotly
+  - plotnine
+  - seaborn
+  - streamlit
+  ### utilities requirements
+  - fastapi
+  - jinja2
+  - keyring
+  - python-dateutil
+  - python-dotenv
+  # - pyodbc
+  - pytest
+  - pyyaml
+  - redis-py>=4.5.5
+  # - snowflake-connector-python
+  # - snowflake-snowpark-python # python version incompatibility
+  # - snowflake-sqlalchemy
+  # - sqlalchemy
+  - uvicorn
+  - xlrd
+  # ### azure requirements
+  # - azure-identity
+  # - azure-keyvault-secrets
+  # - azure-cosmos
+  # - azure-storage-blob
+  # - azure-storage-common
+  # - azure-storage-file-share
+  # ### mlflow requirements
+  # - mlflow==2.9.2
+  # - pip:
+  #     - semantic-kernel # <1.0.0

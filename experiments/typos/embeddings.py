@@ -3,13 +3,13 @@ import itertools
 import logging
 import os
 from pathlib import Path
-
+from tqdm.auto import tqdm
 from dotenv import load_dotenv
-
+import math
 import numpy as np
 import pandas as pd
 from scipy.stats import sem
-
+import gc
 import torch
 from sentence_transformers import SentenceTransformer
 import torch.nn.functional as F  # NOQA: N812
@@ -58,6 +58,7 @@ device = check_torch_device()
 
 # %%
 baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
+n_repeats = int(len(typos_df) / len(baseline_q))
 
 # %% [markdown]
 # ## Sentence Transformers
@@ -72,40 +73,15 @@ baseline_emb = model.encode(
     convert_to_tensor=True,
 )
 
-# %%
-worstcase = model.encode(
-    typos_df.iloc[-100:]["questions"].tolist(),
+#%%
+st_emb = model.encode(
+    typos_df["questions"].tolist(),
     convert_to_tensor=True,
 )
+# ~15 min on 3090
 
 # %%
-F.cosine_similarity(
-    baseline_emb,
-    worstcase,
-).cpu().numpy()
-
-
-# %%
-def baseline_cos_sim(
-    sentences: pd.Series | list[str], *, baseline=torch.Tensor, model: SentenceTransformer
-) -> np.ndarray:
-    """Cosine similarity vs baseline data."""
-    if isinstance(sentences, pd.Series):
-        sentences = sentences.tolist()
-
-    embeddings = model.encode(
-        sentences,
-        convert_to_tensor=True,
-    )
-
-    similarity = F.cosine_similarity(baseline, embeddings).cpu().numpy()
-    return similarity
-
-
-# %%
-typos_df["st_similarity"] = typos_df.groupby(["rate", "iter"]).transform(
-    baseline_cos_sim, baseline=baseline_emb, model=model
-)
+typos_df["st_similarity"] = F.cosine_similarity(baseline_emb.repeat(n_repeats, 1), st_emb).cpu().numpy()
 typos_df.head()
 
 # %%
@@ -122,16 +98,6 @@ g = (
         ),
         size=1,
     )
-    # + geom_errorbar(
-    #     plot_df,
-    #     aes(
-    #         x="rate",
-    #         ymin="mean - sem",
-    #         ymax="mean + sem",
-    #         color="tokenizer",
-    #     ),
-    #     width=0.05,
-    # )
     + scale_x_continuous(
         breaks=[x / 10 for x in range(0, 11)],
         labels=percent_format(),
@@ -152,65 +118,23 @@ g.draw()
 
 # %% [markdown]
 # ## Hack llama models for sentence embeddings
-
+# ### Sentence Embedding
+#
+# use `watch -n0.5 nvidia-smi` to monitor GPU utilization
+# where `0.5` is the time interval
 
 # %%
 model_id = {
-    "phi3": "microsoft/Phi-3-mini-4k-instruct",
     "llama2": "meta-llama/Llama-2-7b-chat-hf",
     "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
 }
+name = model_id['llama3']
 
 # %%
 # for model, name in model_id.items():
 # Load model from HuggingFace Hub
-tokenizer = AutoTokenizer.from_pretrained(model_id["llama3"])
-model = AutoModelForCausalLM.from_pretrained(
-    model_id["llama3_gguf"],
-    # device_map="auto",
-)
-model.to(device)
-# %%
-tokenizer.pad_token = tokenizer.eos_token
-
-model.eval()
-model = model.to(device)
-
-# %%
-inputs = tokenizer(
-    baseline_q.tolist()[:10],
-    padding=True,
-    return_tensors="pt",
-)
-inputs = inputs.to(device)
-
-# %%
-with torch.no_grad():
-    last_hidden_state = model(
-        **inputs,
-        output_hidden_states=True,
-        return_dict=True,
-    ).hidden_states[-1]
-
-# %%
-# linear weights for weighted mean
-positional_weights = inputs.attention_mask * torch.arange(
-    start=1,
-    end=last_hidden_state.shape[1] + 1,
-    device=device,
-).unsqueeze(0)
-
-outputs = torch.div(
-    torch.sum(last_hidden_state * positional_weights.unsqueeze(-1), dim=1),
-    torch.sum(inputs.attention_mask),
-)
-
-# %%
-sentence_embeddings = F.normalize(outputs, p=2, dim=1)
-sentence_embeddings.cpu().numpy()
-
-# %% [markdown]
-# ### Sentence Embedding
+tokenizer = AutoTokenizer.from_pretrained(name)
+model = AutoModelForCausalLM.from_pretrained(name)
 
 
 # %%
@@ -225,7 +149,6 @@ class SentEmbed:
         tokenizer: PreTrainedTokenizerBase,
         model: PreTrainedModel,
         device: torch.device | None = None,
-        batch_size: int = 10,
     ):
         self.device = device if device else check_torch_device()
 
@@ -236,22 +159,10 @@ class SentEmbed:
         self.model.eval()
         self.model = self.model.to(self.device)
 
-        self._batch_size = batch_size
-
-    def _batch(self, iterable, batch_size: int):
-        """Batch data from the iterable into tuples of length n. The last batch may be shorter than n."""
-        if batch_size is None:
-            batch_size = self._batch_size
-        if batch_size < 1:
-            raise ValueError("n must be at least one")
-        iterator = iter(iterable)
-        while batch := tuple(itertools.islice(iterator, batch_size)):
-            yield batch
-
-    def _tokenize(self, batch: list[str]) -> BatchEncoding:
+    def _tokenize(self, text: str | list[str]) -> BatchEncoding:
         """Tokenize input."""
         inputs = self.tokenizer(
-            batch,
+            text,
             padding=True,
             return_tensors="pt",
         ).to(self.device)
@@ -270,45 +181,47 @@ class SentEmbed:
                 return_dict=True,
             ).hidden_states[-1]
 
-        if pooling_strategy == "max":
-            outputs, _ = torch.max(last_hidden_state * inputs.attention_mask[:, :, None], dim=1)
-        elif pooling_strategy == "mean":
-            outputs = torch.div(
-                torch.sum(last_hidden_state * inputs.attention_mask[:, :, None], dim=1),
-                torch.sum(inputs.attention_mask),
-            )
-        elif pooling_strategy == "wtmean":
-            # linear weights for weighted mean
-            positional_weights = inputs.attention_mask * torch.arange(
-                start=1,
-                end=last_hidden_state.shape[1] + 1,
-                device=device,
-            ).unsqueeze(0)
+            if pooling_strategy == "max":
+                outputs, _ = torch.max(last_hidden_state * inputs.attention_mask[:, :, None], dim=1)
+            elif pooling_strategy == "mean":
+                outputs = torch.div(
+                    torch.sum(last_hidden_state * inputs.attention_mask[:, :, None], dim=1),
+                    torch.sum(inputs.attention_mask),
+                )
+            elif pooling_strategy == "wtmean":
+                # linear weights for weighted mean
+                positional_weights = inputs.attention_mask * torch.arange(
+                    start=1,
+                    end=last_hidden_state.shape[1] + 1,
+                    device=device,
+                ).unsqueeze(0)
 
-            outputs = torch.div(
-                torch.sum(last_hidden_state * positional_weights.unsqueeze(-1), dim=1),
-                torch.sum(inputs.attention_mask),
-            )
-        else:
-            raise NotImplementedError("please specify pooling_strategy from [`max`, `mean`, `wtmean`]")
+                outputs = torch.div(
+                    torch.sum(last_hidden_state * positional_weights.unsqueeze(-1), dim=1),
+                    torch.sum(inputs.attention_mask),
+                )
+            else:
+                raise NotImplementedError("please specify pooling_strategy from [`max`, `mean`, `wtmean`]")
 
         return outputs
 
     def __call__(
         self,
         sentences: list[str],
-        batch_size: int | None = None,
         pooling_strategy: int | str | None = "wtmean",
         normalize: bool = True,
-        to_numpy: bool = True,
+        to_numpy: bool = False,
     ) -> torch.Tensor | np.ndarray:
         """Calculate sentence embeddings."""
         if not isinstance(sentences, list):
             raise TypeError(f"`sentences` must be list. Was {type(sentences)}")
 
         sentence_embeddings = []
-        for batch in self._batch(sentences, batch_size=batch_size):
-            inputs = self._tokenize(batch)
+
+        for sentence in tqdm(sentences, leave=False):
+            torch.cuda.empty_cache()
+            gc.collect()
+            inputs = self._tokenize(text=sentence)
             outputs = self._pool(inputs=inputs, pooling_strategy=pooling_strategy)
 
             if normalize:
@@ -316,30 +229,48 @@ class SentEmbed:
             else:
                 sentence_embeddings.append(outputs)
 
+        sentence_embeddings = torch.concatenate(sentence_embeddings)
         if to_numpy:
-            return np.concatenate([s.cpu().numpy() for s in sentence_embeddings])
+            return sentence_embeddings.cpu().numpy()
         else:
-            return torch.concatenate(sentence_embeddings)
+            return sentence_embeddings
 
 
-# %%
-model_id = {
-    "llama2": "meta-llama/Llama-2-7b-chat-hf",
-    "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
-}
+#%%
+se = SentEmbed(tokenizer=tokenizer, model=model, device=device)
 
-# %%
-# for model, name in model_id.items():
-# Load model from HuggingFace Hub
-tokenizer = AutoTokenizer.from_pretrained(name, device=device)
-model = AutoModelForCausalLM.from_pretrained(name)
-model.to(device)
+#%%
+print(torch.cuda.memory_summary(device=None, abbreviated=False))
 
+#%%
+baseline_emb = se(
+    sentences=baseline_q.tolist(),
+    pooling_strategy="wtmean",
+    normalize=True,
+    to_numpy=False,
+)
+torch.save(baseline_emb, Path("./data/llama3_baseline.pt"))
+torch.cuda.empty_cache()
+# ~5 min on 3090
 
-tokens = tokenizer(typos_df["questions"].tolist(), return_attention_mask=False)["input_ids"]
-counts = [len(x) for x in tokens]
-typos_df[f"{model}_tokens"] = counts
+#%%
+for name, group in tqdm(typos_df.groupby(['rate','ver'])):
+    rate, ver = name
+    sentence_embeddings = se(
+        sentences=group['questions'].tolist(),
+        pooling_strategy="wtmean",
+        normalize=True,
+        to_numpy=False,
+    )
+    torch.save(sentence_embeddings, Path(f"./data/llama3_sentence_emb_r{rate}v{ver}.pt"))
+    torch.cuda.empty_cache()
 
+# ~8hr on 3090
+# runtimes increasing as typo incidence increases?
+
+#%%
+typos_df["llama3_similarity"] = F.cosine_similarity(baseline_emb.repeat(n_repeats, 1), sentence_embeddings).cpu().numpy()
+typos_df.head()
 
 # %%
 # Mean Pooling - Take attention mask into account for correct averaging
@@ -395,7 +326,7 @@ for model, name in model_id.items():
     typos_df[f"{model}_tokens"] = counts
 
 # %%
-# baseline = typos_df.groupby(['rate','iter'], as_index=False).first()x
+# baseline = typos_df.groupby(['rate','ver'], as_index=False).first()x
 baseline = typos_df[typos_df["rate"] == 0.0]
 n_repeats = int(len(typos_df) / len(baseline))
 

@@ -51,7 +51,7 @@ for model, name in model_id.items():
     typos_df[f"{model}_tokens"] = counts
 
 # %%
-# baseline = typos_df.groupby(['rate','iter'], as_index=False).first()x
+# baseline = typos_df.groupby(['rate','ver'], as_index=False).first()x
 baseline = typos_df[typos_df["rate"] == 0.0]
 n_repeats = int(len(typos_df) / len(baseline))
 
