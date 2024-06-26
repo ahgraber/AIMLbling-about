@@ -1,15 +1,19 @@
 # %%
+import gc
 import itertools
 import logging
+import math
 import os
 from pathlib import Path
-from tqdm.auto import tqdm
+
 from dotenv import load_dotenv
-import math
+from IPython.display import display
+from tqdm.auto import tqdm
+
 import numpy as np
 import pandas as pd
 from scipy.stats import sem
-import gc
+
 import torch
 from sentence_transformers import SentenceTransformer
 import torch.nn.functional as F  # NOQA: N812
@@ -72,49 +76,25 @@ baseline_emb = model.encode(
     baseline_q.tolist(),
     convert_to_tensor=True,
 )
+torch.save(baseline_emb, Path("./data/st_mpnet_baseline.pt"))
 
-#%%
+# %%
 st_emb = model.encode(
     typos_df["questions"].tolist(),
     convert_to_tensor=True,
 )
 # ~15 min on 3090
 
+torch.save(st_emb, Path("./data/st_mpnet_all.pt"))
+
 # %%
 typos_df["st_similarity"] = F.cosine_similarity(baseline_emb.repeat(n_repeats, 1), st_emb).cpu().numpy()
 typos_df.head()
 
 # %%
-plot_df = typos_df[["rate", "st_similarity"]].groupby(["rate"])["st_similarity"].agg(["mean", sem]).reset_index()
-
-g = (
-    ggplot()
-    + geom_line(
-        plot_df,
-        aes(
-            x="rate",
-            y="mean",
-            # color="st_similarity",
-        ),
-        size=1,
-    )
-    + scale_x_continuous(
-        breaks=[x / 10 for x in range(0, 11)],
-        labels=percent_format(),
-    )
-    + theme_xkcd()
-    + theme(figure_size=(6, 6), legend_position=(0.26, 0.85))
-    + labs(
-        title="Cosine Similarity by Typo Rate",
-        x="Typo Occurrence Rate",
-        y="Cosine Similarity",
-    )
-)
-# fmt: on
-
-g.save(Path("./sentence-transformer-sim.png"))
-g.draw()
-
+del baseline_emb, st_emb
+torch.cuda.empty_cache()
+gc.collect()
 
 # %% [markdown]
 # ## Hack llama models for sentence embeddings
@@ -122,19 +102,6 @@ g.draw()
 #
 # use `watch -n0.5 nvidia-smi` to monitor GPU utilization
 # where `0.5` is the time interval
-
-# %%
-model_id = {
-    "llama2": "meta-llama/Llama-2-7b-chat-hf",
-    "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
-}
-name = model_id['llama3']
-
-# %%
-# for model, name in model_id.items():
-# Load model from HuggingFace Hub
-tokenizer = AutoTokenizer.from_pretrained(name)
-model = AutoModelForCausalLM.from_pretrained(name)
 
 
 # %%
@@ -158,6 +125,9 @@ class SentEmbed:
         self.model = model
         self.model.eval()
         self.model = self.model.to(self.device)
+
+        torch.cuda.empty_cache()
+        gc.collect()
 
     def _tokenize(self, text: str | list[str]) -> BatchEncoding:
         """Tokenize input."""
@@ -236,196 +206,123 @@ class SentEmbed:
             return sentence_embeddings
 
 
-#%%
-se = SentEmbed(tokenizer=tokenizer, model=model, device=device)
-
-#%%
-print(torch.cuda.memory_summary(device=None, abbreviated=False))
-
-#%%
-baseline_emb = se(
-    sentences=baseline_q.tolist(),
-    pooling_strategy="wtmean",
-    normalize=True,
-    to_numpy=False,
-)
-torch.save(baseline_emb, Path("./data/llama3_baseline.pt"))
-torch.cuda.empty_cache()
-# ~5 min on 3090
-
-#%%
-for name, group in tqdm(typos_df.groupby(['rate','ver'])):
-    rate, ver = name
-    sentence_embeddings = se(
-        sentences=group['questions'].tolist(),
-        pooling_strategy="wtmean",
-        normalize=True,
-        to_numpy=False,
-    )
-    torch.save(sentence_embeddings, Path(f"./data/llama3_sentence_emb_r{rate}v{ver}.pt"))
-    torch.cuda.empty_cache()
-
-# ~8hr on 3090
-# runtimes increasing as typo incidence increases?
-
-#%%
-typos_df["llama3_similarity"] = F.cosine_similarity(baseline_emb.repeat(n_repeats, 1), sentence_embeddings).cpu().numpy()
-typos_df.head()
-
-# %%
-# Mean Pooling - Take attention mask into account for correct averaging
-# [artificial intelligence - Sentence embeddings from LLAMA 2 Huggingface opensource - Stack Overflow](https://stackoverflow.com/questions/76926025/sentence-embeddings-from-llama-2-huggingface-opensource)
-def wt_mean_pooling(inputs):
-    """Weighted mean pooling for sentence embeddings."""
-    with torch.no_grad():
-        last_hidden_state = model(**inputs, output_hidden_states=True).hidden_states[-1]
-
-    # linear weights for weighted mean
-    positional_weights = inputs.attention_mask * torch.arange(
-        start=1,
-        end=last_hidden_state.shape[1] + 1,
-    ).unsqueeze(0)
-
-    wt_token_embeddings = torch.sum(last_hidden_state * positional_weights.unsqueeze(-1), dim=1)
-    n_nonpad_tokens = torch.sum(positional_weights, dim=-1).unsqueeze(-1)
-    sentence_embeddings = wt_token_embeddings / n_nonpad_tokens
-    sentence_embeddings = F.normalize(wt_token_embeddings / n_nonpad_tokens, p=2, dim=1)
-    return sentence_embeddings
-
-
-# %%
-# Tokenize sentences
-encoded_input = tokenizer(
-    baseline_q.tolist(),
-    padding=True,
-    truncation=True,
-    return_tensors="pt",
-).to(device)
-
-# Compute token embeddings
-with torch.no_grad():
-    model_output = model(**encoded_input, batch_size=32, device=device)
-
-# Perform sentence-level pooling
-sentence_embeddings = mean_pooling(model_output, encoded_input["attention_mask"])
-sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1).cpu().numpy()
-
-
 # %%
 model_id = {
     "llama2": "meta-llama/Llama-2-7b-chat-hf",
     "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
 }
-# %%
-for model, name in model_id.items():
-    tokenizer = AutoTokenizer.from_pretrained(name)
-    print(f"{model}: {len(tokenizer.get_vocab())} token vocab")
-
-    tokens = tokenizer(typos_df["questions"].tolist(), return_attention_mask=False)["input_ids"]
-    counts = [len(x) for x in tokens]
-    typos_df[f"{model}_tokens"] = counts
 
 # %%
-# baseline = typos_df.groupby(['rate','ver'], as_index=False).first()x
-baseline = typos_df[typos_df["rate"] == 0.0]
-n_repeats = int(len(typos_df) / len(baseline))
+for name, model in model_id.items():
+    # Load model from HuggingFace Hub
+    tokenizer = AutoTokenizer.from_pretrained(model)
+    llm = AutoModelForCausalLM.from_pretrained(model)
 
+    se = SentEmbed(tokenizer=tokenizer, model=llm, device=device)
 
-# %%
-plot_df = typos_df[["rate", "similarity"]].groupby(["rate"])["similarity"].agg(["mean", sem]).reset_index()
-
-g = (
-    ggplot()
-    + geom_line(
-        plot_df,
-        aes(
-            x="rate",
-            y="mean",
-            color="similarity",
-        ),
-        size=1,
+    baseline_emb = se(
+        sentences=baseline_q.tolist(),
+        pooling_strategy="wtmean",
+        normalize=True,
+        to_numpy=False,
     )
-    # + geom_errorbar(
-    #     plot_df,
-    #     aes(
-    #         x="rate",
-    #         ymin="mean - sem",
-    #         ymax="mean + sem",
-    #         color="tokenizer",
-    #     ),
-    #     width=0.05,
-    # )
-    # + scale_x_continuous(
-    #     breaks=[x / 10 for x in range(0, 11)],
-    #     labels=percent_format(),
-    # )
-    + theme_xkcd()
-    + theme(figure_size=(6, 6), legend_position=(0.26, 0.85))
-    + labs(
-        title="Token Increase by Typo Rate",
-        x="Typo Occurrence Rate",
-        y="Average Token Increase",
-    )
-)
-# fmt: on
+    torch.save(baseline_emb, Path(f"./data/{name}_baseline.pt"))
+    torch.cuda.empty_cache()
+    gc.collect()
+    # ~5 min on 3090
 
-g.save(Path("./count-differences.png"))
-g.draw()
+    sentence_embeddings = se(
+        sentences=typos_df["questions"].tolist(),
+        pooling_strategy="wtmean",
+        normalize=True,
+        to_numpy=False,
+    )
+    # ~3-5hr on 3090
+
+    torch.save(sentence_embeddings, Path(f"./data/{name}_all_emb.pt"))
+
+    typos_df[f"{name}_similarity"] = (
+        F.cosine_similarity(baseline_emb.repeat(n_repeats, 1), sentence_embeddings).cpu().numpy()
+    )
+
+    display(typos_df.sample(10))
+
+    del tokenizer, llm, se, baseline_emb, sentence_embeddings
+    torch.cuda.empty_cache()
+    gc.collect()
 
 # %%
+typos_df = pd.read_csv(Path("./data/experiment.csv"))
+
+st_baseline = torch.load(Path("./data/st_mpnet_baseline.pt"), map_location=device)
+st_all = torch.load(Path("./data/st_mpnet_all.pt"), map_location=device)
+typos_df["st_similarity"] = F.cosine_similarity(st_baseline.repeat(n_repeats, 1), st_all).cpu().numpy()
+
+llama2_baseline = torch.load(Path("./data/llama2_baseline.pt"), map_location=device)
+llama2_all = torch.load(Path("./data/llama2_all_emb.pt"), map_location=device)
+typos_df["llama2_similarity"] = F.cosine_similarity(llama2_baseline.repeat(n_repeats, 1), llama2_all).cpu().numpy()
+
+llama3_baseline = torch.load(Path("./data/llama3_baseline.pt"), map_location=device)
+llama3_all = torch.load(Path("./data/llama3_all_emb.pt"), map_location=device)
+typos_df["llama3_similarity"] = F.cosine_similarity(llama3_baseline.repeat(n_repeats, 1), llama3_all).cpu().numpy()
+
+del st_baseline, st_all, llama2_baseline, llama2_all, llama3_baseline, llama3_all
+torch.cuda.empty_cache()
+gc.collect()
+
+# %%
+sim_cols = [
+    "st_similarity",
+    "llama2_similarity",
+    "llama3_similarity",
+]
 plot_df = (
-    typos_df[["rate", "llama2_deltapct", "llama3_deltapct"]]
-    .rename(
-        columns={
-            "llama2_deltapct": "llama2",
-            "llama3_deltapct": "llama3",
+    typos_df[["rate", *sim_cols]]
+    .groupby(["rate"])
+    .mean()
+    .reset_index()
+    .melt(id_vars="rate", value_vars=sim_cols, var_name="model", value_name="mean_similarity")
+    .replace(
+        {
+            "st_similarity": "Sentence Transformer",
+            "llama2_similarity": "Llama 2 7B Chat",
+            "llama3_similarity": "Llama 3 8B Instruct",
         }
     )
-    .melt(id_vars="rate", value_vars=["llama2", "llama3"], var_name="tokenizer", value_name="count")
-    .groupby(["rate", "tokenizer"])["count"]
-    .agg(["mean", sem])
-    .reset_index()
 )
+
 g = (
     ggplot()
     + geom_line(
         plot_df,
         aes(
             x="rate",
-            y="mean",
-            color="tokenizer",
+            y="mean_similarity",
+            color="model",
         ),
         size=1,
     )
-    # + geom_errorbar(
-    #     plot_df,
-    #     aes(
-    #         x="rate",
-    #         ymin="mean - sem",
-    #         ymax="mean + sem",
-    #         color="tokenizer",
-    #     ),
-    #     width=0.05,
-    # )
     + scale_x_continuous(
         breaks=[x / 10 for x in range(0, 11)],
         labels=percent_format(),
     )
-    + scale_y_continuous(
-        labels=percent_format(),
-        limits=(0, 0.35),
+    + guides(color=guide_legend(title="Model", ncol=1, reverse=True))
+    + labs(
+        title="Cosine Similarity by Typo Rate",
+        x="Typo Occurrence Rate",
+        y="Cosine Similarity",
     )
     + theme_xkcd()
-    + theme(figure_size=(6, 6), legend_position=(0.26, 0.85))
-    + labs(
-        title="Proportional Token Increase by Typo Rate",
-        x="Typo Occurrence Rate",
-        y="Average % Token Increase",
+    + theme(
+        figure_size=(6, 6),
+        legend_position=(0.8, 0.8),
     )
 )
 # fmt: on
 
-g.save(Path("./pct-differences.png"))
+g.save(Path("./sentence-sim.png"))
 g.draw()
 
-# %%
+
+# %% [markdown]
+# ## Can LLM's "heal" the typos?
