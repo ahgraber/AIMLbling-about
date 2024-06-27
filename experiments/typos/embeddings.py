@@ -12,7 +12,6 @@ from tqdm.auto import tqdm
 
 import numpy as np
 import pandas as pd
-from scipy.stats import sem
 
 import torch
 from sentence_transformers import SentenceTransformer
@@ -34,15 +33,6 @@ logger.setLevel(logging.DEBUG)
 # specify debug logs from ds_utils to see behind-the-scenes updates
 logging.getLogger("typo_gen").setLevel(logging.DEBUG)
 
-# %%
-load_dotenv()
-token = os.getenv("HF_TOKEN")
-
-# %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
-print(typos_df.shape)
-print(typos_df.sample(10))
-
 
 # %%
 def check_torch_device():
@@ -59,6 +49,15 @@ def check_torch_device():
 
 
 device = check_torch_device()
+
+# %%
+load_dotenv()
+token = os.getenv("HF_TOKEN")
+
+# %%
+typos_df = pd.read_csv(Path("./data/experiment.csv"))
+print(typos_df.shape)
+print(typos_df.sample(10))
 
 # %%
 baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
@@ -322,7 +321,3 @@ g = (
 
 g.save(Path("./sentence-sim.png"))
 g.draw()
-
-
-# %% [markdown]
-# ## Can LLM's "heal" the typos?
