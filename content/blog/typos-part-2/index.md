@@ -65,8 +65,3 @@ represent the typo-laden questions.
 ## References
 
 [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
-
-<!-- [^perturbation]:
-[[2402.15833] Prompt Perturbation Consistency Learning for Robust Language Models](https://arxiv.org/abs/2402.15833)
-[^promptperplexity]: [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
-[^perplexity]: [Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity) -->

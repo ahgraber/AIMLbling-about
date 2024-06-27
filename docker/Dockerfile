@@ -1,5 +1,5 @@
 # https://sko.ai/blog/how-to-actually-build-hugo-containers/
-FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.19@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b as build
+FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.20@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0 as build
 RUN \
     apk add --no-cache \
       git \
@@ -11,7 +11,7 @@ COPY . .
 RUN --mount=type=cache,target=/tmp/hugo_cache \
     hugo --minify
 
-FROM docker.io/library/nginx:1.26@sha256:192e88a0053c178683ca139b9d9a2afb0ad986d171fae491949fe10970dd9da9
+FROM docker.io/library/nginx:1.27@sha256:67682bda769fae1ccf5183192b8daf37b64cae99c6c3302650f6f8bf5f0f95df
 # implement changes required to run NGINX as an less-privileged user
 RUN \
     sed -i 's,/var/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
