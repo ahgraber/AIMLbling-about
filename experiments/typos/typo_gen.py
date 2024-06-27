@@ -20,7 +20,6 @@ import numpy as np
 import pandas as pd
 
 from datasets import load_dataset
-
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format
 from plotnine import *
@@ -121,6 +120,7 @@ generic_error = (
 )
 
 op2err = pd.concat([specific_error, generic_error])
+
 op2err.head()
 # 'fix' col becomes what is needed to fix
 
@@ -155,8 +155,10 @@ def generate_typo(word: str):
     elif op == "substitute":
         # get error likelihoods for substituting `char`
         _choices = op2err["substitute"][op2err["substitute"].index.get_level_values("error") == char]
+
         if len(_choices) == 0:
             _choices = op2err["substitute"][op2err["substitute"].index.get_level_values("error") == "<gen>"]
+
 
         _sub = random.choices(
             _choices.index,
@@ -197,7 +199,6 @@ def induce_typos(seq: str, rate: float = 0.3):
 
 
 # %%
-
 tests = [
     """It is a period of civil war.
 Rebel spaceships, striking

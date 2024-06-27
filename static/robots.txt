@@ -57,4 +57,4 @@ Disallow: /
 
 # Default allow all others
 User-agent: *
-Allow /
+Allow: /
