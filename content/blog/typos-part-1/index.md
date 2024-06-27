@@ -31,19 +31,19 @@ pre-training affords at least some resiliance to erroneous inputs[^resilience].
 
 <!-- markdownlint-enable -->
 
-This is part one of a four-part series <!--(two, three, four)--> where I examine these questions. In this post, I'll
-lay out my plan of attack and explain how I plan to induce typos in a controlled manner for experimentation. In later
-posts, I plan to use the typo generation function to induce typos with increasing frequency in the hopes of
-understanding how typos influence tokenization, embedding, and generation.
+This is part one of a four-part series ([two]({{< ref "/blog/typos-part-2" >}}), three, four) where I examine these
+questions. In this post, I'll lay out my plan of attack and explain how I plan to induce typos in a controlled manner
+for experimentation. In later posts, I plan to use the typo generation function to induce typos with increasing
+frequency in the hopes of understanding how typos influence tokenization, embedding, and generation.
 
 ## Hypotheses
 
 Increasing the typo frequency is equivalent to introducing data drift, moving the distribution of the typo-laden inputs
 away from the distribution of the training data:
 
-1. Typos increase token counts -- as the typo frequency rises, the tokenization will fit the data less well, requiring
-   additional, smaller tokens to represent the data... Unless the typos are so popular that they have made it into the
-   vocabulary.
+1. Typos increase token counts -- as the typo frequency rises, the tokenizer's vocabulary will fit the data less well,
+   requiring additional, more granular tokens to represent the data... Unless the typos are so popular that they have
+   made it into the vocabulary.
 2. Typo occurrence shifts a sentence away from its intended location in embedding space -- as the typo frequency
    increases, the typo-laden embedding will grow more dissimilar to the correct embedding.
 3. Typos increase error rates -- as typos alter the tokenization and embedding pipeline, the language model experiences

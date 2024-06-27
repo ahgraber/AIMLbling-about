@@ -1,6 +1,6 @@
 ---
 title: How Robust Are LLMs to Typos? (part 2)
-date: 2024-07-01
+date: 2024-06-27
 tags:
   # meta
   - "experiment"
@@ -10,37 +10,58 @@ tags:
   - "LLMs"
 series:
   - "typos"
-draft: true
+draft: false
 math: true
 ---
 
-This is part two of a four-part series (one, three, four) where I examine the influence typos have on LLM response
-quality.
+This is part two of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}), three, four) where I examine the
+influence typos have on LLM response quality.
 
-In this post, I'll use the typo generation function to induce typos with increasing frequency in the hopes of
+In this post, I use the typo generation function to induce typos with increasing frequency in the hopes of
 understanding how typos influence **tokenization**.
 
-If you recall, my hypothesis regarding tokenization is that increasing typo frequency increase token counts -- as the
-typo frequency rises, the tokenization will fit the data less well, requiring additional, smaller tokens to represent
-the data... Unless the typos are so popular that they have made it into the vocabulary.
+Recall my hypothesis:
+
+> Typos increase token counts -- as the typo frequency rises, the tokenizer's vocabulary will fit the data less well,
+> requiring additional, more granular tokens to represent the data... Unless the typos are so popular that they have
+> made it into the vocabulary.
 
 ## Design
 
+I've elected to use the TinyBench version of MMLU as a standardized dataset for all experiments.[^tinybench] I induce
+typos using the typo generation function from [part one]({{< ref "/blog/typos-part-1" >}}) at an increasing rate from
+5% (where roughly 1 word in 20 will have a typo) to 100% (approximately every word will have a typo). For each rate, I
+generate 5 different typo variations of each MMLU question.
+
+An implication of my hypothesis is that tokenizer with a larger vocabulary should be able to represent typos better
+than one with a smaller vocabulary. To that end, I've elected to compare the tokenizers of Llama 2 (32k token
+vocabulary) and Llama 3 (128k token vocabulary).
+
+For each model's tokenizer:
+
+1. Tokenize each question in TinyBenchmark's MMLU set and count the tokens.
+2. Tokenize each "typo-ified" question, and count the tokens used by each variation at each typo rate.
+3. Find the (presumed) increase in token use by subtracting the baseline count from the variant count.
+4. Find the (presumed) percent increase by dividing the increase by the baseline count.
+
+## Results
+
+The results confirm the hypothesis that typos increase token use. More tokens are used the more the typo rate
+increases. Additionally, Llama 2 (with the smaller vocabulary) requires more additional tokens to represent the typos
+than Llama 3.
+
+{{< figure
+  src="images/count-differences.png"
+  caption="Llama 2 requires a greater increase in token use to represent typo-laden text than Llama 3." >}}
+
+However, since Llama 3 uses fewer tokens in the baseline (its larger vocabulary includes larger "word chunks" as
+tokens, reducing token count overall), it shows a larger _proportional_ increase in the number of tokens required to
+represent the typo-laden questions.
+
+{{< figure
+  src="images/pct-differences.png"
+  caption="Llama 3 uses fewer tokens in the baseline, so the token use increase is proportionally larger." >}}
+
 ## References
 
-<!-- [^promptbench]: [[2306.04528] PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts](https://arxiv.org/abs/2306.04528)
-[^noisy]: [[2311.00258] Noisy Exemplars Make Large Language Models More Robust: A Domain-Agnostic Behavioral Analysis](https://arxiv.org/abs/2311.00258)
-[^resilience]: [[2404.09754] Resilience of Large Language Models for Noisy Instructions](https://arxiv.org/abs/2404.09754)
-[^corpora]: [Corpora of misspellings for download](https://www.dcs.bbk.ac.uk/~ROGER/corpora.html)
-[^microsoft]: [Microsoft Research Spelling-Correction Data](https://www.microsoft.com/en-us/download/details.aspx?id=52418)
-[^typokit]: [Collection of common typos & spelling mistakes and their fixes](https://github.com/feramhq/typokit)
-[^github]: [GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors](https://github.com/mhagiwara/github-typo-corpus?tab=readme-ov-file)
-[^commit]: [src-d/datasets | Typos](https://github.com/src-d/datasets/blob/master/Typos/README.md)
-[^denoise]: [[2105.05977] Spelling Correction with Denoising Transformer](https://arxiv.org/pdf/2105.05977) -->
-
-[^perturbation] [^perturbation]:
-[[2402.15833] Prompt Perturbation Consistency Learning for Robust Language Models](https://arxiv.org/abs/2402.15833)
-
-<!-- [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
-[^promptperplexity]: [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
-[^perplexity]: [Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity) -->
+[^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
