@@ -16,7 +16,7 @@ import pandas as pd
 import torch
 from sentence_transformers import SentenceTransformer
 import torch.nn.functional as F  # NOQA: N812
-from transformers import AutoModel, AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel
+from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 import matplotlib.pyplot as plt
