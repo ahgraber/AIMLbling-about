@@ -55,7 +55,7 @@ load_dotenv()
 token = os.getenv("HF_TOKEN")
 
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
 print(typos_df.shape)
 print(typos_df.sample(10))
 
@@ -113,7 +113,7 @@ class SentEmbed:
     def __init__(
         self,
         tokenizer: PreTrainedTokenizerBase,
-        model: PreTrainedModel,
+        llm: PreTrainedModel,
         device: torch.device | None = None,
     ):
         self.device = device if device else check_torch_device()
@@ -121,9 +121,9 @@ class SentEmbed:
         self.tokenizer = tokenizer
         self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        self.model = model
-        self.model.eval()
-        self.model = self.model.to(self.device)
+        self.llm = llm
+        self.llm.eval()
+        self.llm = self.llm.to(self.device)
 
         torch.cuda.empty_cache()
         gc.collect()
@@ -144,7 +144,7 @@ class SentEmbed:
         pooling_strategy: int | str | None = None,
     ):
         with torch.no_grad():
-            last_hidden_state = self.model(
+            last_hidden_state = self.llm(
                 **inputs,
                 output_hidden_states=True,
                 return_dict=True,
@@ -186,10 +186,10 @@ class SentEmbed:
             raise TypeError(f"`sentences` must be list. Was {type(sentences)}")
 
         sentence_embeddings = []
-
         for sentence in tqdm(sentences, leave=False):
             torch.cuda.empty_cache()
             gc.collect()
+
             inputs = self._tokenize(text=sentence)
             outputs = self._pool(inputs=inputs, pooling_strategy=pooling_strategy)
 
@@ -215,9 +215,13 @@ model_id = {
 for name, model in model_id.items():
     # Load model from HuggingFace Hub
     tokenizer = AutoTokenizer.from_pretrained(model)
-    llm = AutoModelForCausalLM.from_pretrained(model)
+    llm = AutoModelForCausalLM.from_pretrained(model, torch_dtype=torch.bfloat16)
 
-    se = SentEmbed(tokenizer=tokenizer, model=llm, device=device)
+    se = SentEmbed(
+        tokenizer=tokenizer,
+        llm=llm,
+        device=device,
+    )
 
     baseline_emb = se(
         sentences=baseline_q.tolist(),
@@ -251,7 +255,7 @@ for name, model in model_id.items():
     gc.collect()
 
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
 
 st_baseline = torch.load(Path("./data/st_mpnet_baseline.pt"), map_location=device)
 st_all = torch.load(Path("./data/st_mpnet_all.pt"), map_location=device)

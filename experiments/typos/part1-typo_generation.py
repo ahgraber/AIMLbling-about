@@ -275,6 +275,6 @@ for rate in rates:
 
 # %%
 typos_df = pd.concat(frames, ignore_index=True)
-typos_df.to_csv(Path("./data/experiment.csv"), header=True, index=False)
+typos_df.to_csv(Path("./data/typos-variants.csv"), header=True, index=False)
 
 # %%
