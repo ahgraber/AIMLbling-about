@@ -55,7 +55,7 @@ load_dotenv()
 token = os.getenv("HF_TOKEN")
 
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
 print(typos_df.shape)
 print(typos_df.sample(10))
 
@@ -128,12 +128,12 @@ for name, model in model_id.items():
 
 # %%
 healed_df = pd.DataFrame.from_records(healed)
-healed_df.to_csv(Path("./data/healed.csv"), header=True, index=False)
+healed_df.to_csv(Path("./data/typos-healed.csv"), header=True, index=False)
 healed_df.sample(10)
 
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
-healed_df = pd.read_csv(Path("./data/healed.csv"))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
+healed_df = pd.read_csv(Path("./data/typos-healed.csv"))
 
 baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
 n_repeats = int(len(typos_df) / len(baseline_q))
@@ -257,7 +257,7 @@ for col in ["llama2", "llama3"]:
     torch.save(emb, Path(f"./data/{col}_healed_emb.pt"))
 
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
 baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
 n_repeats = int(len(typos_df) / len(baseline_q))
 
@@ -312,7 +312,7 @@ g = (
     + theme_xkcd()
     + theme(
         figure_size=(6, 6),
-        legend_position=(0.8, 0.25),
+        legend_position=(0.33, 0.25),
     )
 )
 # fmt: on

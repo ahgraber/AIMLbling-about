@@ -37,7 +37,7 @@ model_id = {
 }
 
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
 print(typos_df.shape)
 print(typos_df.sample(10))
 

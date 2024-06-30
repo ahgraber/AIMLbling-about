@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 
 from datasets import load_dataset
+
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format
 from plotnine import *
@@ -159,7 +160,6 @@ def generate_typo(word: str):
         if len(_choices) == 0:
             _choices = op2err["substitute"][op2err["substitute"].index.get_level_values("error") == "<gen>"]
 
-
         _sub = random.choices(
             _choices.index,
             weights=_choices.values,
@@ -275,6 +275,6 @@ for rate in rates:
 
 # %%
 typos_df = pd.concat(frames, ignore_index=True)
-typos_df.to_csv(Path("./data/experiment.csv"), header=True, index=False)
+typos_df.to_csv(Path("./data/typos-variants.csv"), header=True, index=False)
 
 # %%
