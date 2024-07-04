@@ -14,11 +14,14 @@ draft: false
 math: true
 ---
 
-This is part two of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}), three, four) where I examine the
-influence typos have on LLM response quality.
+This is part two of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}),
+[three]({{< ref "/blog/typos-part-3" >}}), four) where I examine the influence typos have on LLM response quality.
 
 In this post, I use the typo generation function to induce typos with increasing frequency in the hopes of
 understanding how typos influence **tokenization**.
+
+Code from these experiments is available
+[here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos).
 
 Recall my hypothesis:
 
@@ -46,9 +49,9 @@ For each model's tokenizer:
 
 ## Results
 
-The results confirm the hypothesis that typos increase token use. More tokens are used the more the typo rate
-increases. Additionally, Llama 2 (with the smaller vocabulary) requires more additional tokens to represent the typos
-than Llama 3.
+The results confirm the hypothesis that typos increase the number of tokens required to represent a passage. More
+tokens are used the more the typo rate increases. Additionally, Llama 2 (with the smaller vocabulary) requires more
+additional tokens to represent the typos than Llama 3.
 
 {{< figure
   src="images/count-differences.png"

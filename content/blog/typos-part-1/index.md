@@ -31,10 +31,14 @@ pre-training affords at least some resiliance to erroneous inputs[^resilience].
 
 <!-- markdownlint-enable -->
 
-This is part one of a four-part series ([two]({{< ref "/blog/typos-part-2" >}}), three, four) where I examine these
-questions. In this post, I'll lay out my plan of attack and explain how I plan to induce typos in a controlled manner
-for experimentation. In later posts, I plan to use the typo generation function to induce typos with increasing
-frequency in the hopes of understanding how typos influence tokenization, embedding, and generation.
+This is part one of a four-part series ([two]({{< ref "/blog/typos-part-2" >}}),
+[three]({{< ref "/blog/typos-part-3" >}}), four) where I examine these questions. In this post, I'll lay out my plan of
+attack and explain how I plan to induce typos in a controlled manner for experimentation. In later posts, I plan to use
+the typo generation function to induce typos with increasing frequency in the hopes of understanding how typos
+influence tokenization, embedding, and generation.
+
+Code from these experiments is available
+[here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos).
 
 ## Hypotheses
 
