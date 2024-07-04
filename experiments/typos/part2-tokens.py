@@ -5,12 +5,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-import numpy as np
 import pandas as pd
 from scipy.stats import sem
 
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer
 
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format
@@ -23,15 +21,12 @@ logging.basicConfig(format=LOG_FMT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-# specify debug logs from ds_utils to see behind-the-scenes updates
-logging.getLogger("typo_gen").setLevel(logging.DEBUG)
-
 # %%
 load_dotenv()
 token = os.getenv("HF_TOKEN")
 
 # %%
-model_id = {
+models = {
     "llama2": "meta-llama/Llama-2-7b-chat-hf",
     "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
 }
@@ -42,22 +37,21 @@ print(typos_df.shape)
 print(typos_df.sample(10))
 
 # %%
-for model, name in model_id.items():
-    tokenizer = AutoTokenizer.from_pretrained(name)
-    print(f"{model}: {len(tokenizer.get_vocab())} token vocab")
+for name, model_id in models.items():
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    print(f"{name}: {len(tokenizer.get_vocab())} token vocab")
 
-    tokens = tokenizer(typos_df["questions"].tolist(), return_attention_mask=False)["input_ids"]
+    tokens = tokenizer(typos_df["question"].tolist(), return_attention_mask=False)["input_ids"]
     counts = [len(x) for x in tokens]
-    typos_df[f"{model}_tokens"] = counts
+    typos_df[f"{name}_tokens"] = counts
 
 # %%
-# baseline = typos_df.groupby(['rate','ver'], as_index=False).first()x
 baseline = typos_df[typos_df["rate"] == 0.0]
 n_repeats = int(len(typos_df) / len(baseline))
 
-for model in model_id:
-    typos_df[f"{model}_delta"] = typos_df[f"{model}_tokens"] - (baseline[f"{model}_tokens"].tolist() * n_repeats)
-    typos_df[f"{model}_deltapct"] = typos_df[f"{model}_delta"] / typos_df[f"{model}_tokens"]
+for name in models:
+    typos_df[f"{name}_delta"] = typos_df[f"{name}_tokens"] - (baseline[f"{name}_tokens"].tolist() * n_repeats)
+    typos_df[f"{name}_deltapct"] = typos_df[f"{name}_delta"] / typos_df[f"{name}_tokens"]
 
 
 # %%
@@ -86,20 +80,11 @@ g = (
         ),
         size=1,
     )
-    # + geom_errorbar(
-    #     plot_df,
-    #     aes(
-    #         x="rate",
-    #         ymin="mean - sem",
-    #         ymax="mean + sem",
-    #         color="tokenizer",
-    #     ),
-    #     width=0.05,
-    # )
     + scale_x_continuous(
         breaks=[x / 10 for x in range(0, 11)],
         labels=percent_format(),
     )
+    # + coord_cartesian(xlim=(0, 1), ylim=(0, 30))
     + theme_xkcd()
     + theme(figure_size=(6, 6), legend_position=(0.26, 0.85))
     + labs(
@@ -138,24 +123,14 @@ g = (
         ),
         size=1,
     )
-    # + geom_errorbar(
-    #     plot_df,
-    #     aes(
-    #         x="rate",
-    #         ymin="mean - sem",
-    #         ymax="mean + sem",
-    #         color="tokenizer",
-    #     ),
-    #     width=0.05,
-    # )
     + scale_x_continuous(
         breaks=[x / 10 for x in range(0, 11)],
         labels=percent_format(),
     )
     + scale_y_continuous(
         labels=percent_format(),
-        limits=(0, 0.35),
     )
+    + coord_cartesian(xlim=(0, 1), ylim=(0, 0.35))
     + theme_xkcd()
     + theme(figure_size=(6, 6), legend_position=(0.26, 0.85))
     + labs(
