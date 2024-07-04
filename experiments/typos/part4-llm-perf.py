@@ -291,7 +291,7 @@ class TinyMMLU:
             pad_token_id=self.tokenizer.eos_token_id,
             stopping_criteria=StoppingCriteriaList([stop_at_newlines]),
             do_sample=False,
-            # do_sample=False makes sampling parms unnecessary
+            # do_sample=False makes sampling params unnecessary
             temperature=None,  # 0.0,
             top_p=None,  # 0.9,
         )

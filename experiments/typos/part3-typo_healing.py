@@ -106,7 +106,7 @@ for name, model_id in models.items():
             eos_token_id=terminators,
             pad_token_id=tokenizer.eos_token_id,
             do_sample=False,
-            # do_sample=False makes sampling parms unnecessary
+            # do_sample=False makes sampling params unnecessary
             temperature=None,  # 0.0,
             top_p=None,  # 0.9,
         )
@@ -180,7 +180,8 @@ def jaccard_multiset(actual: str, pred: str):
 
 for col in ["llama2", "llama3"]:
     healed_df[f"{col}_acc"] = healed_df[["baseline", col]].apply(
-        lambda row: jaccard_multiset(row["baseline"], row[col]), axis=1.0
+        lambda row, col=col: jaccard_multiset(row["baseline"], row[col]),
+        axis=1.0,
     )
 
 

@@ -58,7 +58,7 @@ representation, proposed in a
 > tokens at the beginning have far less context representation.[^stackoverflow]
 
 Although weighted-mean-pooling might grant a passage-grain representation, it does not guarantee a _good_
-representaiton. Llama models are not architected for passage embeddings, nor are they specifically tuned with the task
+representation. Llama models are not architected for passage embeddings, nor are they specifically tuned with the task
 of being good at semantic search or semantic comparison. Therefore, I also use the
 [`Sentence-Transformers/all-mpnet-base-v2`](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model,
 which _is_ designed for semantic comparison.
@@ -99,16 +99,16 @@ the semantic similarity between passages. Llama 3 outperforms Llama 2, but it is
 difference can be attributed to Llama 3's much larger tokenizer vocabulary, and how much of it is due to Llama 3's
 significantly better performance in general.
 
-Finally, it is important to note that the typo incidence must be higher than normal to have a measureable negative
+Finally, it is important to note that the typo incidence must be higher than normal to have a measurable negative
 effect on semantic similarity tasks. I would estimate it to be unusual to have more than 15% of the words in a given
 passage have typos. The experimental results at 15% typo occurrence demonstrate a cosine similarity of 0.9 or better --
 not identical, but still quite close in embedding space!
 
 ## Bonus: Can LLMs Heal Typos?
 
-A question I had going into this experiment was whether it made sense to have a spelling (and or grammar) check
-between the user and the model to ensure the model receives the cleanest input possible. What if the language model
-itself can fix the typos?
+A question I had going into this experiment was whether it made sense to have a spelling (and or grammar) check between
+the user and the model to ensure the model receives the cleanest input possible. What if the language model itself can
+fix the typos?
 
 ### Design
 
@@ -146,8 +146,8 @@ semantic similarity based on the top-performing Sentence-Transformers model from
 </tr>
 </table>
 
-The Jaccard pseudo-accuracy shows that the language model consistently recovers the original text quite well, though the
-exact recovery drops off a bit as typo rate increases. Evaluating cosine similarity indicates that even though the
+The Jaccard pseudo-accuracy shows that the language model consistently recovers the original text quite well, though
+the exact recovery drops off a bit as typo rate increases. Evaluating cosine similarity indicates that even though the
 exact original text is not recovered, _the gist of it is_!
 
 ## References
