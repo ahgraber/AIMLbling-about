@@ -20,13 +20,18 @@ import numpy as np
 import pandas as pd
 
 from datasets import load_dataset
+
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format
 from plotnine import *
 import seaborn as sns
 
 # %%
+LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+
+logging.basicConfig(format=LOG_FMT)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 # %%
 repo = subprocess.check_output(
@@ -37,7 +42,7 @@ repo = subprocess.check_output(
 repo = Path(repo).resolve()
 
 # %%
-data = pd.read_csv(Path("./data/stats.csv"))
+data = pd.read_csv(Path("./data/typo-stats.csv"))
 
 
 # %%
@@ -159,7 +164,6 @@ def generate_typo(word: str):
         if len(_choices) == 0:
             _choices = op2err["substitute"][op2err["substitute"].index.get_level_values("error") == "<gen>"]
 
-
         _sub = random.choices(
             _choices.index,
             weights=_choices.values,
@@ -246,12 +250,12 @@ for test in tests:
 
 # %%
 tiny_data = load_dataset("tinyBenchmarks/tinyMMLU", "all")["test"]
-questions = [row["question"] for row in tiny_data]
+question = [row["question"] for row in tiny_data]
 
 # %%
 df = pd.DataFrame(
     {
-        "questions": questions,
+        "question": question,
         "rate": 0,
         "ver": 0,
     }
@@ -262,11 +266,11 @@ frames = [df]
 rates = [x / 100 for x in range(5, 105, 5)]
 for rate in rates:
     for i in range(5):
-        typos = [induce_typos(q, rate) for q in questions]
+        typos = [induce_typos(q, rate) for q in question]
         frames.append(
             pd.DataFrame(
                 {
-                    "questions": typos,
+                    "question": typos,
                     "rate": rate,
                     "ver": i,
                 }
@@ -275,6 +279,6 @@ for rate in rates:
 
 # %%
 typos_df = pd.concat(frames, ignore_index=True)
-typos_df.to_csv(Path("./data/experiment.csv"), header=True, index=False)
+typos_df.to_csv(Path("./data/typos-variants.csv"), header=True, index=False)
 
 # %%

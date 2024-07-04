@@ -2,6 +2,7 @@
 from collections import defaultdict
 import difflib
 import json
+import logging
 import os
 from pathlib import Path
 import platform
@@ -24,6 +25,13 @@ from plotnine import *
 import seaborn as sns
 
 # %%
+LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+
+logging.basicConfig(format=LOG_FMT)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# %%
 repo = subprocess.check_output(
     ["git", "rev-parse", "--show-toplevel"],  # NOQA: S603, S607
     cwd=Path(__file__).parent,
@@ -39,7 +47,6 @@ repo = Path(repo).resolve()
 # - aspell, birbeck, holbrook, wikipedia
 # - microsoft
 # - typokit
-#
 
 
 # %%
@@ -116,26 +123,26 @@ def collect_typo(typo: str, correction: str | Sequence):
 typos = defaultdict(list)
 
 # typo corpus (aspell, birbeck, holbrook, wikipedia)
-for dat in Path("./data/").glob("*.dat"):
+for dat in Path("./data/corpus").glob("*.dat"):
     parsed = dat_parse_misspellings(dat)
     for typo, correction in parsed.items():
         collect_typo(typo=typo, correction=correction)
 
 # microsoft
-with Path("./data/microsoft.txt").open("r", encoding="utf-8") as file:
+with Path("./data/corpus/microsoft.txt").open("r", encoding="utf-8") as file:
     for line in file:
         typo, correction = line.split()
         collect_typo(typo=typo, correction=correction)
 
 
 # typokit
-for file in Path("./data/typokit/").glob("*.yaml"):
+for file in Path("./data/corpus/typokit/").glob("*.yaml"):
     y = yaml.safe_load(file.open("r", encoding="utf-8"))
     for typo, correction in y.items():
         collect_typo(typo=typo, correction=correction)
 
 # github
-with Path("./data/github.jsonl").open("r", encoding="utf-8") as file:
+with Path("./data/corpus/github.jsonl").open("r", encoding="utf-8") as file:
     for line in file:
         line = json.loads(line)
         # each line is a git diff, which can contain multiple edits
@@ -153,7 +160,7 @@ with Path("./data/github.jsonl").open("r", encoding="utf-8") as file:
             for typo, correction in parsed.items():
                 collect_typo(typo=typo, correction=correction)
 
-ct = pd.read_csv(Path("./data/commit-typos.csv"))
+ct = pd.read_csv(Path("./data/corpus/commit-typos.csv"))
 for row in ct[["wrong", "correct"]].to_dict(orient="records"):
     typo = row["wrong"]
     correction = row["correct"]
@@ -232,14 +239,14 @@ print(f"This collection provides {len(df)} edits for statistical summarization."
 
 # %%
 # save
-df.to_csv(Path("./data/stats.csv"), index=False)
+df.to_csv(Path("./data/typo-stats.csv"), index=False)
 
 
 # %%
 # Edit Op Proportions
 g = (
     ggplot(
-        df.value_counts("op", normalize=True).reset_index().rename(columns={0: "percentage"}),
+        df.value_counts("op", normalize=True).reset_index().rename(columns={"proportion": "percentage"}),
         aes(
             x="op",
             y="percentage",
@@ -255,7 +262,10 @@ g = (
     )
     + scale_y_continuous(
         labels=percent_format(),
-        limits=(0, 1),
+    )
+    + coord_cartesian(
+        # xlim=(0, 1),
+        ylim=(0, 1),
     )
     + theme_xkcd()
     + theme(figure_size=(6, 4))
@@ -279,7 +289,7 @@ plot_df = (
     .groupby("op")
     .value_counts(["letter"], normalize=True, dropna=False)
     .reset_index()
-    .rename(columns={0: "percentage"})
+    .rename(columns={"proportion": "percentage"})
     .reset_index(drop=True)
 )
 
@@ -303,7 +313,10 @@ g = (
     + scale_x_discrete(limits=sorted(plot_df['letter'].unique(), reverse=True,))
     + scale_y_continuous(
         labels=percent_format(),
-        limits=(0, 0.2),
+    )
+    + coord_cartesian(
+        # xlim=(0, 1),
+        ylim=(0, 0.2),
     )
     + facet_wrap("op", ncol=4)
     + coord_flip()

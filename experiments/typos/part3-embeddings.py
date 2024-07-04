@@ -1,8 +1,6 @@
 # %%
 import gc
-import itertools
 import logging
-import math
 import os
 from pathlib import Path
 
@@ -16,8 +14,7 @@ import pandas as pd
 import torch
 from sentence_transformers import SentenceTransformer
 import torch.nn.functional as F  # NOQA: N812
-from transformers import AutoModel, AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel
-from transformers.tokenization_utils_base import PreTrainedTokenizerBase
+from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding
 
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format
@@ -29,9 +26,6 @@ LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - 
 logging.basicConfig(format=LOG_FMT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-# specify debug logs from ds_utils to see behind-the-scenes updates
-logging.getLogger("typo_gen").setLevel(logging.DEBUG)
 
 
 # %%
@@ -55,45 +49,41 @@ load_dotenv()
 token = os.getenv("HF_TOKEN")
 
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
-print(typos_df.shape)
-print(typos_df.sample(10))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
+baseline_q = typos_df[typos_df["rate"] == 0]["question"]
+n_repeats = int(len(typos_df) / len(baseline_q))
+
+savedir = Path("./data/embeddings")
+savedir.mkdir(parents=True, exist_ok=True)
 
 # %%
-baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
-n_repeats = int(len(typos_df) / len(baseline_q))
+print(typos_df.shape)
+print(typos_df.sample(10))
 
 # %% [markdown]
 # ## Sentence Transformers
 
 # %%
-model = SentenceTransformer("all-mpnet-base-v2")
-model.to(device)
+model_id = SentenceTransformer("all-mpnet-base-v2")
+model_id.to(device)
 
-# %%
-baseline_emb = model.encode(
+baseline_emb = model_id.encode(
     baseline_q.tolist(),
     convert_to_tensor=True,
 )
-torch.save(baseline_emb, Path("./data/st_mpnet_baseline.pt"))
+torch.save(baseline_emb, savedir / "st_mpnet_baseline_emb.pt")
 
-# %%
-st_emb = model.encode(
-    typos_df["questions"].tolist(),
+st_emb = model_id.encode(
+    typos_df["question"].tolist(),
     convert_to_tensor=True,
 )
-# ~15 min on 3090
 
-torch.save(st_emb, Path("./data/st_mpnet_all.pt"))
+torch.save(st_emb, savedir / "st_mpnet_all_emb.pt")
 
-# %%
-typos_df["st_similarity"] = F.cosine_similarity(baseline_emb.repeat(n_repeats, 1), st_emb).cpu().numpy()
-typos_df.head()
-
-# %%
 del baseline_emb, st_emb
 torch.cuda.empty_cache()
 gc.collect()
+
 
 # %% [markdown]
 # ## Hack llama models for sentence embeddings
@@ -112,18 +102,21 @@ class SentEmbed:
 
     def __init__(
         self,
-        tokenizer: PreTrainedTokenizerBase,
-        model: PreTrainedModel,
+        model_id: str | os.PathLike,
         device: torch.device | None = None,
     ):
         self.device = device if device else check_torch_device()
 
-        self.tokenizer = tokenizer
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+        if not self.tokenizer.pad_token:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        self.model = model
-        self.model.eval()
-        self.model = self.model.to(self.device)
+        self.llm = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            torch_dtype=torch.bfloat16,
+        )
+        self.llm = self.llm.to(self.device)
+        self.llm.eval()
 
         torch.cuda.empty_cache()
         gc.collect()
@@ -144,7 +137,7 @@ class SentEmbed:
         pooling_strategy: int | str | None = None,
     ):
         with torch.no_grad():
-            last_hidden_state = self.model(
+            last_hidden_state = self.llm(
                 **inputs,
                 output_hidden_states=True,
                 return_dict=True,
@@ -186,10 +179,10 @@ class SentEmbed:
             raise TypeError(f"`sentences` must be list. Was {type(sentences)}")
 
         sentence_embeddings = []
-
-        for sentence in tqdm(sentences, leave=False):
+        for sentence in tqdm(sentences, leave=True):
             torch.cuda.empty_cache()
             gc.collect()
+
             inputs = self._tokenize(text=sentence)
             outputs = self._pool(inputs=inputs, pooling_strategy=pooling_strategy)
 
@@ -206,18 +199,14 @@ class SentEmbed:
 
 
 # %%
-model_id = {
+models = {
     "llama2": "meta-llama/Llama-2-7b-chat-hf",
     "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
 }
 
 # %%
-for name, model in model_id.items():
-    # Load model from HuggingFace Hub
-    tokenizer = AutoTokenizer.from_pretrained(model)
-    llm = AutoModelForCausalLM.from_pretrained(model)
-
-    se = SentEmbed(tokenizer=tokenizer, model=llm, device=device)
+for name, model_id in models.items():
+    se = SentEmbed(model_id)
 
     baseline_emb = se(
         sentences=baseline_q.tolist(),
@@ -225,53 +214,69 @@ for name, model in model_id.items():
         normalize=True,
         to_numpy=False,
     )
-    torch.save(baseline_emb, Path(f"./data/{name}_baseline.pt"))
+    torch.save(baseline_emb, savedir / f"{name}_baseline_emb.pt")
+    del baseline_emb
     torch.cuda.empty_cache()
     gc.collect()
-    # ~5 min on 3090
 
     sentence_embeddings = se(
-        sentences=typos_df["questions"].tolist(),
+        sentences=typos_df["question"].tolist(),
         pooling_strategy="wtmean",
         normalize=True,
         to_numpy=False,
     )
-    # ~3-5hr on 3090
+    torch.save(sentence_embeddings, savedir / f"{name}_all_emb.pt")
 
-    torch.save(sentence_embeddings, Path(f"./data/{name}_all_emb.pt"))
-
-    typos_df[f"{name}_similarity"] = (
-        F.cosine_similarity(baseline_emb.repeat(n_repeats, 1), sentence_embeddings).cpu().numpy()
-    )
-
-    display(typos_df.sample(10))
-
-    del tokenizer, llm, se, baseline_emb, sentence_embeddings
+    del se, sentence_embeddings
     torch.cuda.empty_cache()
     gc.collect()
 
+    # ~30 min / loop on 3090
+
+# %% [markdown]
+# ## Similarity Analysis
+
 # %%
-typos_df = pd.read_csv(Path("./data/experiment.csv"))
+typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
+baseline_q = typos_df[typos_df["rate"] == 0]["question"]
+n_repeats = int(len(typos_df) / len(baseline_q))
 
-st_baseline = torch.load(Path("./data/st_mpnet_baseline.pt"), map_location=device)
-st_all = torch.load(Path("./data/st_mpnet_all.pt"), map_location=device)
-typos_df["st_similarity"] = F.cosine_similarity(st_baseline.repeat(n_repeats, 1), st_all).cpu().numpy()
+savedir = Path("./data/embeddings")
 
-llama2_baseline = torch.load(Path("./data/llama2_baseline.pt"), map_location=device)
-llama2_all = torch.load(Path("./data/llama2_all_emb.pt"), map_location=device)
-typos_df["llama2_similarity"] = F.cosine_similarity(llama2_baseline.repeat(n_repeats, 1), llama2_all).cpu().numpy()
+for name in ["st_mpnet", "llama2", "llama3"]:
+    torch.cuda.empty_cache()
+    gc.collect()
 
-llama3_baseline = torch.load(Path("./data/llama3_baseline.pt"), map_location=device)
-llama3_all = torch.load(Path("./data/llama3_all_emb.pt"), map_location=device)
-typos_df["llama3_similarity"] = F.cosine_similarity(llama3_baseline.repeat(n_repeats, 1), llama3_all).cpu().numpy()
+    base_emb = torch.load(savedir / f"{name}_baseline_emb.pt", map_location=device)
+    all_emb = torch.load(savedir / f"{name}_all_emb.pt", map_location=device)
 
-del st_baseline, st_all, llama2_baseline, llama2_all, llama3_baseline, llama3_all
-torch.cuda.empty_cache()
-gc.collect()
+    typos_df[f"{name}_similarity"] = F.cosine_similarity(
+        base_emb.repeat(n_repeats, 1),
+        all_emb,
+    ).tolist()
+
+    del base_emb, all_emb
+
+
+# st_baseline = torch.load(Path("./data/st_mpnet_baseline_emb.pt"), map_location=device)
+# st_all = torch.load(Path("./data/st_mpnet_all_emb.pt"), map_location=device)
+# typos_df["st_similarity"] = F.cosine_similarity(st_baseline.repeat(n_repeats, 1), st_all).cpu().numpy()
+
+# llama2_baseline = torch.load(Path("./data/llama2_baseline_emb.pt"), map_location=device)
+# llama2_all = torch.load(Path("./data/llama2_all_emb.pt"), map_location=device)
+# typos_df["llama2_similarity"] = F.cosine_similarity(llama2_baseline.repeat(n_repeats, 1), llama2_all).cpu().numpy()
+
+# llama3_baseline = torch.load(Path("./data/llama3_baseline_emb.pt"), map_location=device)
+# llama3_all = torch.load(Path("./data/llama3_all_emb.pt"), map_location=device)
+# typos_df["llama3_similarity"] = F.cosine_similarity(llama3_baseline.repeat(n_repeats, 1), llama3_all).cpu().numpy()
+
+# del st_baseline, st_all, llama2_baseline, llama2_all, llama3_baseline, llama3_all
+# torch.cuda.empty_cache()
+# gc.collect()
 
 # %%
 sim_cols = [
-    "st_similarity",
+    "st_mpnet_similarity",
     "llama2_similarity",
     "llama3_similarity",
 ]
@@ -283,7 +288,7 @@ plot_df = (
     .melt(id_vars="rate", value_vars=sim_cols, var_name="model", value_name="mean_similarity")
     .replace(
         {
-            "st_similarity": "Sentence Transformer",
+            "st_mpnet_similarity": "Sentence Transformer",
             "llama2_similarity": "Llama 2 7B Chat",
             "llama3_similarity": "Llama 3 8B Instruct",
         }
@@ -305,7 +310,11 @@ g = (
         breaks=[x / 10 for x in range(0, 11)],
         labels=percent_format(),
     )
-    + guides(color=guide_legend(title="Model", ncol=1, reverse=True))
+    + scale_y_continuous(
+        # breaks=[x / 10 for x in range(0, 11)],
+    )
+    + coord_cartesian(xlim=(0, 1), ylim=(-1, 1))
+    + guides(color=guide_legend(title="Model", ncol=3, reverse=True))
     + labs(
         title="Cosine Similarity by Typo Rate",
         x="Typo Occurrence Rate",
@@ -314,10 +323,12 @@ g = (
     + theme_xkcd()
     + theme(
         figure_size=(6, 6),
-        legend_position=(0.8, 0.8),
+        legend_position=(0.55, 0.2),
     )
 )
 # fmt: on
 
-g.save(Path("./sentence-sim.png"))
+g.save(Path("./sentence-similarity.png"))
 g.draw()
+
+# %%
