@@ -1,17 +1,14 @@
 # %%
+from collections import Counter
 import gc
-import itertools
 import logging
-import math
 import os
 from pathlib import Path
 import re
 
 from dotenv import load_dotenv
-from IPython.display import display
 from tqdm.auto import tqdm
 
-import numpy as np
 import pandas as pd
 
 import torch
@@ -29,9 +26,6 @@ LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - 
 logging.basicConfig(format=LOG_FMT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-# specify debug logs from ds_utils to see behind-the-scenes updates
-logging.getLogger("typo_gen").setLevel(logging.DEBUG)
 
 
 # %%
@@ -60,7 +54,7 @@ print(typos_df.shape)
 print(typos_df.sample(10))
 
 # %%
-baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
+baseline_q = typos_df[typos_df["rate"] == 0]["question"]
 n_repeats = int(len(typos_df) / len(baseline_q))
 
 
@@ -68,23 +62,23 @@ n_repeats = int(len(typos_df) / len(baseline_q))
 # ## Can LLM's "heal" the typos?
 
 # %%
-model_id = {
+models = {
     "llama2": "meta-llama/Llama-2-7b-chat-hf",
     "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
 }
 
 # %%
-questions = typos_df["questions"].tolist()
+questions = typos_df["question"].tolist()
 healed = {"llama2": [], "llama3": []}
-for name, model in model_id.items():
-    tokenizer = AutoTokenizer.from_pretrained(model)
-    tokenizer.pad_token = tokenizer.eos_token
+for name, model_id in models.items():
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    if not tokenizer.pad_token:
+        tokenizer.pad_token = tokenizer.eos_token
 
-    llm = AutoModelForCausalLM.from_pretrained(
-        model,
-        torch_dtype=torch.bfloat16,
-        device_map=device,
-    )
+    llm = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16)
+    llm = llm.to(device)
+    llm.eval()
+
     terminators = [tokenizer.eos_token_id, tokenizer.convert_tokens_to_ids("<|eot_id|>")]
 
     for question in tqdm(questions):
@@ -111,9 +105,10 @@ for name, model in model_id.items():
             max_new_tokens=input_ids.shape[1],
             eos_token_id=terminators,
             pad_token_id=tokenizer.eos_token_id,
-            do_sample=True,
-            temperature=0.6,
-            top_p=0.9,
+            do_sample=False,
+            # do_sample=False makes sampling parms unnecessary
+            temperature=None,  # 0.0,
+            top_p=None,  # 0.9,
         )
         response = outputs[0][input_ids.shape[-1] :]
 
@@ -124,7 +119,7 @@ for name, model in model_id.items():
     torch.cuda.empty_cache()
     gc.collect()
 
-# ~ 10 hr / loop
+# ~ 11 hr / loop
 
 # %%
 healed_df = pd.DataFrame.from_records(healed)
@@ -135,7 +130,7 @@ healed_df.sample(10)
 typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
 healed_df = pd.read_csv(Path("./data/typos-healed.csv"))
 
-baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
+baseline_q = typos_df[typos_df["rate"] == 0]["question"]
 n_repeats = int(len(typos_df) / len(baseline_q))
 
 # %%
@@ -159,38 +154,35 @@ healed_df["baseline"] = baseline_q.tolist() * n_repeats
 healed_df.sample(10)
 
 # %%
-from collections import Counter
+# from collections import Counter
 
-baseline = [Counter(q.split()) for q in healed_df["baseline"]]
-llama2 = [Counter(q.split()) for q in healed_df["llama2"]]
-llama3 = [Counter(q.split()) for q in healed_df["llama3"]]
+# baseline = [Counter(q.split()) for q in healed_df["baseline"]]
+# llama2 = [Counter(q.split()) for q in healed_df["llama2"]]
+# llama3 = [Counter(q.split()) for q in healed_df["llama3"]]
 
 
 # %% [markdown]
 # ### LLM healing accuracy
 #
-# "accuracy" is
-# 2*count(baseline) - count(symmetric-difference)
-# -----------------------------------------------
-# 2*count(baseline)
+# uses multiset Jaccard (https://arxiv.org/abs/2110.09619)
 
 
 # %%
-def str_match_accuracy(actual: str, pred: str):
-    a_ctr = Counter(actual)
-    p_ctr = Counter(pred)
+def jaccard_multiset(actual: str, pred: str):
+    """Multiset generalization of Jaccard index."""
+    a = Counter(actual.split())
+    p = Counter(pred.split())
 
-    symmetric_difference = (a_ctr - p_ctr) + (p_ctr - a_ctr)
+    jaccard = (a & p).total() / (a | p).total()
 
-    base = 2 * a_ctr.total()
-
-    return (base - symmetric_difference.total()) / base
+    return jaccard
 
 
 for col in ["llama2", "llama3"]:
     healed_df[f"{col}_acc"] = healed_df[["baseline", col]].apply(
-        lambda row: str_match_accuracy(row["baseline"], row[col]), axis=1.0
+        lambda row: jaccard_multiset(row["baseline"], row[col]), axis=1.0
     )
+
 
 # %%
 plot_df = (
@@ -198,7 +190,7 @@ plot_df = (
     .groupby(["rate"])
     .mean()
     .reset_index()
-    .melt(id_vars="rate", value_vars=["llama2_acc", "llama3_acc"], var_name="model", value_name="mean_accuracy")
+    .melt(id_vars="rate", value_vars=["llama2_acc", "llama3_acc"], var_name="model", value_name="mean_jaccard")
     .replace(
         {
             "llama2_acc": "Llama 2 7B Chat",
@@ -213,7 +205,7 @@ g = (
         plot_df,
         aes(
             x="rate",
-            y="mean_accuracy",
+            y="mean_jaccard",
             color="model",
         ),
         size=1,
@@ -222,11 +214,12 @@ g = (
         breaks=[x / 10 for x in range(0, 11)],
         labels=percent_format(),
     )
+    + coord_cartesian(xlim=(0, 1), ylim=(0, 1))
     + guides(color=guide_legend(title="Model", ncol=1, reverse=True))
     + labs(
-        title="Typo Healing Accuracy by Typo Rate",
+        title="Typo Healing Performance by Typo Rate",
         x="Typo Occurrence Rate",
-        y="Accuracy to Ground Truth Baseline",
+        y="Jaccard Equivalence to Ground Truth Baseline",
     )
     + theme_xkcd()
     + theme(
@@ -243,30 +236,30 @@ g.draw()
 # ### LLM healing similarity
 
 # %%
-model = SentenceTransformer("all-mpnet-base-v2")
-model.to(device)
+model_id = SentenceTransformer("all-mpnet-base-v2")
+model_id.to(device)
 
 # %%
 for col in ["llama2", "llama3"]:
-    emb = model.encode(
+    emb = model_id.encode(
         healed_df[col].tolist(),
         convert_to_tensor=True,
     )
-    # ~15 min on 3090
+    # ~1 min on 3090
 
-    torch.save(emb, Path(f"./data/{col}_healed_emb.pt"))
+    torch.save(emb, Path(f"./data/embeddings/{col}_healed_emb.pt"))
 
 # %%
 typos_df = pd.read_csv(Path("./data/typos-variants.csv"))
-baseline_q = typos_df[typos_df["rate"] == 0]["questions"]
+baseline_q = typos_df[typos_df["rate"] == 0]["question"]
 n_repeats = int(len(typos_df) / len(baseline_q))
 
-baseline = torch.load(Path("./data/st_mpnet_baseline.pt"), map_location=device)
-llama2 = torch.load(Path("./data/llama2_healed_emb.pt"), map_location=device)
-llama3 = torch.load(Path("./data/llama3_healed_emb.pt"), map_location=device)
+baseline = torch.load(Path("./data/embeddings/st_mpnet_baseline_emb.pt"), map_location=device)
+llama2 = torch.load(Path("./data/embeddings/llama2_healed_emb.pt"), map_location=device)
+llama3 = torch.load(Path("./data/embeddings/llama3_healed_emb.pt"), map_location=device)
 
-typos_df["llama2_healed_sim"] = F.cosine_similarity(baseline.repeat(n_repeats, 1), llama2).cpu().numpy()
-typos_df["llama3_healed_sim"] = F.cosine_similarity(baseline.repeat(n_repeats, 1), llama3).cpu().numpy()
+typos_df["llama2_healed_sim"] = F.cosine_similarity(baseline.repeat(n_repeats, 1), llama2).tolist()
+typos_df["llama3_healed_sim"] = F.cosine_similarity(baseline.repeat(n_repeats, 1), llama3).tolist()
 
 # %%
 plot_df = (
@@ -303,6 +296,7 @@ g = (
         breaks=[x / 10 for x in range(0, 11)],
         labels=percent_format(),
     )
+    + coord_cartesian(xlim=(0, 1), ylim=(-1, 1))
     + guides(color=guide_legend(title="Model", ncol=1, reverse=True))
     + labs(
         title="Typo Healing Similarity by Typo Rate",
