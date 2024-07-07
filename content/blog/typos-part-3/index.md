@@ -15,10 +15,11 @@ math: true
 ---
 
 This is part three of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}),
-[two]({{< ref "/blog/typos-part-2" >}}), four)where I examine the influence typos have on LLM response quality.
+[two]({{< ref "/blog/typos-part-2" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine the influence typos
+have on LLM response quality.
 
 In this post, I'll use the typo generation function to induce typos with increasing frequency in the hopes of
-understanding how typos influence meaning as represented by sentence embeddings.
+understanding how typos influence meaning as represented by **sentence embeddings**.
 
 {{< callout type="info">}} An embedding is the vector (i.e., list of numbers) that represents an object (token, word,
 passage, image, etc.) and differentiates that object from all other objects to the given model. In other words, an
@@ -38,8 +39,8 @@ will grow increasingly dissimilar to the correct embedding.
 ## Design
 
 I reuse the dataset from [part two's investigation of tokenizers]({{< ref "/blog/typos-part-2" >}}), where the set of
-100 TinyBench[^tinybench] MMLU questions act as a baseline and I have generated "typo-ified" variants of each question
-with increasing typo occurrences.
+100 tinyBenchmarks[^tinybench] MMLU questions act as a baseline and I have generated "typo-ified" variants of each
+question with increasing typo occurrences.
 
 As in [part two]({{< ref "/blog/typos-part-2" >}}), I use Llama2 and Llama3 in the hopes of understanding the
 differences the tokenizer vocabulary makes.
@@ -78,7 +79,7 @@ scores of your guesses. {{< /callout >}}
 
 For each of these models:
 
-1. Generate passage-level embeddings of the TinyBench MMLU baseline questions
+1. Generate passage-level embeddings of the tinyBenchmarks MMLU baseline questions
 2. Generate passage-level embeddings of each "typo-ified" question
 3. Calculate the cosine similarity between the baseline question and each "typo-ified" variant at each typo rate
 4. Take the average of these similarities

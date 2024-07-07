@@ -15,7 +15,8 @@ math: true
 ---
 
 This is part two of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}),
-[three]({{< ref "/blog/typos-part-3" >}}), four) where I examine the influence typos have on LLM response quality.
+[three]({{< ref "/blog/typos-part-3" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine the influence
+typos have on LLM response quality.
 
 In this post, I use the typo generation function to induce typos with increasing frequency in the hopes of
 understanding how typos influence **tokenization**.
@@ -31,10 +32,10 @@ Recall my hypothesis:
 
 ## Design
 
-I've elected to use the TinyBench version of MMLU as a standardized dataset for all experiments.[^tinybench] I induce
-typos using the typo generation function from [part one]({{< ref "/blog/typos-part-1" >}}) at an increasing rate from
-5% (where roughly 1 word in 20 will have a typo) to 100% (approximately every word will have a typo). For each rate, I
-generate 5 different typo variations of each MMLU question.
+I've elected to use the tinyBenchmarks version of MMLU as a standardized dataset for all experiments.[^tinybench] I
+induce typos using the typo generation function from [part one]({{< ref "/blog/typos-part-1" >}}) at an increasing rate
+from 5% (where roughly 1 word in 20 will have a typo) to 100% (approximately every word will have a typo). For each
+rate, I generate 5 different typo variations of each MMLU question.
 
 An implication of my hypothesis is that tokenizer with a larger vocabulary should be able to represent typos better
 than one with a smaller vocabulary. To that end, I've elected to compare the tokenizers of Llama 2 (32k token
