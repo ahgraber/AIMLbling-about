@@ -32,7 +32,7 @@ Recall my hypothesis:
 
 ## Design
 
-I've elected to use the tinyBenchmarks version of MMLU as a standardized dataset for all experiments.[^tinybench] I
+I've elected to use the _tinyBenchmarks_ version of MMLU as a standardized dataset for all experiments.[^tinybench] I
 induce typos using the typo generation function from [part one]({{< ref "/blog/typos-part-1" >}}) at an increasing rate
 from 5% (where roughly 1 word in 20 will have a typo) to 100% (approximately every word will have a typo). For each
 rate, I generate 5 different typo variations of each MMLU question.

@@ -18,26 +18,27 @@ This is part four of a four-part series ([one]({{< ref "/blog/typos-part-1" >}})
 [two]({{< ref "/blog/typos-part-2" >}}), [three]({{< ref "/blog/typos-part-3" >}})) where I examine the influence typos
 have on LLM response quality.
 
-In this post, I'll use the typo generation function to induce typos with increasing frequency in the hopes of
-understanding how typos influence **generation**.
+In this post, I induce typos in a standardized set of prompts with increasing frequency in the hopes of understanding
+how typos influence **generation**.
 
 Code from these experiments is available
 [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos).
 
-If you recall, my hypothesis is that typos will increase error rates -- as typos alter the tokenization and embedding
-pipeline, the language model experiences distribution shift and cannot predict as well for the error-laden inputs.
-Therefore, language models will will have higher perplexity when working with text with typos and will have reduced
-response accuracy when answering questions with typos in the question text.
+If you recall, my hypothesis is that typos will increase error rates -- typos alter the tokenization and embedding
+pipeline such that the error-laden inputs are sufficiently different from the training data such that that the model
+cannot predict well (i.e., the model experiences distribution shift). As a result, language models will have higher
+perplexity when working with text with typos and will have reduced response accuracy when answering questions with
+typos in the question text.
 
 ## Design
 
 I reuse the dataset from [part two's investigation of tokenizers]({{< ref "/blog/typos-part-2" >}}), where the set of
-100 tinyBenchmarks[^tinybench] MMLU questions act as a baseline and I have generated sets of the benchmark questions
+100 _tinyBenchmarks_[^tinybench] MMLU questions act as a baseline and I have generated sets of the benchmark questions
 where I induce typos with an increasing rate.
 
 I continue use Llama2 and Llama3 in the hopes of understanding the differences the tokenizer vocabulary makes. Using
-these two models for comparison, I examine the influence of typos on the generative process by looking at `perplexity`,
-and investigate what that means in real-world tasks by actually running the tinyBenchmarks MMLU benchmark.
+these two models for comparison, I examine the influence of typos on the generative process by looking at perplexity,
+and investigate what that means in real-world tasks by actually running the _tinyBenchmarks_ MMLU benchmark.
 
 For each of these models:
 
@@ -92,7 +93,7 @@ _tinyBenchmarks_ has identified a subset of 100 questions that are sufficient to
 set.[^tinybench]
 
 Note that I have only induced typos in the _question_ text (not the answers or the examples). To see whether the
-typo-fication of the questions unduly influence the standard few-shot approach, I also posing the tinyBenchmarks MMLU
+typo-fication of the questions unduly influence the standard few-shot approach, I also posing the _tinyBenchmarks_ MMLU
 questions in 0-shot format (i.e., with no examples, but with system instructions that provide guidance on how to
 answer).
 
@@ -161,28 +162,26 @@ Answer:
 
 The results confirm the hypothesis that perplexity increase as the typo occurrence rate increases.
 It is notable that the perplexity increases faster for Llama 3 than for Llama 2; I'm not sure _why_ this is the case.
-Intuitively, it seems to me that Llama 3 should have a _lower_ rate of increase in perplexity
+Intuitively, it seems that Llama 3 should have a _slower_ rate of increase in perplexity
 because it has trained on _more tokens_ than Llama 2.
 However, since Meta employed filtering pipelines "to ensure Llama 3 is trained on data of the highest quality",
 it is possible that Llama 3 was trained on proportionately fewer typos than Llama 2.[^llama3]
 Additionally, it is likely that because Llama 3 uses a much larger token vocabulary,
-the log-likelihoods are spread across a much larger field at each prediction step, which would also increase perplexity.
+the log-likelihoods could spread across many more options at each prediction step, which would also increase perplexity.
 
 {{< figure
 src="images/perplexity.png"
 caption="Typo Occurrence Rate Increases Model Perplexity" >}}
 
-While the perplexity results are fairly conclusive, the results from the tinyBenchmarks MMLU benchmark are less so.
-Do typos reduce question-answering performance? Yes, but also ... it depends.
+While the perplexity results are fairly conclusive, the results from the _tinyBenchmarks_ MMLU benchmark are less so.
+Do typos reduce question-answering performance? They seem to... but it depends on best-case MMLU performance.
 Llama 2 performance stays quite flat regardless of typo rate, losing only 4 points from baseline to worst-case in the 0-shot setting,
 and falling < 6 points from baseline to worst-case in the in the 5-shot setting.
-Llama 3 _does_ exhibit a performance decrease, with a 17 point reduction from baseline to worst-case 0-shot benchmark,
-and a 7 point drop from baseline to worst-case in the 5-shot benchmark.
+Llama 3 _does_ exhibit a performance decrease, with a 17 point reduction from baseline to worst-case on the 0-shot benchmark,
+and a 7 point drop from baseline to worst-case with 5-shot examples.
 
 {{< callout type="warning">}} Recall that the baseline dataset is the _tinyBenchmarks_ MMLU dataset.
-This means that the results cannot be directly compared to published MMLU scores; the results are intended to help understand
-the influence of typos on model performance, not to benchmark model A vs. model B.
-{{< /callout >}}
+This means that the results should not be directly compared to published MMLU scores. {{< /callout >}}
 
 {{< figure
 src="images/mmlu-accuracy.png"
@@ -202,17 +201,17 @@ to respond correctly.
 While these experiments have demonstrated that typos do have a measurable negative impact on different aspects of LLM
 inference, I am admittedly quite impressed by the resilience LLms show to noisy inputs!
 Do typos negatively impact tokenization, embedding representation, and generation tasks?
-Yes -- but not to the point that every prompt needs to be fixed with a spelling-and-grammar checker.
+Yes -- but not to the point that every prompt must be optimized by running through a spelling-and-grammar checker.
 
 I mentioned previously that in my estimation, it would be very unusual for a passage to have more than 15% of the words contain typos.
 At that 15% typo rate:
 
 - There is a less than 10% increase in tokens required to represent the passage.
-OpenAI's most expensive model (GPT-4) currently costs 1/1000th of $0.01 per token.[^pricing]
-A prompt would have to contain 10k+ tokens with 15% typos for it to cost a full $0.01 more than it would were it correct!
-- The passages have an average cosine similarity to the baseline of 0.9,
+OpenAI's most expensive model (GPT-4) currently costs 1/1000th of $0.01 per token.[^openai]
+A prompt would have to contain 10k+ tokens at the 15% typo rate for it to cost a full $0.01 more than it would were all the words correct!
+- Typo and baseline passages have an average cosine similarity of 0.9,
 likely close enough to get reasonable results from any embedding-based classification or RAG architecture.
-- Llama 3 loses only 2 points in tinyBenchmarks MMLU 5-shot benchmark.
+- Llama 3 loses only 2 points in _tinyBenchmarks_ MMLU 5-shot benchmark.
 For repeated tasks, using canned (known-good) examples before inserting the user prompt that may contain typos seems
 to mitigate the impact of typos, as the 0-shot benchmark loses 6 points.
 
@@ -221,12 +220,11 @@ to mitigate the impact of typos, as the 0-shot benchmark loses 6 points.
 This has been a fun experiment, but it is by no means exhaustive or without confounding factors.
 
 1. The typo generation function did not create perfectly realistic typos.
- The typo generation dataset did not always include typo incidence/frequency information, which influence the probability ruleset.
- Additionally, I did not make a distinction between code and prose in the typo generation function.
+   The typo generation dataset did not always include typo incidence/frequency information, which influence the probability ruleset.
+   Additionally, I did not make a distinction between code and prose in the typo generation function.
 2. My experimental design does not use apples-to-apples models for comparison -
- Llama2-7B-Chat and Llama3-8B-Instruct have architectural differences and a dramatic difference in amount of training
- data in addition to the different tokenizers.
- Ideally, I use two identical model architectures trained on the same data, where the only difference being the tokenizer vocabularies.
+ in addition to the different tokenizers, Llama2-7B-Chat and Llama3-8B-Instruct have modest architectural differences and a dramatic difference in amount of training data seen.
+ Ideally, the experiment would leverage two identical model architectures trained on the same dataset(s), with the only difference being the tokenizer vocabularies.
 3. My experiments were limited in scope and did not demonstrate implications in production environments or across a wide variety of tasks.
 
 ## Further Reading
@@ -238,10 +236,11 @@ This has been a fun experiment, but it is by no means exhaustive or without conf
 
 [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
 [^promptperplexity]:
-  [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
+    [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
+
 [^perplexity]: [Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity)
 [^perplexity.py]: [perplexity.py · evaluate-measurement/perplexity](https://huggingface.co/spaces/evaluate-measurement/perplexity/blob/main/perplexity.py)
-[^mmlu]: [Measuring Massive Multitask Language Understanding](https://arxiv.org/pdf/2009.03300)
+[^mmlu]: [Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
 [^llama3]: [Introducing Meta Llama 3: The most capable openly available LLM to date](https://ai.meta.com/blog/meta-llama-3/)
 [^openai]: [Pricing | OpenAI](https://openai.com/api/pricing/)
 ````

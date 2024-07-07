@@ -231,5 +231,5 @@ errors.
 [^github]:
     [GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors](https://github.com/mhagiwara/github-typo-corpus?tab=readme-ov-file)
 
-[^commit]: [src-d/datasets | Typos](https://github.com/src-d/datasets/blob/master/Typos/README.md)
-[^denoise]: [[2105.05977] Spelling Correction with Denoising Transformer](https://arxiv.org/pdf/2105.05977)
+[^commit]: [Typos | src-d/datasets](https://github.com/src-d/datasets/blob/master/Typos/README.md)
+[^denoise]: [[2105.05977] Spelling Correction with Denoising Transformer](https://arxiv.org/abs/2105.05977)
