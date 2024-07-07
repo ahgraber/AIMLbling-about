@@ -4,19 +4,20 @@ goldmark:
   footnote: true
   linkify: true
   linkifyProtocol: https
-  passthrough:
-    delimiters:
-      block:
-        - - \[
-          - \]
-        - - $$
-          - $$
-      inline:
-        - - \(
-          - \)
-        # - - '@@'
-        #   - '@@'
-    enable: false
+  extensions:
+    passthrough:
+      delimiters:
+        block:
+          - - \[
+            - \]
+          - - $$
+            - $$
+        inline:
+          - - \(
+            - \)
+          - - \$
+            - \$
+      enable: false
   strikethrough: true
   table: true
   taskList: true
