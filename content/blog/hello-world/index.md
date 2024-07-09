@@ -16,7 +16,7 @@ draft: false
 ---
 
 I'm Alex Graber, an AI/ML Engineer at the Project Management Institute where I work on [Infinity](https://www.pmi.org/about/press-media/press-releases/pmi-introduces-pmi-infinity-the-all-new-ai-powered-resource-for-project-professionals),
-a tool and product for Project Managers, powered by AI.
+an AI-powered tool and product for Project Managers.
 
 Prior work includes Data Science and ML positions where I focused on business analytics and MLOps.
 

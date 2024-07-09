@@ -1,6 +1,6 @@
 ---
 title: How Robust Are LLMs to Typos? (part 4)
-date: 2024-07-06
+date: 2024-07-08
 tags:
   # meta
   - "experiment"
@@ -10,7 +10,7 @@ tags:
   - "LLMs"
 series:
   - "typos"
-draft: true
+draft: false
 math: true
 ---
 
@@ -207,7 +207,8 @@ embedding representation, and generation tasks? Yes -- but not to the point that
 I mentioned previously that in my estimation, it would be very unusual for a passage to have more than 15% of the words contain typos. At that 15% typo rate:
 
 - There is a less than 10% increase in tokens required to represent the passage.  
-  OpenAI's most expensive model (GPT-4) currently costs 1/1000th of $0.01 per token.[^openai] A prompt would have to contain 10k+ tokens at the 15% typo rate for it to cost a full $0.01 more than it would were all the words correct!
+  OpenAI's most expensive model (GPT-4) currently costs 1/1000th of $0.01 per token.
+  A prompt would have to contain 10k+ tokens for it to cost a full $0.01 more than it would were all the words correct!
 - Typo and baseline passages have an average cosine similarity of 0.9, likely close enough to get reasonable results from any embedding-based classification or RAG architecture.
 - Llama 3 loses only 2 points in _tinyBenchmarks_ MMLU 5-shot benchmark.  
   For repeated tasks, using canned (known-good) examples before inserting the user prompt that may contain typos seems to mitigate the impact of typos, as the 0-shot benchmark loses 6 points.

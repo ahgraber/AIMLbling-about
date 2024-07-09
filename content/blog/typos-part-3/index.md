@@ -37,13 +37,13 @@ As in [part two]({{< ref "/blog/typos-part-2" >}}), I use Llama2 and Llama3 in t
 {{< callout type="warning">}} Of course, there's an architectural difference between Llama2-7B-Chat and Llama3-8B-Instruct as well as a dramatic difference in amount of training data seen, so influence of the the tokenizer vocabulary size
 is admittedly confounded by these factors. {{< /callout >}}
 
-Since Llama models (really, any GPT-style model) embed at the per-token granularity rather than the per-sentence or per-passage granularity, I have implemented a weighted-mean-pooling operation to extract the passage-level representation,
+Since Llama models (really, any GPT-style model) embed at the per-token granularity rather than the per-sentence or per-passage granularity, I have implemented a weighted mean-pooling operation to extract the passage-level representation,
 proposed in a [Stack Overflow post](https://stackoverflow.com/questions/76926025/sentence-embeddings-from-llama-2-huggingface-opensource):
 
 > The idea behind weighted-mean_pooling is that the tokens at the end of the sentence should contribute more than the tokens at the beginning of the sentence because their weights are contextualized with the previous tokens, while the
 > tokens at the beginning have far less context representation.[^stackoverflow]
 
-Although weighted-mean-pooling might grant a passage-grain representation, it does not guarantee a _good_ representation. Llama models are not architected for passage embeddings, nor are they specifically tuned with the task of being good
+Although weighted mean-pooling might grant a passage-grain representation, it does not guarantee a _good_ representation. Llama models are not architected for passage embeddings, nor are they specifically tuned with the task of being good
 at semantic search or semantic comparison. Therefore, I also use the [`Sentence-Transformers/all-mpnet-base-v2`](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model, which _is_ designed for semantic comparison.
 
 Semantic comparison typically uses cosine similarity as the comparison metric. It measures the angle between two vectors (irrespective of the vectors' magnitudes). This angle can be between -1 to 1, where -1 means the vectors point in
