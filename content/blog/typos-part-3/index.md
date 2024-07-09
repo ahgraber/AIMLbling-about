@@ -51,7 +51,8 @@ completely opposite directions, 0 means they vectors are orthogonal (unrelated),
 
 {{< figure
   src="images/cosine-similarity.png"
-  caption="Simplified Example of Cosine Similarity, in 2-D" >}}
+  caption="Simplified Example of Cosine Similarity, in 2-D"
+  width="600">}}
 
 {{< callout type="question" emoji="🧩" >}} A fun way to understand semantic similarity is to play the word game [semantle](https://semantle.com/). The goal is to guess the secret word, and your clues are the cold/hot similarity scores of
 your guesses. {{< /callout >}}
