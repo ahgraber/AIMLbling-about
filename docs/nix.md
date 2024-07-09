@@ -4,7 +4,7 @@
 
 For the sake of complication (and keeping a pristine local environment), I'll use `nix` with [numtide's `devshell`](https://numtide.github.io/devshell/getting_started.html) to install/manage the dependencies.
 
-To start, run `nix develop` at the repo root.  Or if using `direnv`, add it to the `.envrc`:
+To start, run `nix develop` at the repo root. Or if using `direnv`, add it to the `.envrc`:
 
 ```sh
 # Watch & reload direnv on change

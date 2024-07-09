@@ -314,48 +314,19 @@ As a hyperscaler/provider:
 [^llama3]: [Llama3 | MODEL_CARD](https://github.com/meta-llama/llama3/blob/main/MODEL_CARD.md)
 [^gpt3]: [[2005.14165] Language Models are Few-Shot Learners](https://arxiv.org/pdf/2005.14165)
 [^gpt3-est]: [[2104.10350] Carbon Emissions and Large Neural Network Training](https://arxiv.org/pdf/2104.10350)
-[^watts]:
-    [[2311.16863] Power Hungry Processing: Watts Driving the Cost of AI Deployment?](https://arxiv.org/abs/2311.16863)
-
-[^tokens]:
-    [What are tokens and how to count them? | OpenAI Help Center](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them)
-
+[^watts]: [[2311.16863] Power Hungry Processing: Watts Driving the Cost of AI Deployment?](https://arxiv.org/abs/2311.16863)
+[^tokens]: [What are tokens and how to count them? | OpenAI Help Center](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them)
 [^tpu]: [Google Tensor Processing Unit](https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Fifth_generation_TPU)
-[^nvidia]:
-    [Nvidia datacenter GPUs](https://en.wikipedia.org/wiki/List_of_Nvidia_graphics_processing_units#Data_Center_GPUs)
-
-[^viking]:
-    [Viking 7B: The first open LLM for the Nordic languages](https://www.silo.ai//blog/viking-7b-the-first-open-llm-for-the-nordic-languages)
-
-[^antares]:
-    [How The "Antares" MI300 GPU Ramp Will Save AMD's Datacenter Business](https://www.nextplatform.com/2024/01/31/how-the-antares-mi300-gpu-ramp-will-save-amds-datacenter-business/)
-
-[^gpu-poors]:
-    [Google Gemini Eats The World – Gemini Smashes GPT-4 By 5X, The GPU-Poors](https://www.semianalysis.com/p/google-gemini-eats-the-world-gemini)
-
-[^toms1]:
-    [Nvidia to Sell 550,000 H100 GPUs for AI in 2023: Report | Tom's Hardware](https://www.tomshardware.com/news/nvidia-to-sell-550000-h100-compute-gpus-in-2023-report)
-
-[^toms2]:
-    [Nvidia sold half a million H100 AI GPUs in Q3 thanks to Meta, Facebook — lead times stretch up to 52 weeks: Report | Tom's Hardware](https://www.tomshardware.com/tech-industry/nvidia-ai-and-hpc-gpu-sales-reportedly-approached-half-a-million-units-in-q3-thanks-to-meta-facebook)
-
-[^wiki]:
-    [List of countries by electricity production](https://en.wikipedia.org/wiki/List_of_countries_by_electricity_production)
-
-[^epa]:
-    [Greenhouse Gases Equivalencies Calculator - Calculations and References | US EPA](https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references)
-
-[^capture]:
-    [The world's largest direct carbon capture plant just went online](https://www.engadget.com/the-worlds-largest-direct-carbon-capture-plant-just-went-online-172447811.html)
-
-[^thirsty]:
-    [[2304.03271] Making AI Less "Thirsty": Uncovering and Addressing the Secret Water Footprint of AI Models](https://arxiv.org/abs/2304.03271)
-
-[^cooling]:
-    [Artificial intelligence technology behind ChatGPT was built in Iowa — with a lot of water | AP News](https://apnews.com/article/chatgpt-gpt4-iowa-ai-water-consumption-microsoft-f551fde98083d17a7e8d904f8be822c4)
-
-[^microsoft-2024-sust]:
-    [Our 2024 Environmental Sustainability Report - Microsoft On the Issues](https://blogs.microsoft.com/on-the-issues/2024/05/15/microsoft-environmental-sustainability-report-2024/)
-
-[^underwater]:
-    [Microsoft finds underwater datacenters are reliable, practical and use energy sustainably - Source](https://news.microsoft.com/source/features/sustainability/project-natick-underwater-datacenter/)
+[^nvidia]: [Nvidia datacenter GPUs](https://en.wikipedia.org/wiki/List_of_Nvidia_graphics_processing_units#Data_Center_GPUs)
+[^viking]: [Viking 7B: The first open LLM for the Nordic languages](https://www.silo.ai//blog/viking-7b-the-first-open-llm-for-the-nordic-languages)
+[^antares]: [How The "Antares" MI300 GPU Ramp Will Save AMD's Datacenter Business](https://www.nextplatform.com/2024/01/31/how-the-antares-mi300-gpu-ramp-will-save-amds-datacenter-business/)
+[^gpu-poors]: [Google Gemini Eats The World – Gemini Smashes GPT-4 By 5X, The GPU-Poors](https://www.semianalysis.com/p/google-gemini-eats-the-world-gemini)
+[^toms1]: [Nvidia to Sell 550,000 H100 GPUs for AI in 2023: Report | Tom's Hardware](https://www.tomshardware.com/news/nvidia-to-sell-550000-h100-compute-gpus-in-2023-report)
+[^toms2]: [Nvidia sold half a million H100 AI GPUs in Q3 thanks to Meta, Facebook — lead times stretch up to 52 weeks: Report | Tom's Hardware](https://www.tomshardware.com/tech-industry/nvidia-ai-and-hpc-gpu-sales-reportedly-approached-half-a-million-units-in-q3-thanks-to-meta-facebook)
+[^wiki]: [List of countries by electricity production](https://en.wikipedia.org/wiki/List_of_countries_by_electricity_production)
+[^epa]: [Greenhouse Gases Equivalencies Calculator - Calculations and References | US EPA](https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references)
+[^capture]: [The world's largest direct carbon capture plant just went online](https://www.engadget.com/the-worlds-largest-direct-carbon-capture-plant-just-went-online-172447811.html)
+[^thirsty]: [[2304.03271] Making AI Less "Thirsty": Uncovering and Addressing the Secret Water Footprint of AI Models](https://arxiv.org/abs/2304.03271)
+[^cooling]: [Artificial intelligence technology behind ChatGPT was built in Iowa — with a lot of water | AP News](https://apnews.com/article/chatgpt-gpt4-iowa-ai-water-consumption-microsoft-f551fde98083d17a7e8d904f8be822c4)
+[^microsoft-2024-sust]: [Our 2024 Environmental Sustainability Report - Microsoft On the Issues](https://blogs.microsoft.com/on-the-issues/2024/05/15/microsoft-environmental-sustainability-report-2024/)
+[^underwater]: [Microsoft finds underwater datacenters are reliable, practical and use energy sustainably - Source](https://news.microsoft.com/source/features/sustainability/project-natick-underwater-datacenter/)
