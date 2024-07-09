@@ -1,5 +1,5 @@
 ---
-title: How Robust Are LLMs to Typos? (part 3)
+title: How Susceptible Are LLMs to Typos? (part 3)
 date: 2024-07-03
 tags:
   # meta

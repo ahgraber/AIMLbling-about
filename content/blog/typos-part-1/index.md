@@ -1,5 +1,5 @@
 ---
-title: How Robust Are LLMs to Typos? (part 1)
+title: How Susceptible Are LLMs to Typos? (part 1)
 date: 2024-06-14
 tags:
   # meta
@@ -15,10 +15,10 @@ math: true
 ---
 
 A recent theme in conversations at work is that "prompts are fragile." Word choice and word order can have large impacts on LLM responses, and every user input is a potential attack vector for the LLM equivalent of a SQL injection attack.
-But before I go off on _that_ tangent, having this repeated discussion got me thinking -- "Can I quantify how sensitive LLMs are to inputs?" and "I wonder how much typos effect response quality?"
+But before I go off on _that_ tangent, having this repeated discussion got me thinking -- "Can I quantify how sensitive LLMs are to inputs?" and more specifically, "I wonder how much typos effect response quality?"
 
 It seems intuitive that typos _should_ affect response quality. Recent whitepapers do back up this instinct[^promptbench] [^noisy]; however, it also appears as though the sheer scope of data provided during pre-training affords at least
-some resiliance to erroneous inputs[^resilience].
+some resilience to erroneous inputs[^resilience].
 
 <!-- markdownlint-disable MD013 -->
 
