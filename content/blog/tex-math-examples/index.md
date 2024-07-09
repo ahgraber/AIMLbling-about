@@ -1,5 +1,5 @@
 ---
-title: 'Math is Fun'
+title: "Math is Fun"
 date: 2024-04-22
 tags: []
 series: []
@@ -7,7 +7,8 @@ math: true
 draft: true
 ---
 
-This is an inline \\(a^\*=x-b^\*\\) equation.
+This is an inline \\(a^\*=x-b^\*\\) equation.  
+This is an inline \\$a^\*=x-b^\*\\$ equation with alternate delimiters.
 
 These are block equations:
 
