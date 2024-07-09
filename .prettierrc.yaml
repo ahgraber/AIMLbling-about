@@ -4,7 +4,7 @@ tabWidth: 2
 semi: false
 singleQuote: false
 quoteProps: "consistent"
-printWidth: 119
+printWidth: 239
 proseWrap: "always"
 plugins:
   # for global plugins, use full path; dots get to $HOME
