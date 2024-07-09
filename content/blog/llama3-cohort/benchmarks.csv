@@ -1,4 +1,4 @@
-﻿,Release Date,Name,MMLU (language),modifier,GSM8K (math),modifier,HumanEval (code),modifier
+﻿,Release Date,Name,MMLU<br>(language),modifier,GSM8K<br>(math),modifier,HumanEval<br>(code),modifier
 Meta,18-Jul-23,llama-2-7B,34.1,5-shot,25.7,8-shot CoT,7.9,0-shot
 ,,llama-2-13B,47.8,5-shot,77.4,8-shot CoT,14,0-shot
 ,,llama-2-70B,52.9,5-shot,57.5,8-shot CoT,25.6,0-shot

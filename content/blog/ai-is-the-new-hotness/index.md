@@ -19,13 +19,13 @@ draft: false
 ---
 
 Meta provided insight into some of the costs of training LLMs in their Llama 2[^llama2] and Llama 3[^llama3] papers,
-listing GPU hours and GPU power draw required to train the models, and **tCO$_2$eq**, or metric tons of Carbon Dioxide
-Equivalent emitted. Of note, we see a huge generational increase from Llama2 to Llama3. It took 12x the electricity to
-train Llama3-8B as it did to train Llama2-7B, and 6.5x the electricity to train Llama3-70B as it did its prior
-generation. It is also possible to glean some insights from larger, closed models; OpenAI reported FLOPs and GPUs in
-the GPT-3 paper[^gpt3], from which power consumption was estimated.[^gpt3-est]
+listing GPU hours and GPU power draw required to train the models, and **tCO\\$_2\\$eq**, or metric tons of Carbon
+Dioxide Equivalent emitted. Of note, we see a huge generational increase from Llama2 to Llama3. It took 12x the
+electricity to train Llama3-8B as it did to train Llama2-7B, and 6.5x the electricity to train Llama3-70B as it did its
+prior generation. It is also possible to glean some insights from larger, closed models; OpenAI reported FLOPs and GPUs
+in the GPT-3 paper[^gpt3], from which power consumption was estimated.[^gpt3-est]
 
-{{< table path="power_emissions.csv" header="true" caption="Calculating tCO$_2$eq" >}}
+{{< table path="power_emissions.csv" header="true" caption="Calculating tCO\\$_2\\$eq" >}}
 
 The generational difference in GPU power draw (W) is due to upgrades in training hardware. GPT3 trained on NVIDIA
 _V100_ accelerators (300-330W), Llama 2 trained on NVIDIA _A100_-80GB accelerators (TDP of 350 or 400W), and Llama 3
@@ -155,22 +155,23 @@ doubled to account for this power draw.
 Total global electricity production is estimated to be 24,816,400 GWh/year.[^wiki] The theoretical all-GPU max
 consumption (including datacenter additions) is 106 GWh/year, or 0.0004% of the global production.
 
-## CO$_2$ emissions
+## CO\\$_2\\$ emissions
 
 <!-- markdownlint-disable MD028 -->
 
 > The actual power usage of a GPU is dependent on its utilization and is likely to vary from the Thermal Design Power
 > (TDP) that we employ as an estimation for GPU power... We estimate the total emissions for training to be 539
-> tCO$_2$eq, of which 100% were directly offset by Meta's sustainability program.[^llama2]
+> tCO\\$_2\\$eq, of which 100% were directly offset by Meta's sustainability program.[^llama2]
 
-> Estimated total emissions were 2290 tCO$_2$eq, 100% of which were offset by Meta's sustainability program.[^llama3]
+> Estimated total emissions were 2290 tCO\\$_2\\$eq, 100% of which were offset by Meta's sustainability
+> program.[^llama3]
 
 <!-- markdownlint-enable MD028 -->
 
 As mentioned above, these numbers represent GPU use only, and do not account for the rest of the server or datacenter
 infrastructure.
 
-How did they ascertain tCO$_2$eq?
+How did they ascertain tCO\\$_2\\$eq?
 
 $$
 \begin{align*}
@@ -179,21 +180,22 @@ $$
 \end{align*}
 $$
 
-where the CO$_2$ to kWh emission rate, `0.000417`, is given by the EPA based on the US national annual average CO$_2$
-output rate in 2021.[^epa] While not exactly as claimed by Meta, this recalculation is fairly close!
+where the CO\\$_2\\$ to kWh emission rate, `0.000417`, is given by the EPA based on the US national annual average
+CO\\$_2\\$ output rate in 2021.[^epa] While not exactly as claimed by Meta, this recalculation is fairly close!
 
-|                                                              | GPU-only consumption (MWh) | GPU-only emissions<br>(tCO$_2$eq) | + Datacenter (MWh) | + Datacenter emissions<br>(tCO$_2$eq) |
-| -----------------------------------------------------------: | -------------------------: | --------------------------------: | -----------------: | ------------------------------------: |
-|                                Llama 3 8B<br>(training only) |                        910 |                               380 |              1,820 |                                   760 |
-|                               Llama 3 70B<br>(training only) |                      4,480 |                              1870 |              8,960 |                                  3740 |
-| theoretical GPU max consumption<br>Training and/or Inference |                 53,000,000 |                        22,000,000 |        106,000,000 |                            44,000,000 |
+|                                                              | GPU-only consumption (MWh) | GPU-only emissions<br>(tCO\\$_2\\$eq) | + Datacenter (MWh) | + Datacenter emissions<br>(tCO\\$_2\\$eq) |
+| -----------------------------------------------------------: | -------------------------: | ------------------------------------: | -----------------: | ----------------------------------------: |
+|                                Llama 3 8B<br>(training only) |                        910 |                                   380 |              1,820 |                                       760 |
+|                               Llama 3 70B<br>(training only) |                      4,480 |                                  1870 |              8,960 |                                      3740 |
+| theoretical GPU max consumption<br>Training and/or Inference |                 53,000,000 |                            22,000,000 |        106,000,000 |                                44,000,000 |
 
-{{< callout type="info">}} You may notice that I did not include the A/C power consumption in the CO$_2$ calculation
-above. I'll get to that in the next section. {{< /callout >}}
+{{< callout type="info">}} You may notice that I did not include the A/C power consumption in the CO\\$_2\\$
+calculation above. I'll get to that in the next section. {{< /callout >}}
 
-Extending our max-consumption exercise from above, the estimated CO$_2$ emissions from running all recent datacenter
-GPUs and their associated hardware is 44 million metric tons per year. Or, given the estimates from "Power Hungry
-Processing", each 1,000 10-token inferences releases 0.0000417 tCO$_2$eq, or about 1/10$^{th}$ of a pound of CO$_2$.
+Extending our max-consumption exercise from above, the estimated CO\\$_2\\$ emissions from running all recent
+datacenter GPUs and their associated hardware is 44 million metric tons per year. Or, given the estimates from "Power
+Hungry Processing", each 1,000 10-token inferences releases 0.0000417 tCO\\$_2\\$eq, or about 1/10$^{th}$ of a pound of
+CO\\$_2\\$.
 
 To put these numbers in scale, I'll share some equivalents I've found using the EPA's equivalencies calculator[^epa]:
 
@@ -205,13 +207,14 @@ To put these numbers in scale, I'll share some equivalents I've found using the 
 | theoretical GPU max consumption<br>Training and/or Inference | 1 year of electricity for 4.3 million homes |       11 coal-fired power plants running for 1 year       |
 |                1,000 10-token inferences<br>(7B-class model) |           2.8 smartphone charges            |     0.21 mi driven by a gas-powered passenger vehicle     |
 
-The world's largest carbon capture facility can capture 36,000 tons of CO$_2$ per year.[^capture] Capturing the carbon
-emitted by the electricity consumed by datacenters hosting GPU clusters would require 1,200 of them.
+The world's largest carbon capture facility can capture 36,000 tons of CO\\$_2\\$ per year.[^capture] Capturing the
+carbon emitted by the electricity consumed by datacenters hosting GPU clusters would require 1,200 of them.
 
 {{< callout type="info" >}} Microsoft just published their
 [2024 Environmental Sustainability Report](https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lhhu). In it,
-they note that while their direct CO$_2$ emissions from the datacenter have actually decreased from 2020, their overall
-CO$_2$ emissions have _increased_, due to emissions related to constructing new data centers. {{< /callout >}}
+they note that while their direct CO\\$_2\\$ emissions from the datacenter have actually decreased from 2020, their
+overall CO\\$_2\\$ emissions have _increased_, due to emissions related to constructing new data centers.
+{{< /callout >}}
 
 ## Water consumption
 
@@ -255,12 +258,12 @@ units -t '24816400 GWh / (1347000000 km^3) / waterdensity / water_specificheat'
 
 ## AI has environmental impacts, regardless of offsets
 
-In both their Llama 2 and LLama 3 papers, Meta shared the tCO$_2$ emissions equivalents from the electricity use for
-training the models and trumpeted that "100% [of the CO$_2$ emissions] were directly offset by Meta's sustainability
-program"[^llama2]. Microsoft promises, "by 2030, 100% of our electricity consumption will be matched by zero carbon
-energy purchases 100% of the time"[^microsoft-2024-sust]. Further, companies like Google, Meta, and Microsoft are
-incredibly aware of the optics of their energy use, and publish sustainability reports and fund green energy
-generation, carbon offset and reclamation, and water replenishment projects. While the disclosures (and the
+In both their Llama 2 and LLama 3 papers, Meta shared the tCO\\$_2\\$ emissions equivalents from the electricity use
+for training the models and trumpeted that "100% [of the CO\\$_2\\$ emissions] were directly offset by Meta's
+sustainability program"[^llama2]. Microsoft promises, "by 2030, 100% of our electricity consumption will be matched by
+zero carbon energy purchases 100% of the time"[^microsoft-2024-sust]. Further, companies like Google, Meta, and
+Microsoft are incredibly aware of the optics of their energy use, and publish sustainability reports and fund green
+energy generation, carbon offset and reclamation, and water replenishment projects. While the disclosures (and the
 sustainability efforts) are admirable, the premise that these models are therefore emissions neutral because of
 emissions offsets or using only sustainably-sourced electricity are flawed.
 
@@ -311,48 +314,19 @@ As a hyperscaler/provider:
 [^llama3]: [Llama3 | MODEL_CARD](https://github.com/meta-llama/llama3/blob/main/MODEL_CARD.md)
 [^gpt3]: [[2005.14165] Language Models are Few-Shot Learners](https://arxiv.org/pdf/2005.14165)
 [^gpt3-est]: [[2104.10350] Carbon Emissions and Large Neural Network Training](https://arxiv.org/pdf/2104.10350)
-[^watts]:
-    [[2311.16863] Power Hungry Processing: Watts Driving the Cost of AI Deployment?](https://arxiv.org/abs/2311.16863)
-
-[^tokens]:
-    [What are tokens and how to count them? | OpenAI Help Center](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them)
-
+[^watts]: [[2311.16863] Power Hungry Processing: Watts Driving the Cost of AI Deployment?](https://arxiv.org/abs/2311.16863)
+[^tokens]: [What are tokens and how to count them? | OpenAI Help Center](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them)
 [^tpu]: [Google Tensor Processing Unit](https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Fifth_generation_TPU)
-[^nvidia]:
-    [Nvidia datacenter GPUs](https://en.wikipedia.org/wiki/List_of_Nvidia_graphics_processing_units#Data_Center_GPUs)
-
-[^viking]:
-    [Viking 7B: The first open LLM for the Nordic languages](https://www.silo.ai//blog/viking-7b-the-first-open-llm-for-the-nordic-languages)
-
-[^antares]:
-    [How The "Antares" MI300 GPU Ramp Will Save AMD's Datacenter Business](https://www.nextplatform.com/2024/01/31/how-the-antares-mi300-gpu-ramp-will-save-amds-datacenter-business/)
-
-[^gpu-poors]:
-    [Google Gemini Eats The World – Gemini Smashes GPT-4 By 5X, The GPU-Poors](https://www.semianalysis.com/p/google-gemini-eats-the-world-gemini)
-
-[^toms1]:
-    [Nvidia to Sell 550,000 H100 GPUs for AI in 2023: Report | Tom's Hardware](https://www.tomshardware.com/news/nvidia-to-sell-550000-h100-compute-gpus-in-2023-report)
-
-[^toms2]:
-    [Nvidia sold half a million H100 AI GPUs in Q3 thanks to Meta, Facebook — lead times stretch up to 52 weeks: Report | Tom's Hardware](https://www.tomshardware.com/tech-industry/nvidia-ai-and-hpc-gpu-sales-reportedly-approached-half-a-million-units-in-q3-thanks-to-meta-facebook)
-
-[^wiki]:
-    [List of countries by electricity production](https://en.wikipedia.org/wiki/List_of_countries_by_electricity_production)
-
-[^epa]:
-    [Greenhouse Gases Equivalencies Calculator - Calculations and References | US EPA](https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references)
-
-[^capture]:
-    [The world's largest direct carbon capture plant just went online](https://www.engadget.com/the-worlds-largest-direct-carbon-capture-plant-just-went-online-172447811.html)
-
-[^thirsty]:
-    [[2304.03271] Making AI Less "Thirsty": Uncovering and Addressing the Secret Water Footprint of AI Models](https://arxiv.org/abs/2304.03271)
-
-[^cooling]:
-    [Artificial intelligence technology behind ChatGPT was built in Iowa — with a lot of water | AP News](https://apnews.com/article/chatgpt-gpt4-iowa-ai-water-consumption-microsoft-f551fde98083d17a7e8d904f8be822c4)
-
-[^microsoft-2024-sust]:
-    [Our 2024 Environmental Sustainability Report - Microsoft On the Issues](https://blogs.microsoft.com/on-the-issues/2024/05/15/microsoft-environmental-sustainability-report-2024/)
-
-[^underwater]:
-    [Microsoft finds underwater datacenters are reliable, practical and use energy sustainably - Source](https://news.microsoft.com/source/features/sustainability/project-natick-underwater-datacenter/)
+[^nvidia]: [Nvidia datacenter GPUs](https://en.wikipedia.org/wiki/List_of_Nvidia_graphics_processing_units#Data_Center_GPUs)
+[^viking]: [Viking 7B: The first open LLM for the Nordic languages](https://www.silo.ai//blog/viking-7b-the-first-open-llm-for-the-nordic-languages)
+[^antares]: [How The "Antares" MI300 GPU Ramp Will Save AMD's Datacenter Business](https://www.nextplatform.com/2024/01/31/how-the-antares-mi300-gpu-ramp-will-save-amds-datacenter-business/)
+[^gpu-poors]: [Google Gemini Eats The World – Gemini Smashes GPT-4 By 5X, The GPU-Poors](https://www.semianalysis.com/p/google-gemini-eats-the-world-gemini)
+[^toms1]: [Nvidia to Sell 550,000 H100 GPUs for AI in 2023: Report | Tom's Hardware](https://www.tomshardware.com/news/nvidia-to-sell-550000-h100-compute-gpus-in-2023-report)
+[^toms2]: [Nvidia sold half a million H100 AI GPUs in Q3 thanks to Meta, Facebook — lead times stretch up to 52 weeks: Report | Tom's Hardware](https://www.tomshardware.com/tech-industry/nvidia-ai-and-hpc-gpu-sales-reportedly-approached-half-a-million-units-in-q3-thanks-to-meta-facebook)
+[^wiki]: [List of countries by electricity production](https://en.wikipedia.org/wiki/List_of_countries_by_electricity_production)
+[^epa]: [Greenhouse Gases Equivalencies Calculator - Calculations and References | US EPA](https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references)
+[^capture]: [The world's largest direct carbon capture plant just went online](https://www.engadget.com/the-worlds-largest-direct-carbon-capture-plant-just-went-online-172447811.html)
+[^thirsty]: [[2304.03271] Making AI Less "Thirsty": Uncovering and Addressing the Secret Water Footprint of AI Models](https://arxiv.org/abs/2304.03271)
+[^cooling]: [Artificial intelligence technology behind ChatGPT was built in Iowa — with a lot of water | AP News](https://apnews.com/article/chatgpt-gpt4-iowa-ai-water-consumption-microsoft-f551fde98083d17a7e8d904f8be822c4)
+[^microsoft-2024-sust]: [Our 2024 Environmental Sustainability Report - Microsoft On the Issues](https://blogs.microsoft.com/on-the-issues/2024/05/15/microsoft-environmental-sustainability-report-2024/)
+[^underwater]: [Microsoft finds underwater datacenters are reliable, practical and use energy sustainably - Source](https://news.microsoft.com/source/features/sustainability/project-natick-underwater-datacenter/)

@@ -1,4 +1,4 @@
-﻿,Release Date,Name,GPUs,GPU Hours,Power Consumption (W),tCO2eq,FLOPs*,assumed utilization*
+﻿,Release Date,Name,GPUs,GPU Hours,Power Draw<br>(W),Claimed<br>tCO\\$_2\\$eq,FLOPs*,assumed<br>utilization*
 Meta,18-Jul-23,llama-2-7B,A100-80GB,"184,320",400,31.22,1.60E+22,30%
 ,,llama-2-13B,A100-80GB,"368,640",400,62.44,3.10E+22,30%
 ,,llama-2-70B,A100-80GB,"1,720,320",400,291.42,1.40E+23,30%
