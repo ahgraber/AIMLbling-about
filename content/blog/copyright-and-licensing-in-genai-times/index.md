@@ -1,11 +1,11 @@
 ---
 title: Copyright and Licensing in GenAI Times
-date: 2024-04-30T16:03:13-04:00
+date: 2024-07-17
 tags:
-  - 'opinion'
-  - 'generative AI'
-  - 'LLMs'
-  - 'copyright'
+  - "opinion"
+  - "generative AI"
+  - "LLMs"
+  - "copyright"
 series: []
 draft: true
 ---
@@ -13,6 +13,7 @@ draft: true
 - [AI weights are not open "source" | Open Core Ventures](https://opencoreventures.com/blog/2023-06-27-ai-weights-are-not-open-source/)
 
 - the problem - Intellectual Property (IP) vs AI
+
   - what is IP:
     - property created by the mind
       - copyright - intagnible rights granted by statute to authors/creators of works
@@ -40,6 +41,7 @@ draft: true
   - [The A.I. Lie | Muddy Colors](https://www.muddycolors.com/2024/04/the-a-i-lie/)
   - [Stack Overflow bans users en masse for rebelling against OpenAI partnership — users banned for deleting answers to prevent them being used to train ChatGPT | Tom's Hardware](https://www.tomshardware.com/tech-industry/artificial-intelligence/stack-overflow-bans-users-en-masse-for-rebelling-against-openai-partnership-users-banned-for-deleting-answers-to-prevent-them-being-used-to-train-chatgpt)
   -
+
 - the solution?
   - keep track of how weights change during training; look at neurons that are activated/updated by training examples.
     then, on inference, keep track of activations and attribute credit to artists based on activations
