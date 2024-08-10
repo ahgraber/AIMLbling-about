@@ -22,6 +22,9 @@ tags:
   - "homelab"
   # other
   - "copyright"
+  - "creators"
+  - "content"
+  - "licensing"
   - "privacy"
 series: []
 layout: single
