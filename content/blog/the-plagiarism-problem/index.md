@@ -1,6 +1,6 @@
 ---
 title: The plagiarism problem
-date: 2024-07-17
+date: 2024-08-10
 tags:
   - "opinion"
   - "generative AI"
@@ -10,14 +10,14 @@ tags:
   - "content"
   - "licensing"
 series: []
-draft: true
+draft: false
 ---
 
 The primary training task for generative AI models is inherently plagiaristic.
 New AI-based answer engines leverage these plagiaristic models to provide in-engine responses containing the specific information or content the user is looking for,
 obviating the need for the user to click through to the (original) content and depriving the creator of traffic.
 This breaks the content creation/consumption paradigm, where creators make money based on the number of views the ads on their pages receive, ads are sold by the search engine, and search results are driven by pagerank and SEO.
-To resolve this, paid source attribution will have to replace per-view ad revenue in the creator economy, and
+To resolve this, pay-per-reference source attribution will have to replace per-view ad revenue in the creator economy, and
 source attribution must be traced through answer engines all the way to the underlying generative models.
 
 ## Copycats in training
@@ -26,7 +26,7 @@ The training process for neural networks requires a dataset with paired inputs a
 For a given input, the model calculates a prediction.
 We check that prediction against the actual answer and adjust the model's weights such that the next time it makes a prediction on similar inputs, it will be more likely to predict the correct answer.
 As a result, every training example processed by the model has the effect of making it better at predicting the correct answer from the training inputs.
-The hope is that the training dataset is a good representation of the real-world non-training data, and therefore the modelcan generalize from training data and make accurate predictions in the real world.
+The hope is that the training dataset is representative of the real-world non-training data, and therefore the model can generalize from training data to make accurate predictions in the real world.
 
 In the case of generative AI, foundation models are trained to mimic the sequences seen in the training data; this approach holds true across all modalities.
 The training task for language models takes a passage of text, hides a word, and seeks to predict the hidden word based on the words that come before it.
@@ -35,16 +35,11 @@ Music generation models are trained in a similar way, where the beginning of a g
 In each of these (simplified) examples, the training data is built on source content; to train models at scale, a **lot** of content is needed.
 Inevitably, organizations training large generative models end up turning to the internet to find large datasets of source material; the source material for the training datasets composed of _someone else's content_.
 
-Note that I said in the intro "the primary training task for generative AI models is inherently plagiaristic", not "is plagiarism".
+I said in the intro "the primary training task for generative AI models is inherently plagiaristic", not "is plagiarism".
 While the optimal response for generative training tasks is quite literally plagiarism,
 training a model to perfect accuracy tends to overfit to the training data (reducing real-world performance on non-training data), and as such is typically avoided.
 Since models are _not_ trained to the point of achieving perfect accuracy, training does not guarantee memorization (though memorization _can_ occur);
 rather, it seeks to make the ground truth next-item-in-the-sequence the _most likely_ option.
-
-{{< callout type="question" emoji="💡" >}}
-Verbatim plagiarism is made less likely due to the variety of probabilistic decoding techniques (beam search, temperature, nucleus sampling, etc.) that are designed to allow models to avoid only picking the highest-probability token.
-These techniques add user-selectable levels of randomness to the generative process.
-{{< /callout >}}
 
 If there are many examples of a piece of information ("The capitol of France is Paris", "France's capitol, Paris", "...in Paris, the capitol of France"), then the model will strongly associate the co-occurring tokens.
 We might liken this to how we might study (cram) for an exam in high school by trying to remember a fact by using flashcards or repeatedly reviewing class notes.
@@ -59,7 +54,12 @@ _or_ via unintentional reproduction of the source text based the internalization
 Without deep mechanistic introspection with respect to the generative process, it is impossible for the end user to determine whether the replicated content was memorized or reconstructed.
 [^memorization]
 
-In the recent Gemma 2 technical paper, researchers from Google do not make the distinction between the two and define memorization as:
+{{< callout type="question" emoji="💡" >}}
+Verbatim plagiarism is made less likely due to the variety of probabilistic decoding techniques (beam search, temperature, nucleus sampling, etc.) that are designed to allow models to avoid only picking the highest-probability token.
+These techniques add user-selectable levels of randomness to the generative process.
+{{< /callout >}}
+
+Because it is impossible for the end user to distinguish, researchers from Google do not make the distinction between the two in the recent Gemma 2 technical paper, and define memorization as:
 
 > whether a model can be induced to generate near-copies of some training examples when prompted with appropriate instructions.
 > We do not mean to say that a model 'contains' its training data in the sense that any arbitrary instance of that data can be retrieved without use of specialized software or algorithms.
@@ -112,10 +112,10 @@ When an answer engine provides the answer directly, it removes the need for the 
 
 Leaving aside the legal specifics regarding intellectual property rights, licensing, "transformative use", and generative AI (I'm not a lawyer),
 it seems to me that source attribution is the key component that resolves plagiarism concerns and provides the mechanism to retain revenue streams for content creators.
-As my 10th grade English teacher said, "It's not plagiarism if you cite it."
-In the case of answer engines, it seems obvious to me that the source content used to generate the answer should be provided a utilization fee, kind of like how artists are paid per-play on Spotify or Apple Music.
+As I learned in high school, "It's not plagiarism if you cite it."
+In the case of answer engines, it seems obvious to me that the source content used to generate the answer should be provided a utilization fee, akin to how artists are paid per-play on Spotify or Apple Music.
 In fact, this is what Perplexity has proposed after being accused of plagiarism. [^profit-sharing]
-Identifying "source content used to generate the answer" is nontrivial, as it requires attributing the content used to train the model as well as any content provided as context during inference.
+Identifying the specific source content used to generate the answer is nontrivial, as it requires attributing the content used to train the model as well as any content provided as context during inference.
 
 Inference-time attribution is easy to solve if the source material is accessed in a RAG (Retrieval Augmented Generation) pattern.
 The answer engine retrieves content based on the user inputs - either from a knowledgebase formed by indexing websites, or by performing a web search and relying on a search engine that has done the indexing.
