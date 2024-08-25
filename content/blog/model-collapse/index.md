@@ -1,6 +1,6 @@
 ---
 title: Model Collapse
-date: 2024-08-25T09:08:33-04:00
+date: 2024-08-25
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -18,7 +18,7 @@ series: []
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 Over the past month, I've seen several articles reporting on the dangers of "model collapse" popping in news aggregators (HackerNews, Reddit, etc.). [^nature] [^bloomberg] [^conversation]
