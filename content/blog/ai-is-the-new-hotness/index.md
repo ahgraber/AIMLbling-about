@@ -308,6 +308,12 @@ As a hyperscaler/provider:
 - Provide further transparency on per-datacenter energy and water consumption to aid data center selection.
 - Provide granular reporting on costs of training and projected costs of inference.
 
+## Updates
+
+Meta's 2024 sustainability report shares that data center electricity use increased 34% from 2023.
+Data center water consumption increased 7%, though groundwater consumption increased 137% and consumption from areas with high or extremely high baseline water stress increased 20%.
+Meta continues to build out its datacenter infrastructure. [^meta-consumption-increase]
+
 ## Works Cited
 
 [^llama2]: [[2307.09288] Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
@@ -330,3 +336,4 @@ As a hyperscaler/provider:
 [^cooling]: [Artificial intelligence technology behind ChatGPT was built in Iowa — with a lot of water | AP News](https://apnews.com/article/chatgpt-gpt4-iowa-ai-water-consumption-microsoft-f551fde98083d17a7e8d904f8be822c4)
 [^microsoft-2024-sust]: [Our 2024 Environmental Sustainability Report - Microsoft On the Issues](https://blogs.microsoft.com/on-the-issues/2024/05/15/microsoft-environmental-sustainability-report-2024/)
 [^underwater]: [Microsoft finds underwater datacenters are reliable, practical and use energy sustainably - Source](https://news.microsoft.com/source/features/sustainability/project-natick-underwater-datacenter/)
+[^meta-consumption-increase]: [Meta data center electricity consumption hits 14,975GWh, leased data center use nearly doubles - DCD](https://www.datacenterdynamics.com/en/news/meta-data-center-electricity-consumption-hits-14975gwh-leased-data-center-use-nearly-doubles/)
