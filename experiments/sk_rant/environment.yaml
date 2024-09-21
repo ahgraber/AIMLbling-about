@@ -1,0 +1,20 @@
+---
+name: sk
+channels:
+  - conda-forge
+dependencies:
+  # see deprecation windows:
+  # https://scientific-python.org/specs/spec-0000/#support-window
+  - python[version='<3.12']
+  - cython
+  - pip
+  - ipykernel
+  - ipython
+  - ipywidgets
+  - joblib
+  - matplotlib
+  - networkx
+  - notebook
+  - python-dotenv
+  - pip:
+      - semantic-kernel>1,<2.0

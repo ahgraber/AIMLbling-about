@@ -42,6 +42,7 @@
           {{- end -}}
         </div>
         <div class="content">
+          {{ .TableOfContents }}
           {{ .Content }}
         </div>
         {{ partial "components/last-updated.html" . }}

@@ -63,8 +63,8 @@ tasks:
   render:
     desc: Render all static site content
     cmds:
-      - rm -r {{.ROOT_DIR}}/public
-      - rm -r {{.ROOT_DIR}}/resources
+      - "[[ ! -d {{.ROOT_DIR}}/public ]] || rm -r {{.ROOT_DIR}}/public"
+      - "[[ ! -d {{.ROOT_DIR}}/resources ]] || rm -r {{.ROOT_DIR}}/resources"
       - hugo --gc
     # cmd: nix build '.?submodules=1'
     preconditions:
