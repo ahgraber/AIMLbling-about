@@ -1,26 +1,26 @@
 ---
 title: "Kernel Panic: Frustrations with Semantic Kernel"
-date: 2024-09-13T20:08:55-04:00
+date: 2024-09-21
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "meta"
+  # - "meta"
   - "blogumentation"
   - "experiment"
-  - "listicle"
+  # - "listicle"
   - "opinion"
   # ai/ml
   - "generative AI"
-  - "prompts"
+  # - "prompts"
   - "LLMs"
 series: []
 layout: wide
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 A few weeks ago at work, I wanted to ensure that the prompt template we used with Semantic Kernel transformed into the OpenAI API spec `messages` array that I expected.
