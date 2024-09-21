@@ -1,8 +1,11 @@
+# ruff: NOQA: F704 # allow naked 'await' since using as ipynb
+
 # %%
 import asyncio
 from collections import deque
 import copy
 import datetime
+import json
 import logging
 import os
 import re
@@ -41,9 +44,9 @@ logger.setLevel(logging.DEBUG)
 
 # %%
 # load .env file specific to desired environment/resources (see .env.sample)
-load_dotenv(".env")
+_ = load_dotenv(".env")
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # need a working key or to mock the endpoint
 
 SERVICE_ID = "chat"
 
@@ -53,7 +56,7 @@ kernel = sk.Kernel()
 # Add the Azure OpenAI chat completion service
 chat_service = OpenAIChatCompletion(
     ai_model_id="gpt-4o-mini",
-    api_key="placeholder",  # OPENAI_API_KEY
+    api_key=OPENAI_API_KEY,
     service_id=SERVICE_ID,  # arbitrary for developer reference
 )
 kernel.add_service(chat_service)
@@ -84,14 +87,15 @@ _ec.update(
     }
 )
 execution_config = OpenAIChatPromptExecutionSettings(**_ec)
+options = execution_config.prepare_settings_dict()
 
 # %%
 system_msg = "You are a helpful AI assistant."
 
 # create chat plugin/function that uses chat history
 history_chat = kernel.add_function(
-    plugin_name="history_chat",
-    function_name="history_chat",
+    plugin_name="ChatBot",
+    function_name="chat",
     prompt="{{$history}}",
     prompt_execution_settings=execution_config,
 )
@@ -164,17 +168,21 @@ class CallGraphTracer:
     def __exit__(self, exc_type, exc_value, traceback):  # NOQA: D105
         sys.settrace(None)
 
-    def draw_call_graph(self, start: str | None = None):
+    def draw_call_graph(self, figsize: tuple[int, int], bfs: bool = True, start: str | None = None):
         """Visualize call graph."""
         call_graph = copy.deepcopy(self.call_graph)
-        if start is None:
-            start = next(iter(call_graph.nodes))
-        call_graph = nx.bfs_tree(call_graph, source=start, reverse=False)
 
-        plt.figure(figsize=(18, 6))
+        if bfs:
+            if start is None:
+                start = next(iter(call_graph.nodes))
 
-        pos = nx.bfs_layout(call_graph, start=start, align="vertical")
+            call_graph = nx.bfs_tree(call_graph, source=start, reverse=False)
+            pos = nx.bfs_layout(call_graph, start=start, align="vertical")
 
+        else:
+            pos = nx.spring_layout(call_graph)
+
+        plt.figure(figsize=figsize)
         nx.draw(
             call_graph,
             pos,
@@ -203,14 +211,17 @@ class CallGraphTracer:
 # %%
 with CallGraphTracer(module_filter="semantic_kernel") as tracer:
     result = await kernel.invoke(  # NOQA: F704
-        plugin_name="history_chat",
-        function_name="history_chat",
+        plugin_name="ChatBot",
+        function_name="chat",
         arguments=KernelArguments(
             settings=execution_config,
             history=history,
         ),
     )
 
-tracer.draw_call_graph()
 
 # %%
+tracer.draw_call_graph(figsize=(18, 6), bfs=True)
+
+# %%
+tracer.draw_call_graph(figsize=(12, 12), bfs=False)
