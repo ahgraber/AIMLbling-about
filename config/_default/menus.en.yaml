@@ -2,7 +2,7 @@
 main:
   - identifier: blog
     name: Blog
-    pageRef: /blog
+    pageRef: /blog/
     weight: 1
   # - identifier: documentation
   #   name: Documentation
