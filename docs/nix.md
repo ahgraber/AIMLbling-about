@@ -19,7 +19,7 @@ use flake
 ```
 
 [Getting started - devshell](https://numtide.github.io/devshell/getting_started.html)
-[Getting started with Nix Flakes and devshell](https://yuanwang.ca/posts/getting-started-with-flakes.html)
+[Getting started with Nix Flakes and devshell](https://yuanwang.ca/blog/getting-started-with-flakes/)
 
 ## Rendering hugo
 
