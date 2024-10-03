@@ -12,7 +12,7 @@ Prior work includes Data Science and ML positions where I focused on business an
 
 {{< cards >}}
 {{< card link="../blog/" title="Blog" icon="book-open" >}}
-{{< card link="../blog/hello-world" title="About" icon="user" >}}
+{{< card link="../blog/hello-world/" title="About" icon="user" >}}
 {{< /cards >}}
 
 {{< cards >}}
