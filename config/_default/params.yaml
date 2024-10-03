@@ -2,7 +2,7 @@
 # theme settings
 author: "Alex Graber"
 license:
-  '<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">AI/MLbling About © 2024 by Alexander Graber
+  '<a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">AI/MLbling About © 2024 by Alexander Graber
   is licensed under CC BY-NC-4.0</a>'
 description:
   "In which I organize my thoughts about LLMs, Generative AI, cool papers from arxiv.org, and other marginalia on
@@ -13,7 +13,7 @@ displayUpdatedDate: true
 dateFormat: "January 2, 2006"
 
 theme:
-  default: system
+  default: dark # system
   displayToggle: true
 
 blog:
