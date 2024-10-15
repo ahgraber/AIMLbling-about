@@ -15,9 +15,11 @@ tags:
   # ai/ml
   - "agents"
   - "arxiv"
+  - "evals"
   - "generative AI"
-  - "prompts"
   - "LLMs"
+  - "prompts"
+  - "RAG"
   # homelab
   - "homelab"
   # other
