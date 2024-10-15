@@ -64,7 +64,7 @@ dependencies:
   # - conda-forge::xformers
   - conda-forge::torchmetrics<2
   - conda-forge::tensorboard
-  - ragas[version='>0.1.20'] # recent versions of ragas are not available on conda
+  - ragas[version='>0.2'] # recent versions of ragas are not available on conda
   - rust
   ### LLM dependencies
   # - aiofiles # semantic-kernel
