@@ -33,14 +33,14 @@ dependencies:
   - tiktoken
   # - together
   - voyageai
-  - langchain[version='>=0.2.*']
+  - langchain[version='>=0.3']
   - langchain-chroma
   - langchain-anthropic
   - langchain-experimental
   - langchain-huggingface
   - langchain-openai
   - langchain-together
-  - langchain-voyageai
+  - langchain-voyageai[version='>=0.1.2']
   - llama-index[version='>=0.11.*'] # most integrations from llamahup are only available via pip
   # - openapi-core
   # - openapi-schema-validator
