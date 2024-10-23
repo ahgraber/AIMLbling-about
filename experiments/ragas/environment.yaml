@@ -19,7 +19,7 @@ dependencies:
   - numpy[version='<2.0']
   - pandas[version='>=2.0,<2.1']
   - openpyxl
-  - pandera
+  - duckdb
   - scikit-learn
   - scipy
   - statsmodels
@@ -34,7 +34,6 @@ dependencies:
   # - together
   - voyageai
   - langchain[version='>=0.3']
-  - langchain-chroma
   - langchain-anthropic
   - langchain-experimental
   - langchain-huggingface
@@ -64,7 +63,7 @@ dependencies:
   # - conda-forge::xformers
   - conda-forge::torchmetrics<2
   - conda-forge::tensorboard
-  - ragas[version='>0.2'] # recent versions of ragas are not available on conda
+  - ragas[version='>=0.2.2'] # recent versions of ragas are not available on conda
   - rust
   ### LLM dependencies
   # - aiofiles # semantic-kernel

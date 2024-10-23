@@ -1,4 +1,5 @@
 # # install after configuring conda environment with 'pip install --no-deps -r ...'
+json_repair
 
 together
 
@@ -17,7 +18,5 @@ llama-index-llms-huggingface
 llama-index-llms-huggingface-api
 llama-index-llms-openai-like
 llama-index-llms-together
-
 # llama-index-readers-file
-
-llama-index-vector-stores-chroma
+llama-index-vector-stores-duckdb
