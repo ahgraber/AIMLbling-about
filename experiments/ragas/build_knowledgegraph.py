@@ -9,7 +9,9 @@ import os
 from pathlib import Path
 import re
 import subprocess
-from typing import Any, Callable, Coroutine, Iterable, List, Optional, Sequence, Tuple, Union
+
+# from typing import Any, Callable, Coroutine, Iterable, List, Optional, Sequence, Tuple, Union
+import typing as t
 
 from dotenv import load_dotenv
 from IPython.display import display
@@ -19,18 +21,23 @@ from tqdm.auto import tqdm
 
 import pandas as pd
 
+import torch
 import spacy
 from spacy.language import Language
 from spacy.pipeline import EntityRecognizer
 
 # NOTE: RAGAS uses langchain as primary integration, so use it for convenience
 from langchain_core.documents import Document as LCDoc
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 import openai
 from ragas import RunConfig
 from ragas.embeddings.base import LangchainEmbeddingsWrapper
+from ragas.executor import run_async_batch
 from ragas.llms import LangchainLLMWrapper
+from ragas.prompt import PydanticPrompt, StringIO
 from ragas.testset.graph import KnowledgeGraph, Node as RagasNode, NodeType
+from ragas.testset.synthesizers.prompts import CommonThemeFromSummariesPrompt, Summaries, Theme, Themes
 from ragas.testset.transforms import (
     CosineSimilarityBuilder,
     EmbeddingExtractor,
@@ -65,12 +72,29 @@ repo = Path(repo).resolve()
 
 datadir = Path(__file__).parent / "data"
 
+
+# %%
+def check_torch_device():
+    """Check which device pytorch will use."""
+    if torch.cuda.is_available():
+        device = torch.device("cuda:0")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps:0")
+    else:
+        device = torch.device("cpu")
+
+    logger.info(f"Found pytorch device '{device.type}'")
+    return device
+
+
+device = check_torch_device()
+
 # %%
 _ = load_dotenv()
 
 # Local uses LMStudio to host a local OpenAI-compatible service
 LOCAL_API_KEY = os.getenv("LOCAL_API_KEY")
-LOCAL_BASE_URL = "http://localhost:1234/v1"  # os.getenv("LOCAL_BASE_URL")
+LOCAL_BASE_URL = os.getenv("LOCAL_BASE_URL")  # "http://localhost:1234/v1"
 
 LLM_KWARGS = {
     "temperature": 0.7,
@@ -177,7 +201,7 @@ class MarkdownHeadlinesExtractor(Extractor):  # NOQA: D101
     pattern: str = r"^(#{2,3})\s+(.*)"  # look for markdown headings by '#'
     property_name: str = "headlines"
 
-    def _headings_to_headlines(self, headings: List[str]) -> Headlines:
+    def _headings_to_headlines(self, headings: t.List[str]) -> Headlines:
         """Naive/hardcoded approach for only ## and ### levels."""
         headlines = {}
 
@@ -194,7 +218,7 @@ class MarkdownHeadlinesExtractor(Extractor):  # NOQA: D101
 
         return Headlines(headlines=headlines)
 
-    async def extract(self, node: RagasNode) -> Tuple[str, Any]:
+    async def extract(self, node: RagasNode) -> t.Tuple[str, t.Any]:
         """Extract headings."""
         text = node.get_property("page_content")
         if not isinstance(text, str):
@@ -214,7 +238,7 @@ class MarkdownTitleExtractor(Extractor):  # NOQA: D101
     pattern: str = r"^(#{1})\s+(.*)"
     property_name: str = "title"
 
-    async def extract(self, node: RagasNode) -> Tuple[str, Any]:
+    async def extract(self, node: RagasNode) -> t.Tuple[str, t.Any]:
         """Extract markdown title."""
         text = node.get_property("page_content")
         if not isinstance(text, str):
@@ -238,24 +262,24 @@ class MarkdownTitleExtractor(Extractor):  # NOQA: D101
 class SpaCyEntities(BaseModel):
     """Entities from SpaCy NER model."""
 
-    # CARDINAL: List[str]=[]
-    # DATE: List[str]=[]
-    # EVENT: List[str]=[]
-    FAC: List[str] = []
-    GPE: List[str] = []
-    LANGUAGE: List[str] = []
-    LAW: List[str] = []
-    LOC: List[str] = []
-    # MONEY: List[str]=[]
-    NORP: List[str] = []
-    # ORDINAL: List[str]=[]
-    ORG: List[str] = []
-    # PERCENT: List[str]=[]
-    PERSON: List[str] = []
-    PRODUCT: List[str] = []
-    # QUANTITY: List[str]=[]
-    # TIME: List[str]=[]
-    WORK_OF_ART: List[str] = []
+    # CARDINAL: t.List[str]=[]
+    # DATE: t.List[str]=[]
+    # EVENT: t.List[str]=[]
+    FAC: t.List[str] = []
+    GPE: t.List[str] = []
+    LANGUAGE: t.List[str] = []
+    LAW: t.List[str] = []
+    LOC: t.List[str] = []
+    # MONEY: t.List[str]=[]
+    NORP: t.List[str] = []
+    # ORDINAL: t.List[str]=[]
+    ORG: t.List[str] = []
+    # PERCENT: t.List[str]=[]
+    PERSON: t.List[str] = []
+    PRODUCT: t.List[str] = []
+    # QUANTITY: t.List[str]=[]
+    # TIME: t.List[str]=[]
+    WORK_OF_ART: t.List[str] = []
 
 
 @dataclass
@@ -274,7 +298,7 @@ class SpacyNERExtractor(Extractor):  # NOQA: D101
         )
         return super().__post_init__()
 
-    async def extract(self, node: RagasNode) -> Tuple[str, Any]:
+    async def extract(self, node: RagasNode) -> t.Tuple[str, t.Any]:
         """Extract named entities with spaCy."""
         text = node.get_property("page_content")
         if not isinstance(text, str):
@@ -323,12 +347,56 @@ kg = KnowledgeGraph(nodes=nodes)
 # print([m.id for m in client.models.list()])
 # del client
 
+
 # %%
-# model="phi-3.1-mini-128k-instruct"
-# model="llama-3.2-3b-instruct"
-# model="meta-llama-3.1-8b-instruct"
-# model="gemma-2-9b-instruct-function-calling"
-model = "mistral-nemo-instruct-2407"
+nomic_embedding_kwargs = {
+    "device": device.type,
+    "trust_remote_code": True,
+    "tokenizer_kwargs": {"model_max_length": 8192},
+    "model_kwargs": {"rotary_scaling_factor": 2},
+    "prompts": {
+        # ref: https://huggingface.co/nomic-ai/nomic-embed-text-v1.5
+        # ref: https://sbert.net/examples/applications/computing-embeddings/README.html#prompt-templates
+        # ref: https://github.com/run-llama/llama_index/blob/67c7e50e782f9ce12e1fd76b4ac3a131a505f19b/llama-index-integrations/embeddings/llama-index-embeddings-huggingface/llama_index/embeddings/huggingface/base.py#L224-L266
+        "text": "search_document: ",  # llamaindex looks for key "text" to embed documents
+        "query": "search_query: ",  # llamaindex looks for key "query" to embed queries
+        "clustering": "clustering: ",
+        "classification": "classification: ",
+    },
+    "default_prompt_name": "classification",
+}
+cluster_em = HuggingFaceEmbeddings(
+    model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
+    model_kwargs=nomic_embedding_kwargs,
+    encode_kwargs={
+        "normalize_embeddings": True,
+        "prompt_name": "clustering",
+    },
+)
+# document_em = HuggingFaceEmbeddings(
+#     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
+#     model_kwargs=nomic_embedding_kwargs,
+#     encode_kwargs={
+#         "normalize_embeddings": True,
+#         "prompt_name": "text",
+#     },
+# )
+# query_em = HuggingFaceEmbeddings(
+#     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
+#     model_kwargs=nomic_embedding_kwargs,
+#     encode_kwargs={
+#         "normalize_embeddings": True,
+#         "prompt_name": "query",
+#     },
+# )
+
+# %%
+# llm_id="phi-3.1-mini-128k-instruct"
+# llm_id="llama-3.2-3b-instruct"
+# llm_id="meta-llama-3.1-8b-instruct"
+# llm_id="gemma-2-9b-instruct-function-calling"
+llm_id = "mistral-nemo-instruct-2407"
+
 
 # %%
 rc = RunConfig(
@@ -341,22 +409,27 @@ llm = LangchainLLMWrapper(
     ChatOpenAI(
         base_url=LOCAL_BASE_URL,
         api_key=LOCAL_API_KEY,
-        model=model,
+        model=llm_id,
         **LLM_KWARGS,
         **RESILIENCE_KWARGS,
     ),
     run_config=rc,
 )
+# em = LangchainEmbeddingsWrapper(
+#     OpenAIEmbeddings(
+#         base_url=LOCAL_BASE_URL,
+#         api_key=LOCAL_API_KEY,
+#         model="nomic-embed-text-v1.5",
+#         check_embedding_ctx_length=False,  # ref: https://github.com/langchain-ai/langchain/issues/21318
+#         **RESILIENCE_KWARGS,
+#     ),
+#     run_config=rc,
+# )
 em = LangchainEmbeddingsWrapper(
-    OpenAIEmbeddings(
-        base_url=LOCAL_BASE_URL,
-        api_key=LOCAL_API_KEY,
-        model="nomic-embed-text-v1.5",
-        check_embedding_ctx_length=False,  # ref: https://github.com/langchain-ai/langchain/issues/21318
-        **RESILIENCE_KWARGS,
-    ),
+    cluster_em,
     run_config=rc,
 )
+
 
 # %% [markdown]
 # Specify the transforms and their order to be applied.
@@ -387,10 +460,10 @@ stage1 = [
 apply_transforms(kg, stage1)
 print("Knowledge Graph stage 1 complete.  Saving...")
 
-kg.save(datadir / "ragas_knowledgegraph_v3.json")
+kg.save(datadir / "ragas_knowledgegraph.json")
 
 # %%
-kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph_v3.json")
+kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph.json")
 
 # at this stage the knowledge graph should only be at the document level
 # so remove/overwrite any other nodes
@@ -445,7 +518,7 @@ need_summary = [node for node in kg.nodes if missing_summary(node)]
 print(f"{len(need_summary)=}")
 
 if len(need_summary) == 0:
-    kg.save(datadir / "ragas_knowledgegraph_v3.json")
+    kg.save(datadir / "ragas_knowledgegraph.json")
 
 # %% [markdown]
 # Now that we have document-level information, we can split the documents into
@@ -471,12 +544,12 @@ stage2 = [
 ]
 
 # %%
-kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph_v3.json")
+kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph.json")
 
 apply_transforms(kg, stage2)
 print("Knowledge Graph stage 2 complete.  Saving...")
 
-kg.save(datadir / "ragas_knowledgegraph_v3.json")
+kg.save(datadir / "ragas_knowledgegraph.json")
 
 
 # %% [markdown]
@@ -525,14 +598,16 @@ print(f"{len(need_title)=}")
 ...
 
 # NOTE: don't forget to save!
-# kg.save(datadir / "ragas_knowledgegraph_v3.json")
+# kg.save(datadir / "ragas_knowledgegraph.json")
 
 # %% [markdown]
 # Finally, we can add relationships defined by embeddign similarities
+#
+# _Tuning the similarity thresholds is critical for extracting high-quality clusters for granular testset generation_
 
 # %%
-cosine_sim_builder = CosineSimilarityBuilder(threshold=0.8)
-summary_cosine_sim_builder = SummaryCosineSimilarityBuilder(threshold=0.6)
+cosine_sim_builder = CosineSimilarityBuilder(threshold=0.85)
+summary_cosine_sim_builder = SummaryCosineSimilarityBuilder(threshold=0.8)
 
 stage3 = [
     cosine_sim_builder,
@@ -540,11 +615,41 @@ stage3 = [
 ]
 
 # %%
-kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph_v3.json")
+kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph.json")
+
+# remove prior clustering
+kg.relationships = [r for r in kg.relationships if r.type not in ["cosine_similarity", "summary_cosine_similarity"]]
 
 apply_transforms(kg, stage3)
 print("Knowledge Graph stage 3 complete.  Saving...")
 
-kg.save(datadir / "ragas_knowledgegraph_v3.json")
+kg.save(datadir / "ragas_knowledgegraph.json")
+
+# %% [markdown]
+# What can we find out about our dataset?
+
+# %%
+clusters = kg.find_clusters(relationship_condition=lambda rel: bool(rel.get_property("cosine_similarity")))
+
+print(f"{len(clusters)} found in knowledge graph")
+
+
+# %%
+theme_from_summaries = CommonThemeFromSummariesPrompt()
+num_themes = 3
+cluster_themes = []
+for cluster in tqdm(clusters):
+    summaries = Summaries(
+        summaries=[node.get_property("summary") for node in cluster if node.get_property("summary") is not None],
+        num_themes=num_themes,
+    )
+    themes = await theme_from_summaries.generate(llm=llm, data=summaries, callbacks=[])  # NOQA: F704
+    cluster_themes.append(themes)
+
+for i, themes in enumerate(cluster_themes):
+    print("---")
+    print(f"Cluster {i} - {len(clusters[i])} nodes with themes:")
+    for theme in themes.themes:
+        print(theme)
 
 # %%
