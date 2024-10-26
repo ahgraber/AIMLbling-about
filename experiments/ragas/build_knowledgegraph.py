@@ -1,17 +1,12 @@
 # %%
-from collections import defaultdict
 import copy
-from dataclasses import dataclass, field
 from itertools import chain
 import json
 import logging
 import os
 from pathlib import Path
-import re
 import subprocess
-
-# from typing import Any, Callable, Coroutine, Iterable, List, Optional, Sequence, Tuple, Union
-import typing as t
+import sys
 
 from dotenv import load_dotenv
 from IPython.display import display
@@ -21,21 +16,14 @@ from tqdm.auto import tqdm
 
 import pandas as pd
 
-import torch
-import spacy
-from spacy.language import Language
-from spacy.pipeline import EntityRecognizer
-
 # NOTE: RAGAS uses langchain as primary integration, so use it for convenience
 from langchain_core.documents import Document as LCDoc
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-import openai
 from ragas import RunConfig
-from ragas.embeddings.base import LangchainEmbeddingsWrapper
+from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.executor import run_async_batch
 from ragas.llms import LangchainLLMWrapper
-from ragas.prompt import PydanticPrompt, StringIO
 from ragas.testset.graph import KnowledgeGraph, Node as RagasNode, NodeType
 from ragas.testset.synthesizers.prompts import CommonThemeFromSummariesPrompt, Summaries, Theme, Themes
 from ragas.testset.transforms import (
@@ -51,16 +39,6 @@ from ragas.testset.transforms import (
     apply_transforms,
     default_transforms,
 )
-from ragas.testset.transforms.base import BaseGraphTransformation, Extractor
-from ragas.testset.transforms.extractors.llm_based import Headlines
-from ragas.testset.transforms.extractors.regex_based import RegexBasedExtractor
-
-# %%
-LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
-
-logging.basicConfig(format=LOG_FMT)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 # %%
 repo = subprocess.check_output(  # NOQA: S603
@@ -72,29 +50,27 @@ repo = Path(repo).resolve()
 
 datadir = Path(__file__).parent / "data"
 
+# %%
+sys.path.insert(0, str(Path(__file__).parent))
+from src.ragas.extractors import (  # NOQA: E402
+    MarkdownHeadlinesExtractor,
+    MarkdownTitleExtractor,
+    SpaCyEntities,
+    SpacyNERExtractor,
+)
+from src.utils import check_torch_device, hugo_title_to_h1  # NOQA: E402
 
 # %%
-def check_torch_device():
-    """Check which device pytorch will use."""
-    if torch.cuda.is_available():
-        device = torch.device("cuda:0")
-    elif torch.backends.mps.is_available():
-        device = torch.device("mps:0")
-    else:
-        device = torch.device("cpu")
+LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
 
-    logger.info(f"Found pytorch device '{device.type}'")
-    return device
+logging.basicConfig(format=LOG_FMT)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-
-device = check_torch_device()
+logging.getLogger("src").setLevel(logging.DEBUG)
 
 # %%
 _ = load_dotenv()
-
-# Local uses LMStudio to host a local OpenAI-compatible service
-LOCAL_API_KEY = os.getenv("LOCAL_API_KEY")
-LOCAL_BASE_URL = os.getenv("LOCAL_BASE_URL")  # "http://localhost:1234/v1"
 
 LLM_KWARGS = {
     "temperature": 0.7,
@@ -104,37 +80,14 @@ RESILIENCE_KWARGS = {
     "max_retries": 10,
     "timeout": 120,
 }
+device = check_torch_device()
 
 # %% [markdown]
 # ## Load files
 #
 # Source corpus will be blog posts and markdown files from my homelab/gitops repo
 
-
 # %%
-def hugo_title_to_h1(text: str):
-    """Extract title hugo front matter section and convert to markdown H1."""
-    frontmatter = re.match(r"(?P<frontmatter>---[\s\S]*?---)", text)
-
-    try:
-        frontmatter = frontmatter["frontmatter"]
-    except TypeError:
-        # no frontmatter; return without changes
-        return text
-
-    title = re.match(r"[\s\S]*title: (?P<title>.*)\n", frontmatter)
-    try:
-        title = f"# {title['title']}\n\n"  # ensure title has trailing newlines
-    except TypeError:
-        logger.info("Could not parse title from frontmatter")
-        logger.debug({frontmatter["frontmatter"]})
-        title = ""
-    else:
-        text = text.replace(frontmatter, title)
-        text = re.sub(r"\n{3,}", "\n\n", text)  # clean up overzealous newlines
-        return text
-
-
 blog_files = list((repo / "content" / "blog").rglob("*.md"))
 blog_docs = [
     LCDoc(
@@ -184,133 +137,6 @@ print(f"{len(documents)=}")
 # We can do this with Ragas v0.2 if we construct the knowledge graph separately
 # from the procedure of generating the synthetic test set.
 
-
-# %% [markdown]
-# ### Define the transformation pipeline
-
-# %% [markdown]
-# Create a headlines extractor for markdown,
-# combining markdown Rrgex extractor with nested headlines
-#
-# This approach is specific to this dataset
-
-
-# %%
-@dataclass
-class MarkdownHeadlinesExtractor(Extractor):  # NOQA: D101
-    pattern: str = r"^(#{2,3})\s+(.*)"  # look for markdown headings by '#'
-    property_name: str = "headlines"
-
-    def _headings_to_headlines(self, headings: t.List[str]) -> Headlines:
-        """Naive/hardcoded approach for only ## and ### levels."""
-        headlines = {}
-
-        current_section = None
-        for level, title in headings:
-            _title = f"{level} {title}"
-            if level == "##":
-                # Create a new section for the main headings
-                headlines[_title] = []
-                current_section = _title
-            elif level == "###" and current_section is not None:
-                # Append to the current section if it exists
-                headlines[current_section].append(_title)
-
-        return Headlines(headlines=headlines)
-
-    async def extract(self, node: RagasNode) -> t.Tuple[str, t.Any]:
-        """Extract headings."""
-        text = node.get_property("page_content")
-        if not isinstance(text, str):
-            raise TypeError(f"node.property('page_content') must be a string, found '{type(text)}'")
-
-        matches = re.findall(self.pattern, text, re.MULTILINE)
-
-        if matches:
-            headlines = self._headings_to_headlines(headings=matches)
-            return self.property_name, headlines.headlines
-        else:
-            return self.property_name, None
-
-
-@dataclass
-class MarkdownTitleExtractor(Extractor):  # NOQA: D101
-    pattern: str = r"^(#{1})\s+(.*)"
-    property_name: str = "title"
-
-    async def extract(self, node: RagasNode) -> t.Tuple[str, t.Any]:
-        """Extract markdown title."""
-        text = node.get_property("page_content")
-        if not isinstance(text, str):
-            raise TypeError(f"node.property('page_content') must be a string, found '{type(text)}'")
-
-        matches = re.findall(self.pattern, text)
-
-        try:
-            title = matches[0][1]
-        except IndexError:
-            return self.property_name, None
-        else:
-            return self.property_name, title
-
-
-# %% [markdown]
-# Create a Named Entity Recognizer using SpaCy
-
-
-# %%
-class SpaCyEntities(BaseModel):
-    """Entities from SpaCy NER model."""
-
-    # CARDINAL: t.List[str]=[]
-    # DATE: t.List[str]=[]
-    # EVENT: t.List[str]=[]
-    FAC: t.List[str] = []
-    GPE: t.List[str] = []
-    LANGUAGE: t.List[str] = []
-    LAW: t.List[str] = []
-    LOC: t.List[str] = []
-    # MONEY: t.List[str]=[]
-    NORP: t.List[str] = []
-    # ORDINAL: t.List[str]=[]
-    ORG: t.List[str] = []
-    # PERCENT: t.List[str]=[]
-    PERSON: t.List[str] = []
-    PRODUCT: t.List[str] = []
-    # QUANTITY: t.List[str]=[]
-    # TIME: t.List[str]=[]
-    WORK_OF_ART: t.List[str] = []
-
-
-@dataclass
-class SpacyNERExtractor(Extractor):  # NOQA: D101
-    model: str = "en_core_web_trf"
-    parser: Language = field(init=False)
-    property_name: str = "entities"
-
-    def __post_init__(self):  # NOQA: D105
-        # Check that spaCy model is available; download if not
-        if not spacy.util.is_package(self.model):
-            spacy.cli.download(self.model)
-        self.parser = spacy.load(
-            self.model,
-            disable=["tok2vec", "tagger", "parser", "attribute_ruler", "lemmatizer"],
-        )
-        return super().__post_init__()
-
-    async def extract(self, node: RagasNode) -> t.Tuple[str, t.Any]:
-        """Extract named entities with spaCy."""
-        text = node.get_property("page_content")
-        if not isinstance(text, str):
-            raise TypeError(f"node.property('page_content') must be a string, found '{type(text)}'")
-        parsed = self.parser(text)
-        entities = defaultdict(set)
-        for ent in parsed.ents:
-            entities[ent.label_].add(ent.text)
-
-        return self.property_name, SpaCyEntities(**entities).model_dump()
-
-
 # %% [markdown]
 # ### Construct Knowledge Graph
 
@@ -328,25 +154,26 @@ def lcdoc2rnode(doc: LCDoc) -> RagasNode:
 
 
 nodes = [lcdoc2rnode(doc=doc) for doc in documents]
-
-# %%
 kg = KnowledgeGraph(nodes=nodes)
 
 # %% [markdown]
 # Use local LMstudio models KG metadata extraction so that the KG is independent of testset / testset generative process
-#
-# `gemma-2-9b-instruct-function-calling` is _way better_ than llama3.1, llama3.2, or phi3 at returning structurally valid responses!
 
 # %%
 # # LMStudio provides openai-compatible endpoints
 # # get available model names
 # client = openai.OpenAI(
-#     base_url=LOCAL_BASE_URL,
-#     api_key=LOCAL_API_KEY,
+#     base_url=os.environ["_LOCAL_BASE_URL"],
+#     api_key=os.environ["_LOCAL_API_KEY"],
 # )
 # print([m.id for m in client.models.list()])
 # del client
-
+#
+# llm_id="phi-3.1-mini-128k-instruct"
+# llm_id="llama-3.2-3b-instruct"
+# llm_id="meta-llama-3.1-8b-instruct"
+# llm_id="gemma-2-9b-instruct-function-calling"
+llm_id = "mistral-nemo-instruct-2407"
 
 # %%
 nomic_embedding_kwargs = {
@@ -358,13 +185,14 @@ nomic_embedding_kwargs = {
         # ref: https://huggingface.co/nomic-ai/nomic-embed-text-v1.5
         # ref: https://sbert.net/examples/applications/computing-embeddings/README.html#prompt-templates
         # ref: https://github.com/run-llama/llama_index/blob/67c7e50e782f9ce12e1fd76b4ac3a131a505f19b/llama-index-integrations/embeddings/llama-index-embeddings-huggingface/llama_index/embeddings/huggingface/base.py#L224-L266
-        "text": "search_document: ",  # llamaindex looks for key "text" to embed documents
-        "query": "search_query: ",  # llamaindex looks for key "query" to embed queries
+        "text": "search_document: ",  # use key "text" to embed documents
+        "query": "search_query: ",  # use key "query" to embed queries
         "clustering": "clustering: ",
         "classification": "classification: ",
     },
-    "default_prompt_name": "classification",
+    # "default_prompt_name": "",
 }
+# since LangChain defines encode_kwargs.prompt_name per instance, create an instance per task
 cluster_em = HuggingFaceEmbeddings(
     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
     model_kwargs=nomic_embedding_kwargs,
@@ -373,29 +201,8 @@ cluster_em = HuggingFaceEmbeddings(
         "prompt_name": "clustering",
     },
 )
-# document_em = HuggingFaceEmbeddings(
-#     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
-#     model_kwargs=nomic_embedding_kwargs,
-#     encode_kwargs={
-#         "normalize_embeddings": True,
-#         "prompt_name": "text",
-#     },
-# )
-# query_em = HuggingFaceEmbeddings(
-#     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
-#     model_kwargs=nomic_embedding_kwargs,
-#     encode_kwargs={
-#         "normalize_embeddings": True,
-#         "prompt_name": "query",
-#     },
-# )
-
-# %%
-# llm_id="phi-3.1-mini-128k-instruct"
-# llm_id="llama-3.2-3b-instruct"
-# llm_id="meta-llama-3.1-8b-instruct"
-# llm_id="gemma-2-9b-instruct-function-calling"
-llm_id = "mistral-nemo-instruct-2407"
+# document_em = HuggingFaceEmbeddings(..., encode_kwargs={..., "prompt_name": "text"})
+# query_em = HuggingFaceEmbeddings(..., encode_kwargs={..., "prompt_name": "query"})
 
 
 # %%
@@ -407,8 +214,8 @@ rc = RunConfig(
 )
 llm = LangchainLLMWrapper(
     ChatOpenAI(
-        base_url=LOCAL_BASE_URL,
-        api_key=LOCAL_API_KEY,
+        base_url=os.environ["_LOCAL_BASE_URL"],
+        api_key=os.environ["_LOCAL_API_KEY"],
         model=llm_id,
         **LLM_KWARGS,
         **RESILIENCE_KWARGS,
@@ -417,8 +224,8 @@ llm = LangchainLLMWrapper(
 )
 # em = LangchainEmbeddingsWrapper(
 #     OpenAIEmbeddings(
-#         base_url=LOCAL_BASE_URL,
-#         api_key=LOCAL_API_KEY,
+#         base_url=os.environ["_LOCAL_BASE_URL"],
+#         api_key=os.environ["_LOCAL_API_KEY"],
 #         model="nomic-embed-text-v1.5",
 #         check_embedding_ctx_length=False,  # ref: https://github.com/langchain-ai/langchain/issues/21318
 #         **RESILIENCE_KWARGS,
@@ -432,6 +239,8 @@ em = LangchainEmbeddingsWrapper(
 
 
 # %% [markdown]
+# ### Define transformations to populate knowledge graph
+#
 # Specify the transforms and their order to be applied.
 #
 # Breaking transformations down into stages may make it more resilent

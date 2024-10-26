@@ -6,9 +6,8 @@ import json
 import logging
 import os
 from pathlib import Path
-import re
 import subprocess
-import typing as t
+import sys
 
 from dotenv import load_dotenv
 from IPython.display import display
@@ -18,22 +17,15 @@ from tqdm.auto import tqdm
 
 import pandas as pd
 
-import torch
-
 # NOTE: RAGAS uses langchain as primary integration, so use it for convenience
-from langchain.text_splitter import TokenTextSplitter
 from langchain_anthropic import ChatAnthropic
-from langchain_core.documents import Document as LCDoc
-from langchain_core.messages import BaseMessage
-from langchain_core.outputs import ChatGeneration, Generation, LLMResult
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_together import ChatTogether, TogetherEmbeddings
 from langchain_voyageai import VoyageAIEmbeddings
-import openai
 from ragas import RunConfig
 from ragas.cost import CostCallbackHandler, TokenUsage, get_token_usage_for_anthropic, get_token_usage_for_openai
-from ragas.embeddings.base import LangchainEmbeddingsWrapper
+from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.llms import LangchainLLMWrapper
 from ragas.testset import TestsetGenerator
 from ragas.testset.graph import KnowledgeGraph, NodeType
@@ -42,13 +34,6 @@ from ragas.testset.synthesizers import (
     ComparativeAbstractQuerySynthesizer,
     SpecificQuerySynthesizer,
 )
-
-# %%
-LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
-
-logging.basicConfig(format=LOG_FMT)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 # %%
 repo = subprocess.check_output(  # NOQA: S603
@@ -60,35 +45,22 @@ repo = Path(repo).resolve()
 
 datadir = Path(__file__).parent / "data"
 
+# %%
+sys.path.insert(0, str(Path(__file__).parent))
+from src.ragas.hacks import llama_finished_parser  # NOQA: E402
+from src.utils import check_torch_device  # NOQA: E402
 
 # %%
-def check_torch_device():
-    """Check which device pytorch will use."""
-    if torch.cuda.is_available():
-        device = torch.device("cuda:0")
-    elif torch.backends.mps.is_available():
-        device = torch.device("mps:0")
-    else:
-        device = torch.device("cpu")
+LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
 
-    logger.info(f"Found pytorch device '{device.type}'")
-    return device
+logging.basicConfig(format=LOG_FMT)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-
-device = check_torch_device()
+logging.getLogger("src").setLevel(logging.DEBUG)
 
 # %%
 _ = load_dotenv()
-
-# # Local uses LMStudio to host a local OpenAI-compatible service
-LOCAL_API_KEY = os.getenv("LOCAL_API_KEY")
-LOCAL_BASE_URL = os.getenv("LOCAL_BASE_URL")  # "http://localhost:1234/v1"
-
-# OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
-TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
 LLM_KWARGS = {
     "temperature": 0,
@@ -98,6 +70,8 @@ RESILIENCE_KWARGS = {
     "max_retries": 10,
     "timeout": 60,
 }
+
+device = check_torch_device()
 
 # %% [markdown]
 # ## Configure LLMs via LangChain adapters
@@ -115,84 +89,33 @@ nomic_embedding_kwargs = {
     "tokenizer_kwargs": {"model_max_length": 8192},
     "model_kwargs": {"rotary_scaling_factor": 2},
     "prompts": {
-        # "text": "search_document: ",  # use key "text" to embed documents
-        # "query": "search_query: ",  # use key "query" to embed queries
+        "text": "search_document: ",  # use key "text" to embed documents
+        "query": "search_query: ",  # use key "query" to embed queries
         "clustering": "clustering: ",
-        # "classification": "classification: ",
+        "classification": "classification: ",
     },
     # "default_prompt_name": "",
 }
+# since LangChain defines encode_kwargs.prompt_name per instance, create an instance per task
 cluster_em = HuggingFaceEmbeddings(
     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
-    model_kwargs={
-        **nomic_embedding_kwargs,
-        **{"default_prompt_name": "clustering"},
-    },
+    model_kwargs=nomic_embedding_kwargs,
     encode_kwargs={
         "normalize_embeddings": True,
         "prompt_name": "clustering",
     },
 )
-# document_em = HuggingFaceEmbeddings(
-#     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
-#     model_kwargs={
-#         **nomic_embedding_kwargs,
-#         **{"default_prompt_name": "text"},
-#     },
-#     encode_kwargs={
-#         "normalize_embeddings": True,
-#         "prompt_name": "text",
-#     },
-# )
-# query_em = HuggingFaceEmbeddings(
-#     model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
-#     model_kwargs={
-#         **nomic_embedding_kwargs,
-#         **{"default_prompt_name": "query"},
-#     },
-#     encode_kwargs={
-#         "normalize_embeddings": True,
-#         "prompt_name": "query",
-#     },
-# )
-
-
-# %%
-def llama_finished_parser(response: LLMResult) -> bool:
-    """Check TogetherAI/Llama response for successful generation."""
-    is_finished_list = []
-    for g in response.flatten():
-        resp = g.generations[0][0]
-        if resp.generation_info is not None:
-            # generation_info is provided - so we parse that
-
-            # OpenAI uses "finish_reason": "stop"
-            # Together/Llama uses "finish_reason": "stop" or "eos"
-            if resp.generation_info.get("finish_reason") is not None:
-                is_finished_list.append(resp.generation_info.get("finish_reason") in ["stop", "eos"])
-            # provide more conditions here: https://github.com/explodinggradients/ragas/issues/1548
-
-        # if generation_info is empty, we parse the response_metadata
-        # this is less reliable
-        elif t.cast(ChatGeneration, resp).message is not None:
-            resp_message: BaseMessage = t.cast(ChatGeneration, resp).message
-            if resp_message.response_metadata.get("finish_reason") is not None:
-                is_finished_list.append(resp_message.response_metadata.get("finish_reason") in ["stop", "eos"])
-            elif resp_message.response_metadata.get("stop_reason") is not None:
-                is_finished_list.append(resp_message.response_metadata.get("stop_reason") == "end_turn")
-        # default to True
-        else:
-            is_finished_list.append(True)
-    return all(is_finished_list)
+# document_em = HuggingFaceEmbeddings(..., encode_kwargs={..., "prompt_name": "text"})
+# query_em = HuggingFaceEmbeddings(..., encode_kwargs={..., "prompt_name": "query"})
 
 
 # %%
 providers = {
     "local": {
         "llm": ChatOpenAI(
-            base_url=LOCAL_BASE_URL,
+            base_url=os.environ["_LOCAL_BASE_URL"],
             # base_url="http://localhost:1234/v1",
-            api_key=LOCAL_API_KEY,
+            api_key=os.environ["_LOCAL_API_KEY"],
             # model="phi-3.1-mini-128k-instruct",
             model="mistral-nemo-instruct-2407",
             **LLM_KWARGS,
@@ -200,9 +123,9 @@ providers = {
             timeout=120,
         ),
         # "em": OpenAIEmbeddings(
-        #     base_url=LOCAL_BASE_URL,
+        #     base_url=os.environ["_LOCAL_BASE_URL"],
         #     # base_url="http://localhost:1234/v1",
-        #     api_key=LOCAL_API_KEY,
+        #     api_key=os.environ["_LOCAL_API_KEY"],
         #     model="nomic-embed-text-v1.5",
         #     check_embedding_ctx_length=False,  # ref: https://github.com/langchain-ai/langchain/issues/21318
         #     **RESILIENCE_KWARGS,
@@ -211,13 +134,13 @@ providers = {
     },
     "openai": {
         "llm": ChatOpenAI(
-            api_key=OPENAI_API_KEY,
+            api_key=os.environ["_OPENAI_API_KEY"],
             model="gpt-4o-mini",
             **LLM_KWARGS,
             **RESILIENCE_KWARGS,
         ),
         "em": OpenAIEmbeddings(
-            api_key=OPENAI_API_KEY,
+            api_key=os.environ["_OPENAI_API_KEY"],
             model="text-embedding-3-small",
             # deployment="text-embedding-3-small",
             **RESILIENCE_KWARGS,
@@ -230,7 +153,7 @@ providers = {
             **RESILIENCE_KWARGS,
         ),
         "em": VoyageAIEmbeddings(
-            voyage_api_key=VOYAGE_API_KEY,
+            voyage_api_key=os.environ["_VOYAGE_API_KEY"],
             model="voyage-3-lite",
             batch_size=7,  # ref: https://docs.llamaindex.ai/en/stable/api_reference/embeddings/voyageai/
             # **resilience_kwargs,
@@ -239,7 +162,7 @@ providers = {
     "together": {
         "llm": ChatOpenAI(  # Langchain-Together is based on Langchain-OpenAI; might as well use source
             base_url="https://api.together.xyz/v1",
-            api_key=TOGETHER_API_KEY,
+            api_key=os.environ["_TOGETHER_API_KEY"],
             model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
             # model="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
             # **LLM_KWARGS,
@@ -251,7 +174,7 @@ providers = {
         ),
         "em": TogetherEmbeddings(
             model="togethercomputer/m2-bert-80M-8k-retrieval",
-            api_key=TOGETHER_API_KEY,
+            api_key=os.environ["_TOGETHER_API_KEY"],
             **RESILIENCE_KWARGS,
         ),
     },
