@@ -133,7 +133,7 @@ section-order = ["future", "standard-library", "third-party", "sci", "torch", "l
 [lint.isort.sections]
 "sci" = ["numpy", "pandas", "scipy", "sklearn", "statsmodels"]
 "torch" = ["datasets", "lightning", "torch", "torch*", "tokenizers", "transformers", "sentence_transformers", "spacy"]
-"llm" = ["langchain*", "llama-index*", "openai", "semantic_kernel", "ragas"]
+"llm" = ["langchain*", "llama_index*", "openai", "semantic_kernel", "ragas"]
 "plot" = ["cmcrameri", "matplotlib", "mizani", "plotly", "plotnine", "seaborn"]
 
 [lint.mccabe]
