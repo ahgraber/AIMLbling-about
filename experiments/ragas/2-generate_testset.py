@@ -148,12 +148,14 @@ providers = {
     },
     "anthropic": {
         "llm": ChatAnthropic(
-            model="claude-3-5-sonnet-20240620",
+            api_key=os.environ["_ANTHROPIC_API_KEY"],
+            # model="claude-3-5-sonnet-20240620",
+            model="claude-3-haiku-20240307",
             **LLM_KWARGS,
             **RESILIENCE_KWARGS,
         ),
         "em": VoyageAIEmbeddings(
-            voyage_api_key=os.environ["_VOYAGE_API_KEY"],
+            api_key=os.environ["_VOYAGE_API_KEY"],
             model="voyage-3-lite",
             batch_size=7,  # ref: https://docs.llamaindex.ai/en/stable/api_reference/embeddings/voyageai/
             # **resilience_kwargs,
@@ -173,8 +175,8 @@ providers = {
             **RESILIENCE_KWARGS,
         ),
         "em": TogetherEmbeddings(
-            model="togethercomputer/m2-bert-80M-8k-retrieval",
             api_key=os.environ["_TOGETHER_API_KEY"],
+            model="togethercomputer/m2-bert-80M-8k-retrieval",
             **RESILIENCE_KWARGS,
         ),
     },
@@ -308,6 +310,10 @@ logger.info("All testsets have been created!")
 #     "claude-3.5-sonnet": {
 #         "input": 3.00,
 #         "output": 15.00,
+#     },
+#     "claude-3-haiku": {
+#         "input": 0.25,
+#         "output": 1.25,
 #     },
 #     "llama-3.1-70B": {
 #         "input": 0.88,
