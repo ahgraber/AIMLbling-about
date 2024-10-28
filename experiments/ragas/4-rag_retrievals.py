@@ -74,14 +74,14 @@ device = check_torch_device()
 # %%
 providers = {
     "local": {
-        "llm": OpenAILike(
-            api_base=os.environ["_LOCAL_BASE_URL"],
-            api_key=os.environ["_LOCAL_API_KEY"],
-            model="mistral-nemo-instruct-2407",
-            **LLM_KWARGS,
-            max_retries=10,
-            timeout=120,
-        ),
+        # "llm": OpenAILike(
+        #     api_base=os.environ["_LOCAL_BASE_URL"],
+        #     api_key=os.environ["_LOCAL_API_KEY"],
+        #     model="mistral-nemo-instruct-2407",
+        #     **LLM_KWARGS,
+        #     max_retries=10,
+        #     timeout=120,
+        # ),
         "em": HuggingFaceEmbedding(
             model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
             trust_remote_code=True,
@@ -98,12 +98,12 @@ providers = {
         ),
     },
     "openai": {
-        "llm": OpenAI(
-            api_key=os.environ["_OPENAI_API_KEY"],
-            model="gpt-4o-mini",
-            **LLM_KWARGS,
-            **RESILIENCE_KWARGS,
-        ),
+        # "llm": OpenAI(
+        #     api_key=os.environ["_OPENAI_API_KEY"],
+        #     model="gpt-4o-mini",
+        #     **LLM_KWARGS,
+        #     **RESILIENCE_KWARGS,
+        # ),
         "em": OpenAIEmbedding(
             api_key=os.environ["_OPENAI_API_KEY"],
             model="text-embedding-3-small",
@@ -112,13 +112,13 @@ providers = {
         ),
     },
     "anthropic": {
-        "llm": Anthropic(
-            api_key=os.environ["_ANTHROPIC_API_KEY"],
-            model="claude-3-haiku-20240307",
-            # model="claude-3-5-sonnet-20240620",
-            **LLM_KWARGS,
-            **RESILIENCE_KWARGS,
-        ),
+        # "llm": Anthropic(
+        #     api_key=os.environ["_ANTHROPIC_API_KEY"],
+        #     model="claude-3-haiku-20240307",
+        #     # model="claude-3-5-sonnet-20240620",
+        #     **LLM_KWARGS,
+        #     **RESILIENCE_KWARGS,
+        # ),
         "em": VoyageEmbedding(
             voyage_api_key=os.environ["_VOYAGE_API_KEY"],
             model_name="voyage-3-lite",
@@ -127,14 +127,14 @@ providers = {
         ),
     },
     "together": {
-        "llm": OpenAILike(
-            api_base="https://api.together.xyz/v1",
-            api_key=os.environ["_TOGETHER_API_KEY"],
-            model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-            # model="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-            **LLM_KWARGS,
-            **RESILIENCE_KWARGS,
-        ),
+        # "llm": OpenAILike(
+        #     api_base="https://api.together.xyz/v1",
+        #     api_key=os.environ["_TOGETHER_API_KEY"],
+        #     model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+        #     # model="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+        #     **LLM_KWARGS,
+        #     **RESILIENCE_KWARGS,
+        # ),
         "em": TogetherEmbedding(
             api_base="https://api.together.xyz/v1",
             api_key=os.environ["_TOGETHER_API_KEY"],
@@ -187,13 +187,14 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 
 # %%
 dfs = []
-for provider in providers:
-    df = pd.read_json(datadir / f"ragas_dataset_{provider}.jsonl", orient="records", lines=True)
-    df["generated_by"] = provider
+for file in sorted(datadir.glob("ragas_dataset_*.jsonl")):
+    df = pd.read_json(file, orient="records", lines=True)
+    df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
 
 # load as pandas df so we can add the retrieved_contexts once they are generated
 testset_df = pd.concat(dfs, ignore_index=True)
+
 display(testset_df)
 del dfs
 
@@ -212,7 +213,7 @@ else:
 
     for experiment in tqdm(experiments):
         experiment_name = "_".join(experiment)
-        logger.info(f"Evaluating retrieval similarity for {experiment_name} experiment...")
+        logger.info(f"Retrieving contexts for {experiment_name} experiment...")
 
         chunker, provider = experiment
 
@@ -236,5 +237,6 @@ else:
     del retrievals
 
     assert all(testset_df["user_input"] == retrieval_df["query"]), "Error: testset_df and retrieval_df are not aligned"  # NOQA SIM104
+    logger.info("Retrievals complete.")
 
 # %%
