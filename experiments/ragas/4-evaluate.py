@@ -1,5 +1,6 @@
 # %%
 import asyncio
+import gc
 import itertools
 import json
 import logging
@@ -9,6 +10,7 @@ import subprocess
 import sys
 import textwrap
 import typing as t
+import warnings
 
 from dotenv import load_dotenv
 from IPython.display import Markdown, display
@@ -36,10 +38,25 @@ from llama_index.llms.openai import OpenAI
 from llama_index.llms.openai_like import OpenAILike
 from llama_index.llms.together import TogetherLLM
 from llama_index.vector_stores.duckdb import DuckDBVectorStore
-from ragas import EvaluationDataset, MultiTurnSample, SingleTurnSample
-from ragas.async_utils import run_async_tasks
+from ragas import EvaluationDataset, MultiTurnSample, SingleTurnSample, evaluate
 from ragas.embeddings import LangchainEmbeddingsWrapper, LlamaIndexEmbeddingsWrapper
-from ragas.llms import LangchainLLMWrapper, LlamaIndexLLMWrapper
+from ragas.llms import LlamaIndexLLMWrapper
+from ragas.metrics import (
+    Faithfulness,
+    LLMContextPrecisionWithoutReference,
+    LLMContextRecall,
+    ResponseRelevancy,
+    RougeScore,
+    SemanticSimilarity,
+)
+from ragas.metrics._context_precision import LLMContextPrecisionWithReference
+from ragas.metrics.base import (
+    Metric,
+    MetricWithEmbeddings,
+    MetricWithLLM,
+    MultiTurnMetric,
+    SingleTurnMetric,
+)
 
 import matplotlib.pyplot as plt
 
@@ -56,7 +73,8 @@ datadir = Path(__file__).parent / "data"
 # %%
 sys.path.insert(0, str(Path(__file__).parent))
 from src.llamaindex.prompt_templates import BASELINE_QA_PROMPT, DEFAULT_TEXT_QA_PROMPT  # NOQA: E402
-from src.utils import batched, check_torch_device  # NOQA: E402
+from src.ragas.hacks import TopKRougeScorer  # NOQA: E402
+from src.utils import check_torch_device  # NOQA: E402
 
 # %%
 LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
@@ -123,7 +141,9 @@ providers = {
     },
     "anthropic": {
         "llm": Anthropic(
-            model="claude-3-5-sonnet-20240620",
+            api_key=os.environ["_ANTHROPIC_API_KEY"],
+            model="claude-3-haiku-20240307",
+            # model="claude-3-5-sonnet-20240620",
             **LLM_KWARGS,
             **RESILIENCE_KWARGS,
         ),
@@ -151,6 +171,9 @@ providers = {
         ),
     },
 }
+
+# Ragas has not implemented `is_finished` for LlamaIndex models
+warnings.filterwarnings("ignore", message="is_finished not implemented for LlamaIndexLLMWrapper")
 
 # %%
 # instantiate default "independent" embedding model for evals
@@ -188,13 +211,13 @@ experiments = list(
 experiment_names = ["_".join(experiment) for experiment in experiments]
 
 # %% [markdown]
-# ## Load testset(s)
+# ## Load data
 
 # %%
 dfs = []
-for provider in providers:
-    df = pd.read_json(datadir / f"ragas_dataset_{provider}.jsonl", orient="records", lines=True)
-    df["provider"] = provider
+for file in datadir.glob("ragas_dataset_*.jsonl"):
+    df = pd.read_json(file, orient="records", lines=True)
+    df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
 
 # load as pandas df so we can add the retrieved_contexts once they are generated
@@ -202,63 +225,181 @@ testset_df = pd.concat(dfs, ignore_index=True)
 display(testset_df)
 del dfs
 
+# %%
+dfs = []
+for file in datadir.glob("qa_response_baseline_*.jsonl"):
+    df = pd.read_json(file, orient="records", lines=True)
+    df["response_by"] = file.stem.split("_")[-1]
+    dfs.append(df)
+
+baseline_response_df = pd.concat(dfs, ignore_index=True)
+display(baseline_response_df)
+del dfs
+
+
+# %%
+# reduce memory footprint by removing unnecessary info from retrieved nodes during load
+def filter_node_metadata(d: dict, keys: t.Iterable = ("node_id", "metadata", "text", "score")):
+    """Retain only subset of keys."""
+    return {k: v for k, v in d.items() if k in keys}
+
+
+with (datadir / "rag_retrievals.jsonl").open("r") as f:
+    data = [
+        {
+            k: [filter_node_metadata(node) for node in v] if k in experiment_names else v
+            for k, v in json.loads(line).items()
+        }
+        for line in f
+    ]
+
+retrieval_df = pd.DataFrame.from_records(data)
+
+# %%
+# join testset_df and retrieval_df
+experiment_df = pd.concat([testset_df, retrieval_df], axis="columns")
+
+if not all(experiment_df["user_input"] == experiment_df["query"]):
+    raise AssertionError("Error: testset_df and retrieval_df are not aligned!")
+
+# reshape into baseline_df format with cols:
+# ['user_input', 'reference_contexts', 'reference', 'synthesizer_name', 'generated_by', 'response']
+experiment_df = experiment_df.drop(columns="query").melt(
+    id_vars=testset_df.columns, value_vars=experiment_names, value_name="retrieved_context", var_name="experiment"
+)
+
+display(experiment_df)
+# 3584 rows!
+
 # %% [markdown]
 # ## Testing plan
 #
-# 1. Compare retrievals - how similar are the chunks found by each retriever?
-# 2. For each LLM, run evals _without_ RAG as baseline
+# 1. For each LLM, run evals _without_ RAG as baseline
+# 2. Compare retrievals - how similar are the chunks found by each retriever?
 # 3. For each LLM, Run evals with RAG over combination of LLM, EM, and Index
 
-# %% [markdown]
-# ## Run retrieval for all testset queries
 
 # %%
-if (datadir / "rag_retrievals.jsonl").exists():
-    logger.info("Loading retrieval_df from jsonl file...")
-    retrieval_df = pd.read_json(datadir / "rag_retrievals.jsonl", orient="records", lines=True)
+def validate_metrics(metrics: list):
+    """Ensure metrics have been initialized with required model access."""
+    for metric in metrics:
+        if isinstance(metric, MetricWithLLM) and metric.llm is None:
+            logger.warning(f"{metric.name} does not have an LLM assigned")
+        if isinstance(metric, MetricWithEmbeddings) and metric.embeddings is None:
+            logger.warning(f"{metric.name} does not have an embedding model assigned")
 
-else:
-    logger.info("Running retrievals across all vector indexes...")
 
-    top_k = 5
-    queries = testset_df["user_input"].to_list()
-    retrievals = {"query": queries}
+def run_ragas_evals(source_df: pd.DataFrame, metrics: list, outfile: str, batch_size: int = 20):
+    """Run evaluation of set of metrics for source data."""
+    # check if output file exists
+    if (datadir / outfile).exists():
+        logger.info(f"Prior '{outfile}' exists, will not rerun.")
 
-    for experiment in tqdm(experiments):
-        experiment_name = "_".join(experiment)
-        logger.info(f"Evaluating retrieval similarity for {experiment_name} experiment...")
+    # load source data and ensure it has correct features
+    missing = required_cols - set(source_df.columns)
+    assert not missing, f"Error: source_df missing column(s) {missing}"  # NOQA: S101
 
-        chunker, provider = experiment
+    # run evals
+    eval_dataset = EvaluationDataset.from_list(source_df.to_dict(orient="records"))
+    eval_results = evaluate(dataset=eval_dataset, metrics=metrics, batch_size=batch_size)
+    logger.info(f"Summary metrics:\n{eval_results}")
 
-        # load vector store from disk
-        vector_store = DuckDBVectorStore.from_local(str(datadir / "vectordb" / f"{experiment_name}.duckdb"))
-        index = VectorStoreIndex.from_vector_store(
-            vector_store,
-            embed_model=providers[provider]["em"],
-        )
+    # save work
+    eval_df = pd.concat([source_df, pd.DataFrame.from_records(eval_results.scores)], axis="columns")
+    logger.info("Saving eval_results...")
+    eval_df.to_json(datadir / outfile, orient="records", lines=True)
 
-        # init retriever
-        retriever = index.as_retriever(llm=None, similarity_top_k=top_k)
+    logger.info("Evaluation run complete.")
+    gc.collect()
 
-        # run retrievals
-        # TODO: async: https://docs.llamaindex.ai/en/stable/examples/pipeline/query_pipeline_async/#query-pipeline-with-asyncparallel-execution
-        retrievals[experiment_name] = [retriever.retrieve(query) for query in tqdm(queries, leave=False)]
-
-    retrieval_df = pd.DataFrame.from_dict(retrievals)
-    retrieval_df.to_json(datadir / "rag_retrievals.jsonl", orient="records", lines=True)
-    display(retrieval_df.head())
-    del retrievals
-
-assert all(testset_df["user_input"] == retrieval_df["query"]), "Error: testset_df and retrieval_df are not aligned"  # NOQA SIM104
 
 # %% [markdown]
-# ## Check similarity in retrievals
+# ### 1. Baseline: How does LLM score without RAG?
+#
+# Limits to metrics that do not require RAG retrieval:
+#
+# - Answer/Response Relevance - Is response relevant to the original input?
+#   Generate a question based on the response and get the similarity between the original question and generated question
+# - SemanticSimilarity - similarity between ground truth reference and response
+
+# %%
+baseline_metrics = [
+    *[
+        ResponseRelevancy(
+            name=f"answer_relevance_{evaluator}",
+            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+            embeddings=LangchainEmbeddingsWrapper(default_em),
+        )
+        for evaluator in providers
+    ],
+    SemanticSimilarity(
+        llm=LlamaIndexLLMWrapper(providers["local"]["llm"]),  # I don't think this is used
+        embeddings=LangchainEmbeddingsWrapper(default_em),
+    ),
+]
+required_cols = set(
+    itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in baseline_metrics)
+)
+
+validate_metrics(baseline_metrics)
+
+run_ragas_evals(
+    source_df=baseline_response_df,
+    metrics=baseline_metrics,
+    outfile="eval_baseline_response.jsonl",
+)
+
+# for provider in tqdm(providers):
+#     # check if output file exists
+#     if (datadir / f"eval_baseline_{provider}.jsonl").exists():
+#         logger.info(f"Prior 'eval_baseline_{provider}.jsonl' exists, will not rerun.")
+#         continue
+
+#     # load source data and ensure it has correct features
+#     df = pd.read_json(datadir / f"qa_response_baseline_{provider}.jsonl", orient="records", lines=True)
+#     missing = required_cols - set(df.columns)
+#     assert not missing, f"Error: qa_response_baseline_{provider} missing column(s) {missing}"  # NOQA: S101
+
+#     # run evals
+#     eval_dataset = EvaluationDataset.from_list(df.to_dict(orient="records"))
+#     eval_results = evaluate(dataset=eval_dataset, metrics=baseline_metrics, batch_size=20)
+#     logger.info(f"Summary metrics for {provider}:\n{eval_results}")
+
+#     # save work
+#     eval_df = pd.concat([df, pd.DataFrame.from_records(eval_results.scores)], axis="columns")
+#     logger.info(f"Saving baseline eval_results for {provider}.")
+#     eval_df.to_json(datadir / f"eval_baseline_{provider}.jsonl", orient="records", lines=True)
+
+# logger.info("Baseline response evals complete.")
+del baseline_metrics
+gc.collect()
+
+# %% [markdown]
+# Approx token use over eval combinations
+# Note: switch to Haiku due to daily token limit!!
+#
+# - openai:
+#   - in: [4_699_746] @1_540_557
+#   - out [179_880] @61_430
+# - anthropic
+#   - in: [5_294_684] @1_737_885
+#   - out [225_121] @76_431
+# - together
+#   - in: [?]
+#   - out [?]
+
+# %% [markdown]
+# ### 2. Evaluate retrievals
+
+# %% [markdown]
+# #### Check similarity in retrievals
 #
 # Since source documents are the same, we compare using chunk text; ROUGE-L should work great
 #
 # Retrieval based on Together embeddings seem to perform poorly / differently than retrieval based on embeddings from other providers
 
 # %%
+# pull the retrieval scores from the retrieved chunks
 relevance_df = retrieval_df.copy()
 for experiment in experiment_names:
     relevance_df[experiment] = relevance_df[experiment].apply(
@@ -268,6 +409,8 @@ for experiment in experiment_names:
 display(relevance_df[experiment_names].describe())
 display(relevance_df[experiment_names].mean())
 # MarkdownNodeParser outperforms SentenceSplitter@512
+
+del relevance_df
 
 # %%
 # markdown_local        0.673358
@@ -281,254 +424,176 @@ display(relevance_df[experiment_names].mean())
 
 
 # %%
-class TopKRougeScorer:
-    """Calculate similarity between lists of strings."""
+if (datadir / "rouge_retrieval_similarity.csv").exists():
+    logger.info("Prior 'rouge_retrieval_similarity.csv' exists, will not rerun.")
+else:
+    retrieval_scorer = TopKRougeScorer(
+        rouge_type="rougeL",
+        metric="fmeasure",
+        weight=True,
+        k=5,
+    )
 
-    def __init__(
-        self,
-        rouge_type: str,
-        use_stemmer: bool = False,
-        split_summaries: bool = False,
-        metric: str = "fmeasure",
-        weight: bool = True,
-        k: int = 5,
-    ):
-        self.rouge_type = rouge_type
-        if metric in ["precision", "recall", "fmeasure"]:
-            self.metric = metric
-        else:
-            raise ValueError("metric not in ['precision','recall','fmeasure']")
+    text_df = retrieval_df.copy()
+    for experiment in experiment_names:
+        text_df[experiment] = text_df[experiment].apply(lambda row: [node["text"] for node in row])
 
-        self.scorer = rouge_scorer.RougeScorer(
-            [rouge_type],  # use rougeL, which ignores/concats newlines
-            use_stemmer=use_stemmer,
-            split_summaries=split_summaries,
-        )
+    # run comparisons
+    retrieval_similarities = {}
+    for comparison in tqdm(list(itertools.combinations_with_replacement(experiment_names, 2))):
+        a, b = comparison
+        logger.info(f"{a} vs. {b}")
 
-        self.weights = self._calculate_rank_weights(k) if weight else None
+        retrieval_similarities[comparison] = text_df.apply(
+            lambda row: retrieval_scorer.score_lists(row[a], row[b]),  # NOQA: B023 # TODO: FIXME
+            axis="columns",
+        ).tolist()
 
-    def _calculate_rank_weights(self, k: int) -> np.ndarray:
-        """Create a weight matrix of shape (m, n) with weights diminishing from the identity."""
-        # Create arrays of row and column indices
-        indices = np.arange(k)
+    # convert to df
+    retrieval_similarities = {k: np.array(v).mean() for k, v in retrieval_similarities.items()}
+    retrieval_similarity_df = pd.DataFrame()
+    for k, v in retrieval_similarities.items():
+        row, col = k
+        retrieval_similarity_df.loc[col, row] = v
+    display(retrieval_similarity_df)
+    retrieval_similarity_df.to_csv(datadir / "rouge_retrieval_similarity.csv", index=False)
 
-        # Calculate the distance matrix
-        distance_matrix = np.abs(indices[:, np.newaxis] - indices[np.newaxis, :])
+    del text_df, retrieval_similarity_df
 
-        # Create the weight matrix using the distance
-        weight_matrix = 1 / (1 + distance_matrix)
-        return weight_matrix
-
-    def score(self, x: str, y: str) -> float:
-        """Evaluate Rouge score for string pairs and extract the specified metric."""
-        return self.scorer.score(x, y)[self.rouge_type]._asdict()[self.metric]
-
-    def score_lists(self, a: t.List[str], b: t.List[str]) -> float:
-        """Compare lists of retrieved text using ROUGE."""
-        pairs = itertools.product(a, b)
-        scores = np.array([self.score(x, y) for x, y in pairs]).reshape(len(a), len(b))
-
-        if self.weights is None:
-            return scores.mean()
-        else:
-            return np.average(scores, weights=self.weights)
-
-
-# %%
-retrieval_scorer = TopKRougeScorer(
-    rouge_type="rougeL",
-    metric="fmeasure",
-    weight=True,
-    k=5,
-)
-
-text_df = retrieval_df.copy()
-for experiment in experiment_names:
-    text_df[experiment] = text_df[experiment].apply(lambda row: [node["text"] for node in row])
-
-retrieval_similarities = {}
-for comparison in tqdm(list(itertools.combinations_with_replacement(experiment_names, 2))):
-    a, b = comparison
-    logger.info(f"{a} vs. {b}")
-
-    retrieval_similarities[comparison] = text_df.apply(
-        lambda row: retrieval_scorer.score_lists(row[a], row[b]), axis="columns"
-    ).tolist()
-
-# %%
-retrieval_similarities = {k: np.array(v).mean() for k, v in retrieval_similarities.items()}
-retrieval_similarity_df = pd.DataFrame()
-for k, v in retrieval_similarities.items():
-    row, col = k
-    retrieval_similarity_df.loc[col, row] = v
-display(retrieval_similarity_df)
-
-# %%
-# 	markdown_local	markdown_openai	markdown_anthropic	markdown_together	sentence_local	sentence_openai	sentence_anthropic	sentence_together
-# markdown_local	0.492455	NaN	NaN	NaN	NaN	NaN	NaN	NaN
-# markdown_openai	0.272337	0.490984	NaN	NaN	NaN	NaN	NaN	NaN
-# markdown_anthropic	0.260526	0.296956	0.497758	NaN	NaN	NaN	NaN	NaN
-# markdown_together	0.103195	0.105769	0.099555	0.455773	NaN	NaN	NaN	NaN
-# sentence_local	0.202283	0.177978	0.168717	0.087573	0.488204	NaN	NaN	NaN
-# sentence_openai	0.177671	0.202049	0.177056	0.089394	0.267586	0.485222	NaN	NaN
-# sentence_anthropic	0.177539	0.188289	0.199449	0.087041	0.258991	0.286270	0.490415	NaN
-# sentence_together	0.090568	0.089018	0.084187	0.142817	0.114583	0.112678	0.109805	0.458982
 
 # %% [markdown]
-# ## Evaluate with RAGAS
-
-# %%
-from ragas import evaluate
-from ragas.dataset_schema import (
-    EvaluationDataset,
-    EvaluationResult,
-    MultiTurnSample,
-    SingleTurnSample,
-)
-from ragas.metrics import (
-    Faithfulness,
-    LLMContextPrecisionWithoutReference,
-    LLMContextRecall,
-    ResponseRelevancy,
-    RougeScore,
-    SemanticSimilarity,
-)
-from ragas.metrics._context_precision import LLMContextPrecisionWithReference
-from ragas.metrics.base import (
-    Metric,
-    MetricWithEmbeddings,
-    MetricWithLLM,
-    MultiTurnMetric,
-    SingleTurnMetric,
-    is_reproducible,
-)
-
-# import nest_asyncio
-
-# nest_asyncio.apply()
-
-# %% [markdown]
-# ### Baseline: How does LLM score without RAG?
+# ### 3. RAG eval
 #
-# Limits to metrics that do not require RAG retrieval:
-#
-# - Answer/Response Relevance - Is response relevant to the original input?
-#   Generate a question based on the response and get the similarity between the original question and generated question
-# - SemanticSimilarity - similarity between ground truth reference and response
-
-
-# %%
-# Generate A's for all Q's in testset for all providers
-for provider in tqdm(providers):
-    df = testset_df.copy()
-
-    # don't need to wrap in LlamaIndexLLMWrapper b/c using LlamaIndex directly here
-    llm = providers[provider]["llm"]
-
-    tasks = [llm.achat(messages=BASELINE_QA_PROMPT.format_messages(query_str=query)) for query in df["user_input"]]
-
-    responses = [run_async_tasks(tasks=batch, show_progress=True) for batch in tqdm(batched(tasks, n=5), leave=False)]
-
-    df["response"] = [response.message.content for response in itertools.chain.from_iterable(responses)]
-    df.to_json(datadir / f"qa_baseline_{provider}.jsonl", orient="records", lines=True)
-
-
-# %%
-metrics = [
-    ResponseRelevancy(),
-    SemanticSimilarity(),
-]
-required_cols = set(itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in metrics))
-
-# %%
-# TODO
-# - set nonstandard openai env vars
-# - custom batch run_as_async / Executor.results()
-
-
-# %%
-# for provider in tqdm(providers):
-provider = list(providers.keys())[0]
-baseline_df = pd.read_json(datadir / f"qa_baseline_{provider}.jsonl", orient="records", lines=True)
-
-metrics = [
-    *[
-        ResponseRelevancy(name=f"answer_relevancy_{evaluator}", llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]))
-        for evaluator in providers
-    ],
-    SemanticSimilarity(embeddings=LangchainEmbeddingsWrapper(default_em)),
-]
-missing = required_cols - set(baseline_df.columns)
-assert not missing, f"Error: qa_baseline_{provider} missing column(s) {missing}"
-
-eval_dataset = EvaluationDataset.from_list(baseline_df.to_dict(orient="records"))
-evals = evaluate(dataset=eval_dataset, metrics=metrics)
-logger.info(f"Summary metrics for {provider}:\n{evals}")
-
-eval_df = pd.concat([baseline_df, pd.DataFrame.from_records(evals.scores)], axis="columns")
-
-eval_df.to_json(datadir / f"eval_baseline_{provider}.jsonl", orient="records", lines=True)
-
-# %% [markdown]
-# ## RAG eval
-#
-# - Context Recall - Can sentences in response be attributed to the retrieved context?
 # - Context Precision - Was the retrieved context "useful at arriving at the" in the ground truth _reference_?
 #   ContextPrecisionWithoutReference - Was the retrieved context "useful at arriving at the" in the _response_? --> This has strong overlap with Context Recall
+# - Context Recall - Can sentences in _reference _ be attributed to the retrieved context?
 # - Faithfulness -
 # - Answer/Response Relevance - Is response relevant to the original input?
 #   Generate a question based on the response and get the similarity between the original question and generated question
 
+# %% [markdown]
+# #### RAGAS Retrieval Evals
+
 # %%
-metrics = [
-    LLMContextRecall(),  # retrieved_context used in response
-    LLMContextPrecisionWithoutReference(),  # retrieved_context relevant to response --> strong overlap w/ ContextRecall
-    LLMContextPrecisionWithReference(),  # retrieved_context relevant to reference
-    SemanticSimilarity(),
-    Faithfulness(),  # response wrt retrieved_context
-    ResponseRelevancy(),  # response wrt input
+retrieval_metrics = [
+    *[
+        LLMContextPrecisionWithReference(  # retrieved_context relevant to _reference answer_
+            name=f"context_precision_{evaluator}",
+            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+        )
+        for evaluator in providers
+    ],
+    # *[
+    #     LLMContextPrecisionWithoutReference(  # retrieved_context relevant to _generated response_ --> strong overlap w/ ContextRecall
+    #         name=f"context_precision_noref_{evaluator}",
+    #         llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+    #     )
+    #     for evaluator in providers
+    # ],
+    *[
+        LLMContextRecall(  # retrieved_context used in _reference answer_
+            name=f"context_recall_{evaluator}",
+            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+        )
+        for evaluator in providers
+    ],
 ]
-
-# %%
-experiment = experiments[0]
-# for experiment in experiments:
-
-experiment_name = "_".join(experiment)
-chunker, provider = experiment
-
-df = testset_df.copy()
-df["retrieved_context"] = retrieval_df[experiment_name]
-
-
-# %%
-# load from disk
-vector_store = DuckDBVectorStore.from_local(str(datadir / "vectordb" / f"{experiment_name}.duckdb"))
-index = VectorStoreIndex.from_vector_store(
-    vector_store,
-    embed_model=providers[provider],
-    use_async=True,  # TODO: does this work?
+required_cols = set(
+    itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in retrieval_metrics)
 )
 
-# %%
-query = "How can I see what is happening in my Kubernetes cluster?"
+validate_metrics(retrieval_metrics)
+
+run_ragas_evals(
+    source_df=experiment_df,
+    metrics=retrieval_metrics,
+    outfile="eval_rag_retrieval.jsonl",
+)
+
+# for provider in tqdm(providers):
+#     # check if output file exists
+#     if (datadir / f"eval_retrieval_{provider}.jsonl").exists():
+#         logger.info(f"Prior 'eval_retrieval_{provider}.jsonl' exists, will not rerun.")
+#         continue
+
+#     # load source data and ensure it has correct features
+#     df = experiment_df.copy()
+#     missing = required_cols - set(df.columns)
+#     assert not missing, f"Error: experiment_df missing column(s) {missing}"  # NOQA: S101
+
+#     # run evals
+#     eval_dataset = EvaluationDataset.from_list(df.to_dict(orient="records"))
+#     eval_results = evaluate(dataset=eval_dataset, metrics=retrieval_metrics, batch_size=20)
+#     logger.info(f"Summary metrics for {provider}:\n{eval_results}")
+
+#     # save work
+#     eval_df = pd.concat([df, pd.DataFrame.from_records(eval_results.scores)], axis="columns")
+#     logger.info(f"Saving RAGAS retrieval eval_results for {provider}.")
+#     eval_df.to_json(datadir / f"eval_retrieval_{provider}.jsonl", orient="records", lines=True)
+
+# logger.info("Retrieval evals complete.")
+del retrieval_metrics
+gc.collect()
+
+# %% [markdown]
+# #### RAGAS Response Evals
 
 # %%
-retriever = index.as_retriever(llm=None, similarity_top_k=5)
-retriever.retrieve(query)
-
-
-# %%
-# Query Data from the persisted index
-query_engine = index.as_query_engine(
-    llm=OpenAILike(
-        api_base=os.environ["_LOCAL_BASE_URL"],
-        api_key=os.environ["_LOCAL_API_KEY"],
-        model="mistral-nemo-instruct-2407",
-        max_tokens=2048,
+response_metrics = [
+    SemanticSimilarity(
+        llm=LlamaIndexLLMWrapper(providers["local"]["llm"]),  # I don't think this is used
+        embeddings=LangchainEmbeddingsWrapper(default_em),
     ),
-    similarity_top_k=5,
+    *[
+        Faithfulness(  # response wrt retrieved_context
+            name=f"faithfulness_{evaluator}",
+            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+        )
+        for evaluator in providers
+    ],
+    *[
+        ResponseRelevancy(  # response wrt input
+            name=f"answer_relevance_{evaluator}",
+            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+            embeddings=LangchainEmbeddingsWrapper(default_em),
+        )
+        for evaluator in providers
+    ],
+]
+required_cols = set(
+    itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in response_metrics)
 )
-response = query_engine.query(query)
-display(Markdown(f"<p>{response}</p>"))
 
-# %%
+validate_metrics(response_metrics)
+
+run_ragas_evals(
+    source_df=experiment_df,
+    metrics=response_metrics,
+    outfile="eval_rag_response.jsonl",
+)
+
+# for provider in tqdm(providers):
+#     # check if output file exists
+#     fname = f"eval_rag_{provider}.jsonl"
+#     if (datadir / fname).exists():
+#         logger.info(f"Prior '{fname}' exists, will not rerun.")
+#         continue
+
+#     # load source data and ensure it has correct features
+#     df = experiment_df.copy()
+#     missing = required_cols - set(df.columns)
+#     assert not missing, f"Error: experiment_df missing column(s) {missing}"  # NOQA: S101
+
+#     # run evals
+#     eval_dataset = EvaluationDataset.from_list(df.to_dict(orient="records"))
+#     eval_results = evaluate(dataset=eval_dataset, metrics=response_metrics, batch_size=20)
+#     logger.info(f"Summary metrics for {provider}:\n{eval_results}")
+
+#     # save work
+#     eval_df = pd.concat([df, pd.DataFrame.from_records(eval_results.scores)], axis="columns")
+#     logger.info(f"Saving RAGAS response eval_results for {provider}.")
+#     eval_df.to_json(datadir / fname, orient="records", lines=True)
+
+# logger.info("RAG response evals complete.")
+del response_metrics
+gc.collect()
