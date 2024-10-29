@@ -37,6 +37,8 @@ from ragas.testset.transforms.base import BaseGraphTransformation, Extractor
 from ragas.testset.transforms.extractors.llm_based import Headlines
 from ragas.testset.transforms.extractors.regex_based import RegexBasedExtractor
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class MarkdownHeadlinesExtractor(Extractor):  # NOQA: D101

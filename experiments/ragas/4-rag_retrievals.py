@@ -202,8 +202,10 @@ del dfs
 # ## Run retrieval for all testset queries
 
 # %%
-if (datadir / "rag_retrievals.jsonl").exists():
-    logger.info("rag_retrievals.jsonl exists, skipping evaluation...")
+fname = "rag_retrievals.jsonl"
+if (datadir / fname).exists():
+    logger.info(f"Prior {fname} exists, skipping evaluation...")
+    del fname
 else:
     logger.info("Running retrievals across all vector indexes...")
 
@@ -232,9 +234,9 @@ else:
         retrievals[experiment_name] = [retriever.retrieve(query) for query in tqdm(queries, leave=False)]
 
     retrieval_df = pd.DataFrame.from_dict(retrievals)
-    retrieval_df.to_json(datadir / "rag_retrievals.jsonl", orient="records", lines=True)
+    retrieval_df.to_json(datadir / fname, orient="records", lines=True)
     display(retrieval_df.head())
-    del retrievals
+    del retrievals, fname
 
     assert all(testset_df["user_input"] == retrieval_df["query"]), "Error: testset_df and retrieval_df are not aligned"  # NOQA SIM104
     logger.info("Retrievals complete.")

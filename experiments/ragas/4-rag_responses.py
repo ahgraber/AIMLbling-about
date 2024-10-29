@@ -225,7 +225,7 @@ if not all(experiment_df["user_input"] == experiment_df["query"]):
 # reshape into baseline_df format with cols:
 # ['user_input', 'reference_contexts', 'reference', 'synthesizer_name', 'generated_by', 'response']
 experiment_df = experiment_df.drop(columns="query").melt(
-    id_vars=testset_df.columns, value_vars=experiment_names, value_name="retrieved_context", var_name="experiment"
+    id_vars=testset_df.columns, value_vars=experiment_names, value_name="retrieved_contexts", var_name="experiment"
 )
 del testset_df, retrieval_df
 
@@ -251,11 +251,11 @@ for provider in tqdm(providers):
     tasks = [
         llm.achat(
             messages=DEFAULT_TEXT_QA_PROMPT.format_messages(
-                context_str="\n---\n".join(node["text"] for node in record["retrieved_context"]),
+                context_str="\n---\n".join(node["text"] for node in record["retrieved_contexts"]),
                 query_str=record["user_input"],
             )
         )
-        for record in df[["user_input", "retrieved_context"]].to_dict(orient="records")
+        for record in df[["user_input", "retrieved_contexts"]].to_dict(orient="records")
     ]
 
     # run async to help reduce timeout errors (especially on local generation)
@@ -278,8 +278,8 @@ logger.info("RAG answer generation complete.")
 #   - in: 4_905_289
 #   - out: 1_201_517
 # - anthropic
-#   - in: 5_687_881 @3_477_780
-#   - out: 1_236_788 @639_371
+#   - in: 5_687_881
+#   - out: 1_236_788
 # - together
 #   - in: ?
 #   - out ?
