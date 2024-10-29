@@ -185,13 +185,14 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 
 # %%
 dfs = []
-for provider in providers:
-    df = pd.read_json(datadir / f"ragas_dataset_{provider}.jsonl", orient="records", lines=True)
-    df["generated_by"] = provider
+for file in sorted(datadir.glob("ragas_dataset_*.jsonl")):
+    df = pd.read_json(file, orient="records", lines=True)
+    df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
 
 # load as pandas df so we can add the retrieved_contexts once they are generated
 testset_df = pd.concat(dfs, ignore_index=True)
+
 display(testset_df)
 del dfs
 
@@ -240,6 +241,8 @@ for provider in tqdm(providers):
         logger.info(f"'qa_response_rag_{provider}.jsonl' exists, skipping generation...")
         continue
 
+    logger.info(f"Evaluating responses for {provider}...")
+
     df = experiment_df.copy()
 
     # don't need to wrap in LlamaIndexLLMWrapper b/c using LlamaIndex directly here
@@ -255,25 +258,28 @@ for provider in tqdm(providers):
         for record in df[["user_input", "retrieved_context"]].to_dict(orient="records")
     ]
 
-    # responses = [run_async_tasks(tasks=batch, show_progress=True) for batch in tqdm(batched(tasks, n=5), leave=False)]
-    responses = run_async_tasks(tasks=tasks, show_progress=True, batch_size=5)
+    # run async to help reduce timeout errors (especially on local generation)
+    # # responses = [run_async_tasks(tasks=batch, show_progress=True) for batch in tqdm(batched(tasks, n=5), leave=False)]
+    responses = run_async_tasks(  # requires https://github.com/explodinggradients/ragas/pull/1589
+        tasks=tasks, show_progress=True, batch_size=20
+    )
 
-    df["response"] = [response.message.content for response in itertools.chain.from_iterable(responses)]
+    df["response"] = [response.message.content for response in responses]
     df.to_json(datadir / f"qa_response_rag_{provider}.jsonl", orient="records", lines=True)
 
 logger.info("RAG answer generation complete.")
 
 
 # %% [markdown]
-# Approx token use over response generation
+# Approx token use for generation
 # Note: switch to Haiku due to daily token limit!!
 #
 # - openai:
-#   - in: [] @1_540_557
-#   - out [] @61_430
+#   - in: 4_905_289
+#   - out: 1_201_517
 # - anthropic
-#   - in: [] @1_737_885
-#   - out [] @76_431
+#   - in: 5_687_881 @3_477_780
+#   - out: 1_236_788 @639_371
 # - together
-#   - in: [?]
-#   - out [?]
+#   - in: ?
+#   - out ?

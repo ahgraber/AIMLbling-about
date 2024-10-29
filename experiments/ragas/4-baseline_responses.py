@@ -185,13 +185,14 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 
 # %%
 dfs = []
-for provider in providers:
-    df = pd.read_json(datadir / f"ragas_dataset_{provider}.jsonl", orient="records", lines=True)
-    df["generated_by"] = provider
+for file in sorted(datadir.glob("ragas_dataset_*.jsonl")):
+    df = pd.read_json(file, orient="records", lines=True)
+    df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
 
 # load as pandas df so we can add the retrieved_contexts once they are generated
 testset_df = pd.concat(dfs, ignore_index=True)
+
 display(testset_df)
 del dfs
 
@@ -205,6 +206,8 @@ for provider in tqdm(providers):
         logger.info(f"'qa_response_baseline_{provider}.jsonl' exists, skipping generation...")
         continue
 
+    logger.info(f"Evaluating responses for {provider}...")
+
     df = testset_df.copy()
 
     # don't need to wrap in LlamaIndexLLMWrapper b/c using LlamaIndex directly here
@@ -212,12 +215,27 @@ for provider in tqdm(providers):
 
     tasks = [llm.achat(messages=BASELINE_QA_PROMPT.format_messages(query_str=query)) for query in df["user_input"]]
 
-    # responses = [run_async_tasks(tasks=batch, show_progress=True) for batch in tqdm(batched(tasks, n=5), leave=False)]
-    responses = run_async_tasks(tasks=tasks, show_progress=True, batch_size=5)
+    # run async to help reduce timeout errors (especially on local generation)
+    # # responses = [run_async_tasks(tasks=batch, show_progress=True) for batch in tqdm(batched(tasks, n=5), leave=False)]
+    responses = run_async_tasks(  # requires https://github.com/explodinggradients/ragas/pull/1589
+        tasks=tasks, show_progress=True, batch_size=20
+    )
 
-    df["response"] = [response.message.content for response in itertools.chain.from_iterable(responses)]
+    df["response"] = [response.message.content for response in responses]
     df.to_json(datadir / f"qa_response_baseline_{provider}.jsonl", orient="records", lines=True)
 
 logger.info("Baseline answer generation complete.")
 
-# %%
+# %% [markdown]
+# Approx token use for generation
+# Note: switch to Haiku due to daily token limit!!
+#
+# - openai
+#   - in: 19_059
+#   - out: 184_290
+# - anthropic
+#   - in: 21_150
+#   - out: 176_198
+# - together
+#   - in: ?
+#   - out ?
