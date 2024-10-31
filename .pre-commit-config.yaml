@@ -79,6 +79,7 @@ repos:
           (?x)^(
             # these file types may have nonstandard indents
             ^(LICENSE)$ |
+            ^.*(\.ipynb)$ |
             ^.*(\.md)$ |
             ^.*(\.rst)$
           )$

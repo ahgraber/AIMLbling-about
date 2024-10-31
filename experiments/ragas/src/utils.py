@@ -1,6 +1,7 @@
 import itertools
 import logging
 import re
+import textwrap
 import typing as t
 
 
@@ -19,6 +20,11 @@ def check_torch_device():
     return device
 
 
+def filter_dict_by_keys(d: dict, keys: t.Iterable):
+    """Retain only subset of keys."""
+    return {k: v for k, v in d.items() if k in keys}
+
+
 def batched(iterable: t.Iterable, n: int):
     """Batch data from the iterable into tuples of length n. The last batch may be shorter than n."""
     # batched('ABCDEFG', 3) → ABC DEF G
@@ -27,6 +33,26 @@ def batched(iterable: t.Iterable, n: int):
     iterator = iter(iterable)
     while batch := tuple(itertools.islice(iterator, n)):
         yield batch
+
+
+def pwrap(text: str, width: int = 80, **twrap_kwargs):
+    """'Pretty print' text using print(textwrap.fill(text))."""
+    lines = []
+    for line in text.splitlines():
+        try:
+            indent_size = re.search(r"\S", line).start()  # index of the first non-whitespace char
+            indent_size = indent_size // 2
+        except AttributeError:
+            indent_size = None
+        lines.append(
+            textwrap.fill(
+                line.strip(),
+                width=width,
+                initial_indent=" " * indent_size if indent_size else "",
+                subsequent_indent=" " * 2 * indent_size if indent_size else "",
+            )
+        )
+    print("\n".join(lines))
 
 
 def hugo_title_to_h1(text: str):
