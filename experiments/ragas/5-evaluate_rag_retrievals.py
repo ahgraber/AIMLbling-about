@@ -35,11 +35,8 @@ from ragas import EvaluationDataset, MultiTurnSample, SingleTurnSample, evaluate
 from ragas.embeddings import LangchainEmbeddingsWrapper, LlamaIndexEmbeddingsWrapper
 from ragas.llms import LlamaIndexLLMWrapper
 from ragas.metrics import (
-    Faithfulness,
     LLMContextPrecisionWithoutReference,
     LLMContextRecall,
-    ResponseRelevancy,
-    SemanticSimilarity,
 )
 from ragas.metrics._context_precision import LLMContextPrecisionWithReference
 
@@ -58,7 +55,7 @@ datadir = Path(__file__).parent / "data"
 # %%
 sys.path.insert(0, str(Path(__file__).parent))
 from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
-from src.utils import check_torch_device  # NOQA: E402
+from src.utils import check_torch_device, filter_dict_by_keys  # NOQA: E402
 
 # %%
 LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
@@ -195,12 +192,7 @@ experiments = list(
 experiment_names = ["_".join(experiment) for experiment in experiments]
 
 # %% [markdown]
-# ## Load data
-#
-# - synthetic testset
-# - baseline (no retrieval) responses
-# - retrievals
-# - RAG responses
+# ### 2. Evaluate retrievals
 
 # %%
 # Load synthetic testset
@@ -218,37 +210,9 @@ display(testset_df)
 del dfs
 
 # %%
-# Load baseline response
-dfs = []
-for file in sorted(datadir.glob("qa_response_baseline_*.jsonl")):
-    df = pd.read_json(file, orient="records", lines=True)
-    df["response_by"] = file.stem.split("_")[-1]
-    if not all(testset_df["user_input"] == df["user_input"]):
-        raise AssertionError(f"Error: testset_df and {file} are not aligned!")
-    dfs.append(df)
-
-baseline_response_df = pd.concat(dfs, ignore_index=True)
-
-if not all(
-    testset_df["user_input"].tolist() * len(testset_df["generated_by"].unique()) == baseline_response_df["user_input"]
-):
-    raise AssertionError("Error: testset_df and retrieval_df are not aligned!")
-
-display(baseline_response_df)
-# 1792 rows (testset * providers)
-del dfs
-
-
-# %%
 # Load retrievals from vector indexes
 
-
 # reduce memory footprint by removing unnecessary info from retrieved nodes during load
-def filter_dict_by_keys(d: dict, keys: t.Iterable):
-    """Retain only subset of keys."""
-    return {k: v for k, v in d.items() if k in keys}
-
-
 filter_node_metadata = partial(filter_dict_by_keys, keys=("node_id", "metadata", "text", "score"))
 
 with (datadir / "rag_retrievals.jsonl").open("r") as f:
@@ -275,92 +239,6 @@ retrieval_df = retrieval_df.drop(columns="query").melt(
 display(retrieval_df)
 # 3584 rows (testset * experiments)
 
-# %%
-# load RAG responses
-dfs = []
-for file in datadir.glob("qa_response_rag_*.jsonl"):
-    df = pd.read_json(file, orient="records", lines=True)
-    df["response_by"] = file.stem.split("_")[-1]
-    dfs.append(df)
-
-rag_response_df = pd.concat(dfs, ignore_index=True)
-
-if not all(
-    testset_df["user_input"].tolist() * len(testset_df["generated_by"].unique()) * len(experiments)
-    == rag_response_df["user_input"]
-):
-    raise AssertionError("Error: testset_df and retrieval_df are not aligned!")
-
-display(rag_response_df)
-# 14336 rows (testset * providers * experiments)
-del dfs
-
-# %% [markdown]
-# ## Testing plan
-#
-# 1. For each LLM, run evals _without_ RAG as baseline
-# 2. Compare retrievals - how similar are the chunks found by each retriever?
-# 3. For each LLM, Run evals with RAG over combination of LLM, EM, and Index
-
-
-# %% [markdown]
-# ### 1. Baseline: How does LLM score without RAG?
-#
-# Limits to metrics that do not require RAG retrieval:
-#
-# - Answer/Response Relevance - Is response relevant to the original input?<br>
-#   Generate a question based on the response and get the similarity between the original question and generated question
-# - SemanticSimilarity - similarity between ground truth reference and response
-
-# %%
-baseline_metrics = [
-    *[
-        ResponseRelevancy(
-            name=f"answer_relevance_{evaluator}",
-            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
-            embeddings=LangchainEmbeddingsWrapper(default_em),
-        )
-        for evaluator in providers
-    ],
-    SemanticSimilarity(
-        llm=LlamaIndexLLMWrapper(providers["local"]["llm"]),  # I don't think this is used
-        embeddings=LangchainEmbeddingsWrapper(default_em),
-    ),
-]
-required_cols = set(
-    itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in baseline_metrics)
-)
-
-validate_metrics(baseline_metrics)
-logger.info(f"API calls: {len(baseline_response_df)=} * {len(baseline_metrics)=}")
-
-run_ragas_evals(
-    source_df=baseline_response_df,
-    metrics=baseline_metrics,
-    outfile=datadir / "eval_baseline_response.jsonl",
-)
-
-del baseline_metrics
-gc.collect()
-
-# %%
-# %% [markdown]
-# Approx token use over eval combinations
-# Note: switch to Haiku due to daily token limit!!
-#
-# - openai:
-#   - in:  4_619_124
-#   - out: 179_109
-# - anthropic
-#   - in:   5_118_460
-#   - out:  246_175    @
-# - together
-#   - in: ?
-#   - out ?
-
-# %% [markdown]
-# ### 2. Evaluate retrievals
-
 # %% [markdown]
 # #### Check similarity in retrievals
 #
@@ -383,36 +261,34 @@ else:
     relevance_df["mean_retrieved_relevance"] = relevance_df["scores"].apply(np.mean)
     relevance_df[["experiment", "mean_retrieved_relevance"]].groupby("experiment").mean()
 
-    relevance_df[["experiment", "mean_retrieved_relevance"]].groupby("experiment").describe().to_csv(datadir / fname)
+    relevance_df.groupby("experiment")["mean_retrieved_relevance"].describe().to_csv(datadir / fname)
     display(relevance_df[["experiment", "mean_retrieved_relevance"]].groupby("experiment").mean())
     # MarkdownNodeParser outperforms SentenceSplitter@512
 
     del relevance_df, fname
 
-# %%
-# 	mean_retrieved_relevance
-# markdown_anthropic	0.535638
-# markdown_local	0.673358
-# markdown_openai	0.505379
-# markdown_together	0.636722
-# sentence_anthropic	0.507325
-# sentence_local	0.664001
-# sentence_openai	0.481724
-# sentence_together	0.612881
+# %% [markdown]
+# | experiment         |   count |     mean |       std |      min |      25% |      50% |      75% |      max |
+# |:-------------------|--------:|---------:|----------:|---------:|---------:|---------:|---------:|---------:|
+# | markdown_anthropic |     448 | 0.535638 | 0.0896168 | 0.24064  | 0.479275 | 0.535012 | 0.598882 | 0.781517 |
+# | markdown_local     |     448 | 0.673358 | 0.0563549 | 0.536583 | 0.633552 | 0.671418 | 0.714183 | 0.834795 |
+# | markdown_openai    |     448 | 0.505379 | 0.097424  | 0.178659 | 0.440267 | 0.504686 | 0.578345 | 0.765099 |
+# | markdown_together  |     448 | 0.636722 | 0.116947  | 0.328021 | 0.55386  | 0.6473   | 0.724252 | 0.886935 |
+# | sentence_anthropic |     448 | 0.507325 | 0.0891611 | 0.234116 | 0.458913 | 0.508267 | 0.559096 | 0.790512 |
+# | sentence_local     |     448 | 0.664001 | 0.0566214 | 0.535727 | 0.624531 | 0.662381 | 0.704818 | 0.826115 |
+# | sentence_openai    |     448 | 0.481724 | 0.0985733 | 0.169161 | 0.412585 | 0.482945 | 0.553362 | 0.761959 |
+# | sentence_together  |     448 | 0.612881 | 0.117678  | 0.296082 | 0.528364 | 0.623194 | 0.702294 | 0.859675 |
 
 
 # %% [markdown]
 # ### 3. RAG eval
+
+# %% [markdown]
+# #### RAGAS Retrieval Evals
 #
 # - Context Precision - Was the retrieved context "useful at arriving at the" in the ground truth _reference_?
 #   ContextPrecisionWithoutReference - Was the retrieved context "useful at arriving at the" in the _response_? --> This has strong overlap with Context Recall
 # - Context Recall - Can sentences in _reference _ be attributed to the retrieved context?
-# - Faithfulness -
-# - Answer/Response Relevance - Is response relevant to the original input?
-#   Generate a question based on the response and get the similarity between the original question and generated question
-
-# %% [markdown]
-# #### RAGAS Retrieval Evals
 
 # %%
 retrieval_metrics = [
@@ -450,66 +326,64 @@ retrieval_df["retrieved_contexts"] = retrieval_df["retrieved_contexts"].apply(
     lambda row: [node["text"] for node in row]
 )
 
-run_ragas_evals(
-    source_df=retrieval_df,
-    metrics=retrieval_metrics,
-    outfile=datadir / "eval_rag_retrieval.jsonl",
-)
+# %%
+# run experiments for 'markdown' chunker
+for experiment in tqdm(experiment_names):
+    if not experiment.startswith("markdown"):
+        continue
 
-del retrieval_metrics
-gc.collect()
+    logger.info(f"Running retrieval analysis for {experiment}")
+    source_df = retrieval_df[retrieval_df["experiment"] == experiment]
+    run_ragas_evals(
+        source_df=source_df,
+        metrics=retrieval_metrics,
+        outfile=datadir / f"eval_rag_retrieval_{experiment}.jsonl",
+    )
+
+    gc.collect()
+
+# TODO: redo with together only, merge files
 
 # %% [markdown]
+# Estimated approx 37 hours
 # Approx token use over eval combinations
-# Note: switch to Haiku due to daily token limit!!
 #
 # - openai:
-#   - in:  @4_650_606
-#   - out: @180_333
+#   - in:  (92_300 - ... ) + ...
+#   - out: (4_400 - ... ) + ...
 # - anthropic
-#   - in:  @8_703_682
-#   - out:   @  887_272
+#   - in:  (142_600 - ... ) + ...
+#   - out: (6_700 - ... ) + ...
 # - together
 #   - in: ?
 #   - out ?
 
-# %% [markdown]
-# #### RAGAS Response Evals
-
 # %%
-response_metrics = [
-    SemanticSimilarity(
-        llm=LlamaIndexLLMWrapper(providers["local"]["llm"]),  # I don't think this is used
-        embeddings=LangchainEmbeddingsWrapper(default_em),
-    ),
-    *[
-        Faithfulness(  # response wrt retrieved_context
-            name=f"faithfulness_{evaluator}",
-            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
-        )
-        for evaluator in providers
-    ],
-    *[
-        ResponseRelevancy(  # response wrt input
-            name=f"answer_relevance_{evaluator}",
-            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
-            embeddings=LangchainEmbeddingsWrapper(default_em),
-        )
-        for evaluator in providers
-    ],
-]
-required_cols = set(
-    itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in response_metrics)
-)
+# run experiments for 'sentence' chunker
+for experiment in tqdm(experiment_names):
+    if not experiment.startswith("markdown"):
+        continue
 
-validate_metrics(response_metrics)
-logger.info(f"API calls: {len(rag_response_df)=} * {len(response_metrics)=}")
+    logger.info(f"Running retrieval analysis for {experiment}")
+    source_df = retrieval_df[retrieval_df["experiment"] == experiment]
+    run_ragas_evals(
+        source_df=source_df,
+        metrics=retrieval_metrics,
+        outfile=datadir / f"eval_rag_retrieval_{experiment}.jsonl",
+    )
 
-run_ragas_evals(
-    source_df=rag_response_df,
-    metrics=response_metrics,
-    outfile=datadir / "eval_rag_response.jsonl",
-)
+    gc.collect()
 
-del response_metrics
-gc.collect()
+# %% [markdown]
+# Estimated approx 37 hours
+# Approx token use over eval combinations
+#
+# - openai:
+#   - in:  (4_650_606 - ... ) + ...
+#   - out: (180_333 - ... ) + ...
+# - anthropic
+#   - in:  (8_703_682 - ... ) + ...
+#   - out: (887_272 - ... ) + ...
+# - together
+#   - in: ?
+#   - out ?
