@@ -408,7 +408,9 @@ rag_eval_tokens = (
     + (TESTSET_SIZE * est_ff_tokens)
 )
 print(f"Generating the knowledge graph over {N_DOCS=} will use approx {kg_generation_tokens:,} input tokens")
-print(f"Generating the test set for {TESTSET_SIZE=} samples will use approx {kg_generation_tokens:,} input tokens")
+print(
+    f"Generating the test set for {TESTSET_SIZE=} samples will use approx {testset_generation_tokens:,} input tokens"
+)
 print(f"Evaluating the base case (no retrieval) will use approx {baseline_eval_tokens:,} input tokens")
 print(f"Evaluating with RAG retrieval will use approx {rag_eval_tokens:,} input tokens")
 
@@ -470,7 +472,7 @@ for provider, models in llm_ppm.items():
             f"  Generating the knowledge graph over {N_DOCS=} will cost approx ${kg_generation_tokens * costs['input'] / 1_000_000:,.2f}"
         )
         print(
-            f"  Generating the test set for {TESTSET_SIZE=} samples will use approx ${kg_generation_tokens * costs['input']  / 1_000_000:,.2f}"
+            f"  Generating the test set for {TESTSET_SIZE=} samples will use approx ${testset_generation_tokens * costs['input']  / 1_000_000:,.2f}"
         )
         print(
             f"  Evaluating the base case (no retrieval) will use approx ${baseline_eval_tokens * costs['input'] / 1_000_000:,.2f}"
