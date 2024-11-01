@@ -12,6 +12,7 @@ vars:
 
 includes:
   hugo: .taskfiles/hugo/taskfile.yaml
+  jupyter: .taskfiles/jupyter/taskfile.yaml
 
 dotenv: [".env"]
 
