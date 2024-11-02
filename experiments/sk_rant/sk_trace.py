@@ -15,6 +15,7 @@ import types
 
 from dotenv import load_dotenv
 import networkx as nx
+
 import semantic_kernel as sk
 from semantic_kernel.connectors.ai.chat_completion_client_base import ChatCompletionClientBase
 from semantic_kernel.connectors.ai.function_choice_behavior import FunctionChoiceBehavior
@@ -46,7 +47,7 @@ logger.setLevel(logging.DEBUG)
 # load .env file specific to desired environment/resources (see .env.sample)
 _ = load_dotenv(".env")
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # need a working key or to mock the endpoint
+OPENAI_API_KEY = os.getenv("_OPENAI_API_KEY")  # need a working key or to mock the endpoint
 
 SERVICE_ID = "chat"
 

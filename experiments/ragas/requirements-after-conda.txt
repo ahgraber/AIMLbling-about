@@ -1,0 +1,23 @@
+# # install after configuring conda environment with 'pip install --no-deps -r ...'
+json_repair
+bert-score
+
+together
+
+langchain-voyageai>=0.1.2
+
+# llama-index>=0.11.*
+# llama-index-cli
+# llama-index-core
+llama-index-embeddings-huggingface
+# llama-index-embeddings-openai
+llama-index-embeddings-together
+llama-index-embeddings-voyageai
+llama-index-llms-anthropic
+# llama-index-llms-openai
+llama-index-llms-huggingface
+llama-index-llms-huggingface-api
+llama-index-llms-openai-like
+llama-index-llms-together
+# llama-index-readers-file
+llama-index-vector-stores-duckdb

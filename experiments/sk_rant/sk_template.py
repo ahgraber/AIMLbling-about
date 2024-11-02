@@ -8,6 +8,7 @@ import logging
 import os
 
 from dotenv import load_dotenv
+
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion, OpenAIChatPromptExecutionSettings
 from semantic_kernel.connectors.ai.prompt_execution_settings import PromptExecutionSettings
@@ -93,7 +94,7 @@ async def render_api_call(
 # load .env file specific to desired environment/resources (see .env.sample)
 _ = load_dotenv(".env")
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # need a working key or to mock the endpoint
+OPENAI_API_KEY = os.getenv("_OPENAI_API_KEY")  # need a working key or to mock the endpoint
 
 SERVICE_ID = "gpt-4o"
 

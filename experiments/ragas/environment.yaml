@@ -1,0 +1,113 @@
+---
+name: ragas
+channels:
+  - conda-forge
+  - huggingface
+  - pytorch
+  # - nvidia
+dependencies:
+  # see deprecation windows:
+  # https://scientific-python.org/specs/spec-0000/#support-window
+  - python[version='<3.13']
+  - cython
+  - pip
+  - ipykernel
+  - ipython
+  - ipywidgets
+  - joblib
+  - nest-asyncio
+  - notebook
+  - numpy[version='<2.0']
+  - pandas[version='>=2.0,<2.1']
+  - openpyxl
+  - duckdb
+  - scikit-learn
+  - scipy
+  - statsmodels
+  ### LLM
+  - nltk
+  - rouge_score
+  # - sentencepiece
+  - spacy
+  - anthropic
+  - openai
+  - tiktoken
+  # - together
+  - voyageai
+  - langchain[version='>=0.3']
+  - langchain-anthropic
+  - langchain-experimental
+  - langchain-huggingface
+  - langchain-openai
+  - langchain-together
+  # - langchain-voyageai[version='>=0.1.2']
+  - llama-index[version='>=0.11.*'] # most integrations from llamahup are only available via pip
+  # - openapi-core
+  # - openapi-schema-validator
+  - unstructured
+  - huggingface::datasets[version='<3']
+  - safetensors
+  - sentence-transformers
+  - huggingface_hub[version='<1.0']
+  - text-generation
+  - tokenizers[version='==0.20']
+  - transformers[version='==4.45']
+  - accelerate
+  # - flash-attn
+  # - mlx
+  - pytorch::pytorch[version='>=2.3,<3']
+  - pytorch::torchaudio
+  - pytorch::torchdata # <0.8 # development paused @0.7
+  - pytorch::torchtext # <0.f17 # development paused @0.16
+  - pytorch::torchvision
+  # - pytorch::pytorch-cuda
+  # - conda-forge::xformers
+  - conda-forge::torchmetrics<2
+  - conda-forge::tensorboard
+  - ragas[version='>=0.2.2'] # recent versions of ragas are not available on conda
+  - rust
+  ### LLM dependencies
+  # - aiofiles # semantic-kernel
+  # - aiohttp # semantic-kernel
+  - appdirs # ragas
+  - einops
+  - eval_type_backport
+  - minijinja
+  # - motor # semantic-kernel
+  # - prance # semantic-kernel
+  - pysbd # ragas
+  # - regex # semantic-kernel
+  ### plotting
+  - cmcrameri
+  - matplotlib
+  - plotly
+  - plotnine
+  - seaborn
+  - streamlit
+  ### utilities requirements
+  - fastapi
+  - jinja2
+  - keyring
+  - python-dateutil
+  - python-dotenv
+  # - pyodbc
+  - pytest
+  - pyyaml
+  - redis-py>=4.5.5
+  # - snowflake-connector-python
+  # - snowflake-snowpark-python # python version incompatibility
+  # - snowflake-sqlalchemy
+  # - sqlalchemy
+  - uvicorn
+  - xlrd
+  # ### azure requirements
+  # - azure-identity
+  # - azure-keyvault-secrets
+  # - azure-cosmos
+  # - azure-storage-blob
+  # - azure-storage-common
+  # - azure-storage-file-share
+  # ### mlflow requirements
+  # - mlflow==2.9.2
+  # - pip:
+  #     - semantic-kernel # <1.0.0

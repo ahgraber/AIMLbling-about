@@ -66,6 +66,10 @@ repos:
     rev: "v8.21.2"
     hooks:
       - id: gitleaks
+  - repo: https://github.com/stefmolin/exif-stripper
+    rev: 0.5.0
+    hooks:
+      - id: strip-exif
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
     rev: "3.0.3"
     hooks:
@@ -75,6 +79,7 @@ repos:
           (?x)^(
             # these file types may have nonstandard indents
             ^(LICENSE)$ |
+            ^.*(\.ipynb)$ |
             ^.*(\.md)$ |
             ^.*(\.rst)$
           )$
