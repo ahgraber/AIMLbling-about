@@ -119,6 +119,6 @@ Conversely, recent research indicates that smaller, semantically-defined chunks 
 [^recall]: [context recall](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/context_recall/)
 [^faithfulness]: [faithfulness](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/faithfulness/)
 [^response_relevance]: [response relevancy](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/answer_relevance/)
-[^ragas]: [Ragas](https://docs.ragas.io/en/v0.2.3/)
+[^ragas]: [explodinggradients/ragas: Supercharge Your LLM Application Evaluations 🚀](https://github.com/explodinggradients/ragas/tree/main)
 [^ragas_arxiv]: [[2309.15217] RAGAS: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
 [^chunking]: [Evaluating Chunking Strategies for Retrieval | Chroma Research](https://research.trychroma.com/evaluating-chunking)
