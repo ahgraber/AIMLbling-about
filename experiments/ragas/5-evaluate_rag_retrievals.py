@@ -191,9 +191,6 @@ experiments = list(
 )
 experiment_names = ["_".join(experiment) for experiment in experiments]
 
-# %% [markdown]
-# ### 2. Evaluate retrievals
-
 # %%
 # Load synthetic testset
 dfs = []
@@ -240,6 +237,9 @@ display(retrieval_df)
 # 3584 rows (testset * experiments)
 
 # %% [markdown]
+# ### 2. Evaluate retrievals
+
+# %% [markdown]
 # #### Check similarity in retrievals
 #
 # Since source documents are the same, we compare using chunk text; ROUGE-L should work great
@@ -278,10 +278,17 @@ else:
 # | sentence_local     |     448 | 0.664001 | 0.0566214 | 0.535727 | 0.624531 | 0.662381 | 0.704818 | 0.826115 |
 # | sentence_openai    |     448 | 0.481724 | 0.0985733 | 0.169161 | 0.412585 | 0.482945 | 0.553362 | 0.761959 |
 # | sentence_together  |     448 | 0.612881 | 0.117678  | 0.296082 | 0.528364 | 0.623194 | 0.702294 | 0.859675 |
-
+#
+# MarkdownNodeParser outperforms SentenceSplitter@512
 
 # %% [markdown]
 # ### 3. RAG eval
+
+# %%
+# cull experiment set to only markdown set
+experiments = [x for x in experiments if x[0] == "markdown"]
+experiment_names = ["_".join(x) for x in experiments]
+retrieval_df = retrieval_df[retrieval_df["experiment"].isin(experiment_names)]
 
 # %% [markdown]
 # #### RAGAS Retrieval Evals
@@ -345,45 +352,15 @@ for experiment in tqdm(experiment_names):
 # TODO: redo with together only, merge files
 
 # %% [markdown]
-# Estimated approx 37 hours
+# Estimated approx 2.75 hours per experiment
 # Approx token use over eval combinations
 #
 # - openai:
-#   - in:  (92_300 - ... ) + ...
-#   - out: (4_400 - ... ) + ...
+#   - in:  7_376_630 (for 2 of 4)
+#   - out: 400_454 (for 2 of 4)
 # - anthropic
-#   - in:  (142_600 - ... ) + ...
-#   - out: (6_700 - ... ) + ...
-# - together
-#   - in: ?
-#   - out ?
-
-# %%
-# run experiments for 'sentence' chunker
-for experiment in tqdm(experiment_names):
-    if not experiment.startswith("markdown"):
-        continue
-
-    logger.info(f"Running retrieval analysis for {experiment}")
-    source_df = retrieval_df[retrieval_df["experiment"] == experiment]
-    run_ragas_evals(
-        source_df=source_df,
-        metrics=retrieval_metrics,
-        outfile=datadir / f"eval_rag_retrieval_{experiment}.jsonl",
-    )
-
-    gc.collect()
-
-# %% [markdown]
-# Estimated approx 37 hours
-# Approx token use over eval combinations
-#
-# - openai:
-#   - in:  (4_650_606 - ... ) + ...
-#   - out: (180_333 - ... ) + ...
-# - anthropic
-#   - in:  (8_703_682 - ... ) + ...
-#   - out: (887_272 - ... ) + ...
+#   - in:  8_899_712 (for 2 of 4)
+#   - out: 585_592 (for 2 of 4)
 # - together
 #   - in: ?
 #   - out ?

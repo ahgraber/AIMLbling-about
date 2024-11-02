@@ -191,18 +191,6 @@ experiments = list(
 )
 experiment_names = ["_".join(experiment) for experiment in experiments]
 
-
-# %% [markdown]
-# ### 3. RAG eval
-
-
-# %% [markdown]
-# #### RAGAS RAG Response Evals
-#
-# - Faithfulness -
-# - Answer/Response Relevance - Is response relevant to the original input?
-#   Generate a question based on the response and get the similarity between the original question and generated question
-
 # %%
 # Load synthetic testset
 dfs = []
@@ -237,6 +225,23 @@ if not all(
 display(rag_response_df)
 # 14336 rows (testset * providers * experiments)
 del dfs
+
+# %% [markdown]
+# ### 3. RAG eval
+
+# %%
+# cull experiment set to only markdown set
+experiments = [x for x in experiments if x[0] == "markdown"]
+experiment_names = ["_".join(x) for x in experiments]
+retrieval_df = rag_response_df[rag_response_df["experiment"].isin(experiment_names)]
+
+# %% [markdown]
+# #### RAGAS RAG Response Evals
+#
+# - Faithfulness -
+# - Answer/Response Relevance - Is response relevant to the original input?
+#   Generate a question based on the response and get the similarity between the original question and generated question
+
 
 # %%
 response_metrics = [

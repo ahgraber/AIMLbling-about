@@ -190,15 +190,6 @@ experiments = list(
 )
 experiment_names = ["_".join(experiment) for experiment in experiments]
 
-# %% [markdown]
-# ### 1. Baseline: How does LLM score without RAG?
-#
-# Limits to metrics that do not require RAG retrieval:
-#
-# - Answer/Response Relevance - Is response relevant to the original input?<br>
-#   Generate a question based on the response and get the similarity between the original question and generated question
-# - SemanticSimilarity - similarity between ground truth reference and response
-
 # %%
 # Load synthetic testset
 dfs = []
@@ -234,6 +225,15 @@ if not all(
 display(baseline_response_df)
 # 1792 rows (testset * providers)
 del dfs
+
+# %% [markdown]
+# ### 1. Baseline: How does LLM score without RAG?
+#
+# Limits to metrics that do not require RAG retrieval:
+#
+# - Answer/Response Relevance - Is response relevant to the original input?<br>
+#   Generate a question based on the response and get the similarity between the original question and generated question
+# - SemanticSimilarity - similarity between ground truth reference and response
 
 # %%
 baseline_metrics = [
