@@ -23,7 +23,7 @@ math: false
 draft: false
 ---
 
-This is part two of a three-part series ([one]({{< ref "/blog/ragas-to-riches-1" >}}), [three]({{< ref "/blog/ragas-to-riches-3" >}})) where I explore best practices for evaluating RAG architecture via Ragas' recent v0.2 release.
+This is part two of a three-part series ([one]({{< ref "/blog/ragas-to-riches-1" >}}), three) where I explore best practices for evaluating RAG architecture via Ragas' recent v0.2 release.
 Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas).
 
 In this post, I will dive into why I'm so excited about Ragas v0.2 and dive into how it works.
