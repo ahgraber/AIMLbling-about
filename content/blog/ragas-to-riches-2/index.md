@@ -1,6 +1,6 @@
 ---
 title: RAGAS to Riches (part 2)
-date: 2024-10-31T08:02:37-04:00
+date: 2024-11-02
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -20,7 +20,7 @@ series:
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 This is part two of a three-part series ([one]({{< ref "/blog/ragas-to-riches-1" >}}), [three]({{< ref "/blog/ragas-to-riches-3" >}})) where I explore best practices for evaluating RAG architecture via Ragas' recent v0.2 release.
