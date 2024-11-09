@@ -91,7 +91,7 @@ providers = {
             model="mistral-nemo-instruct-2407",
             **LLM_KWARGS,
             max_retries=10,
-            timeout=120,
+            timeout=240,
         ),
         "em": HuggingFaceEmbedding(
             model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
@@ -228,12 +228,26 @@ del dfs
 
 # %% [markdown]
 # ### 3. RAG eval
+#
+# full factorial experiment will be too expensive to run
 
 # %%
-# cull experiment set to only markdown set
+# - cull experiment set to only markdown set
 experiments = [x for x in experiments if x[0] == "markdown"]
 experiment_names = ["_".join(x) for x in experiments]
-retrieval_df = rag_response_df[rag_response_df["experiment"].isin(experiment_names)]
+
+# - don't need the cross between retrievers, and responders
+# (i.e., don't care about who generated the question; want to limit retriever/responder to same provider)
+rag_response_df = pd.concat(
+    [
+        rag_response_df[
+            (rag_response_df["experiment"] == f"markdown_{provider}") & (rag_response_df["response_by"] == provider)
+        ]
+        for provider in providers
+    ],
+    ignore_index=True,
+)
+display(rag_response_df)
 
 # %% [markdown]
 # #### RAGAS RAG Response Evals
@@ -244,57 +258,82 @@ retrieval_df = rag_response_df[rag_response_df["experiment"].isin(experiment_nam
 
 
 # %%
-response_metrics = [
-    SemanticSimilarity(
-        llm=LlamaIndexLLMWrapper(providers["local"]["llm"]),  # I don't think this is used
-        embeddings=LangchainEmbeddingsWrapper(default_em),
-    ),
-    *[
-        Faithfulness(  # response wrt retrieved_context
-            name=f"faithfulness_{evaluator}",
-            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
-        )
-        for evaluator in providers
-    ],
-    *[
-        ResponseRelevancy(  # response wrt input
-            name=f"answer_relevance_{evaluator}",
-            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
-            embeddings=LangchainEmbeddingsWrapper(default_em),
-        )
-        for evaluator in providers
-    ],
-]
-required_cols = set(
-    itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in response_metrics)
+# convert retrieved_contexts to list of strings
+rag_response_df["retrieved_contexts"] = rag_response_df["retrieved_contexts"].apply(
+    lambda row: [node["text"] for node in row]
 )
 
-validate_metrics(response_metrics)
-logger.info(f"API calls: {len(rag_response_df)=} * {len(response_metrics)=}")
-
 # %%
-for evaluator in providers:
-    source_df = rag_response_df[rag_response_df["response_by"] == evaluator]
+# for experiment, evaluator in itertools.product(experiment_names, providers):
+#     # experiment = experiment_names[3]  # "markdown_local"
+#     # evaluator = "anthropic"
+for experiment in tqdm(experiment_names):
+    logger.info(f"Running evals with for {experiment}...")
+
+    source_df = rag_response_df[rag_response_df["experiment"] == experiment].reset_index(drop=True)
+
+    response_metrics = [
+        SemanticSimilarity(
+            llm=LlamaIndexLLMWrapper(providers["local"]["llm"]),  # I don't think this is used
+            embeddings=LangchainEmbeddingsWrapper(default_em),
+        ),
+        *[
+            Faithfulness(  # response wrt retrieved_context
+                name=f"faithfulness_{evaluator}",
+                llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+            )
+            for evaluator in providers
+            if evaluator in ["local", "openai"]  # anthropic, together have high error rates here
+        ],
+        *[
+            ResponseRelevancy(  # response wrt input
+                name=f"answer_relevance_{evaluator}",
+                llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+                embeddings=LangchainEmbeddingsWrapper(default_em),
+            )
+            for evaluator in providers
+        ],
+    ]
+    required_cols = set(
+        itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in response_metrics)
+    )
+
+    validate_metrics(response_metrics)
+    # calculate # evals; some evals need > 1 API call
+    logger.info(
+        f"Evaluations: {len(source_df)=} * {len(response_metrics)=} = {len(source_df) * len(response_metrics):_}"
+    )
 
     run_ragas_evals(
         source_df=source_df,
         metrics=response_metrics,
-        outfile=datadir / f"eval_rag_response_{evaluator}.jsonl",
+        outfile=datadir / f"eval_rag_response_{experiment}.jsonl",
+        batch_size=20,
     )
 
     gc.collect()
 
 
 # %% [markdown]
-# Estimated approx 37 hours
-# Approx token use over eval combinations
+# Approx 4 hours per provider (16 hours total)
+# Approx token use over eval combinations: 448 questions * 4 experiments * evals
 #
 # - openai:
-#   - in:  (4_650_606 - ... ) + ...
-#   - out: (180_333 - ... ) + ...
-# - anthropic
-#   - in:  (8_703_682 - ... ) + ...
-#   - out: (887_272 - ... ) + ...
-# - together
+#   - in:  2_742_623 (for 1 of 4) // 11_839_585
+#   - out: 656_508 (for 1 of 4) // 3_027_981
+# - anthropic --> anthropic fails for faithfulness response formatting
+#   - in:  5_350_500 (no faithfulness)
+#   - out: 323_710 (no faithfulness)
+# - together --> llama fails for faithfulness and response relevance response formatting
 #   - in: ?
 #   - out ?
+
+# %%
+e1 = "markdown_together"
+e2 = "local"
+df = pd.read_json(datadir / f"eval_rag_response_{e1}-{e2}.jsonl", orient="records", lines=True)
+
+eval_cols = ["semantic_similarity", f"faithfulness_{e2}", f"answer_relevance_{e2}"]
+df[eval_cols].isnull().mean()  # % missingness
+
+# %%

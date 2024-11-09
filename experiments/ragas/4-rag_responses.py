@@ -225,7 +225,10 @@ if not all(experiment_df["user_input"] == experiment_df["query"]):
 # reshape into baseline_df format with cols:
 # ['user_input', 'reference_contexts', 'reference', 'synthesizer_name', 'generated_by', 'response']
 experiment_df = experiment_df.drop(columns="query").melt(
-    id_vars=testset_df.columns, value_vars=experiment_names, value_name="retrieved_contexts", var_name="experiment"
+    id_vars=testset_df.columns,
+    value_vars=experiment_names,
+    value_name="retrieved_contexts",
+    var_name="experiment",
 )
 del testset_df, retrieval_df
 
