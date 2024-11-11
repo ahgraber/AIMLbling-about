@@ -1,6 +1,6 @@
 ---
 title: RAGAS to Riches (part 3)
-date: 2024-11-10
+date: 2024-11-11
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -20,7 +20,7 @@ series:
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 This is part three of a three-part series ([one]({{< ref "/blog/ragas-to-riches-1" >}}), [two]({{< ref "/blog/ragas-to-riches-2" >}}))
