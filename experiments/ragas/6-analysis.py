@@ -161,7 +161,7 @@ logger.info("ROUGE comparison complete.")
 # Nomic, OpenAI, and Voyage all seem to perform similarly, but Together's 8k BERT model severely underperforms
 
 # %% [markdown]
-# - [GPT-4o mini]: https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/
+# - [GPT-4o mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/)
 # - [Claude 3 Haiku](https://www.anthropic.com/news/claude-3-haiku)
 # - [meta-llama/Llama-3.1-70B-Instruct](https://huggingface.co/meta-llama/Llama-3.1-70B-Instruct)
 # - [mistralai/Mistral-Nemo-Instruct-2407](https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407)
@@ -229,10 +229,10 @@ print(response_relevance.to_markdown())
 # %% [markdown]
 # Interestingly, claude-3-haiku is scored as having the worst performance,
 # and mistral-nemo-instruct-2407 outperforms both claude-3-haiku and llama-3.1-70b (which are much larger models)
-#
+
 # Model performance on baseline (no RAG) `answer_relevance` seems more related to model release recency than size,
 # with the more recent gpt4o-mini and mistral-nemo-instruct-2407 outperforming older claude-3-haiku and llama-3.1-70b-instruct-turbo
-#
+
 # | response_by   |   ar_openai |   ar_anthropic |   ar_together |   ar_local |
 # |:--------------|------------:|---------------:|--------------:|-----------:|
 # | openai        |    0.900829 |       0.916623 |      0.91293  |   0.90528  |
@@ -251,16 +251,16 @@ print(evaluator_stats.to_markdown())
 
 # %%[markdown]
 # claude-3-haiku and llama-3.1-70b provide higher/more optimistic mean scores across the board, though gpt-4o-mini has a more optimistic median
-#
+
 # | evaluation_by   |   count |   mean |    std |   min |    25% |    50% |    75% |   max |
 # |:----------------|--------:|-------:|-------:|------:|-------:|-------:|-------:|------:|
 # | openai          |    1792 | 0.8314 | 0.2753 |     0 | 0.8541 | 0.9263 | 0.9695 |     1 |
 # | anthropic       |    1790 | 0.8529 | 0.2307 |     0 | 0.85   | 0.9181 | 0.9692 |     1 |
 # | together        |    1655 | 0.8518 | 0.2308 |     0 | 0.8502 | 0.9126 | 0.9675 |     1 |
 # | local           |    1792 | 0.8429 | 0.2334 |     0 | 0.8371 | 0.9098 | 0.9623 |     1 |
-#
+
 # All providers show negative skew (mean < median), indicating more scores clustered at higher values.
-#
+
 # openai, with the highest variance and greater deviation between mean and median, may demonstrate greater discrimination between "good" and "bad" responses.
 #
 
@@ -331,152 +331,6 @@ model = smf.ols(
 )
 results = model.fit()
 print(results.summary())
-
-# %% [markdown]
-# ```txt
-#                             OLS Regression Results
-# ==============================================================================
-# Dep. Variable:       answer_relevance   R-squared:                       0.094
-# Model:                            OLS   Adj. R-squared:                  0.092
-# Method:                 Least Squares   F-statistic:                     48.59
-# Date:                Fri, 08 Nov 2024   Prob (F-statistic):          3.36e-138
-# Time:                        15:58:47   Log-Likelihood:                 299.98
-# No. Observations:                7029   AIC:                            -568.0
-# Df Residuals:                    7013   BIC:                            -458.2
-# Df Model:                          15
-# Covariance Type:            nonrobust
-# ===========================================================================================================================================================
-#                                                                                               coef    std err          t      P>|t|      [0.025      0.975]
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------
-# Intercept                                                                                   0.9008      0.011     82.141      0.000       0.879       0.922
-# C(response_by, levels=providers)[T.anthropic]                                              -0.2113      0.016    -13.625      0.000      -0.242      -0.181
-# C(response_by, levels=providers)[T.together]                                               -0.0496      0.016     -3.197      0.001      -0.080      -0.019
-# C(response_by, levels=providers)[T.local]                                                  -0.0169      0.016     -1.089      0.276      -0.047       0.014
-# C(eval_by, levels=providers)[T.anthropic]                                                   0.0158      0.016      1.018      0.309      -0.015       0.046
-# C(eval_by, levels=providers)[T.together]                                                    0.0121      0.016      0.767      0.443      -0.019       0.043
-# C(eval_by, levels=providers)[T.local]                                                       0.0045      0.016      0.287      0.774      -0.026       0.035
-# C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.anthropic]     0.0268      0.022      1.220      0.223      -0.016       0.070
-# C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.anthropic]      0.0123      0.022      0.560      0.576      -0.031       0.055
-# C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.anthropic]        -0.0161      0.022     -0.732      0.464      -0.059       0.027
-# C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.together]      0.0321      0.022      1.439      0.150      -0.012       0.076
-# C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.together]       0.0168      0.022      0.748      0.454      -0.027       0.061
-# C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.together]         -0.0136      0.022     -0.612      0.541      -0.057       0.030
-# C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.local]         0.0290      0.022      1.321      0.187      -0.014       0.072
-# C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.local]          0.0151      0.022      0.688      0.491      -0.028       0.058
-# C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.local]            -0.0159      0.022     -0.727      0.467      -0.059       0.027
-# ==============================================================================
-# Omnibus:                     3092.683   Durbin-Watson:                   1.623
-# Prob(Omnibus):                  0.000   Jarque-Bera (JB):            13270.352
-# Skew:                          -2.193   Prob(JB):                         0.00
-# Kurtosis:                       8.106   Cond. No.                         22.8
-# ==============================================================================
-
-# Notes:
-# [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-
-# ```
-
-# %%
-print(results.summary().as_html())
-
-# %% [markdown]
-# <table class="simpletable">
-# <caption>OLS Regression Results</caption>
-# <tr>
-#   <th>Dep. Variable:</th>    <td>answer_relevance</td> <th>  R-squared:         </th> <td>   0.094</td>
-# </tr>
-# <tr>
-#   <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.092</td>
-# </tr>
-# <tr>
-#   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   48.59</td>
-# </tr>
-# <tr>
-#   <th>Date:</th>             <td>Fri, 08 Nov 2024</td> <th>  Prob (F-statistic):</th> <td>3.36e-138</td>
-# </tr>
-# <tr>
-#   <th>Time:</th>                 <td>16:00:03</td>     <th>  Log-Likelihood:    </th> <td>  299.98</td>
-# </tr>
-# <tr>
-#   <th>No. Observations:</th>      <td>  7029</td>      <th>  AIC:               </th> <td>  -568.0</td>
-# </tr>
-# <tr>
-#   <th>Df Residuals:</th>          <td>  7013</td>      <th>  BIC:               </th> <td>  -458.2</td>
-# </tr>
-# <tr>
-#   <th>Df Model:</th>              <td>    15</td>      <th>                     </th>     <td> </td>
-# </tr>
-# <tr>
-#   <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>
-# </tr>
-# </table>
-# <table class="simpletable">
-# <tr>
-#                                              <td></td>                                                <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>
-# </tr>
-# <tr>
-#   <th>Intercept</th>                                                                               <td>    0.9008</td> <td>    0.011</td> <td>   82.141</td> <td> 0.000</td> <td>    0.879</td> <td>    0.922</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]</th>                                           <td>   -0.2113</td> <td>    0.016</td> <td>  -13.625</td> <td> 0.000</td> <td>   -0.242</td> <td>   -0.181</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]</th>                                            <td>   -0.0496</td> <td>    0.016</td> <td>   -3.197</td> <td> 0.001</td> <td>   -0.080</td> <td>   -0.019</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]</th>                                               <td>   -0.0169</td> <td>    0.016</td> <td>   -1.089</td> <td> 0.276</td> <td>   -0.047</td> <td>    0.014</td>
-# </tr>
-# <tr>
-#   <th>C(eval_by, levels=providers)[T.anthropic]</th>                                               <td>    0.0158</td> <td>    0.016</td> <td>    1.018</td> <td> 0.309</td> <td>   -0.015</td> <td>    0.046</td>
-# </tr>
-# <tr>
-#   <th>C(eval_by, levels=providers)[T.together]</th>                                                <td>    0.0121</td> <td>    0.016</td> <td>    0.767</td> <td> 0.443</td> <td>   -0.019</td> <td>    0.043</td>
-# </tr>
-# <tr>
-#   <th>C(eval_by, levels=providers)[T.local]</th>                                                   <td>    0.0045</td> <td>    0.016</td> <td>    0.287</td> <td> 0.774</td> <td>   -0.026</td> <td>    0.035</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.anthropic]</th> <td>    0.0268</td> <td>    0.022</td> <td>    1.220</td> <td> 0.223</td> <td>   -0.016</td> <td>    0.070</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.anthropic]</th>  <td>    0.0123</td> <td>    0.022</td> <td>    0.560</td> <td> 0.576</td> <td>   -0.031</td> <td>    0.055</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.anthropic]</th>     <td>   -0.0161</td> <td>    0.022</td> <td>   -0.732</td> <td> 0.464</td> <td>   -0.059</td> <td>    0.027</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.together]</th>  <td>    0.0321</td> <td>    0.022</td> <td>    1.439</td> <td> 0.150</td> <td>   -0.012</td> <td>    0.076</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.together]</th>   <td>    0.0168</td> <td>    0.022</td> <td>    0.748</td> <td> 0.454</td> <td>   -0.027</td> <td>    0.061</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.together]</th>      <td>   -0.0136</td> <td>    0.022</td> <td>   -0.612</td> <td> 0.541</td> <td>   -0.057</td> <td>    0.030</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.local]</th>     <td>    0.0290</td> <td>    0.022</td> <td>    1.321</td> <td> 0.187</td> <td>   -0.014</td> <td>    0.072</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.local]</th>      <td>    0.0151</td> <td>    0.022</td> <td>    0.688</td> <td> 0.491</td> <td>   -0.028</td> <td>    0.058</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.local]</th>         <td>   -0.0159</td> <td>    0.022</td> <td>   -0.727</td> <td> 0.467</td> <td>   -0.059</td> <td>    0.027</td>
-# </tr>
-# </table>
-# <table class="simpletable">
-# <tr>
-#   <th>Omnibus:</th>       <td>3092.683</td> <th>  Durbin-Watson:     </th> <td>   1.623</td>
-# </tr>
-# <tr>
-#   <th>Prob(Omnibus):</th>  <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td>13270.352</td>
-# </tr>
-# <tr>
-#   <th>Skew:</th>           <td>-2.193</td>  <th>  Prob(JB):          </th> <td>    0.00</td>
-# </tr>
-# <tr>
-#   <th>Kurtosis:</th>       <td> 8.106</td>  <th>  Cond. No.          </th> <td>    22.8</td>
-# </tr>
-# </table><br/><br/>Notes:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
 
 
 # %% [markdown]
@@ -563,6 +417,22 @@ print(retrieval_metrics[[col for col in metrics if "precision" in col]].to_markd
 # | markdown_together  |                   0.233777 |                      0.374917 |                     0.183431 |                  0.157313 |
 # | markdown_local     |                   0.673546 |                      0.793435 |                     0.604087 |                  0.523723 |
 
+# %%
+# look at stats per evaluator
+cp_stats = pd.DataFrame.from_dict(
+    {evaluator: retrieval_metrics_df[f"context_precision_{evaluator}"].describe().round(4) for evaluator in providers}
+).transpose()
+cp_stats.index.name = "evaluation_by"
+print(cp_stats.to_markdown())
+
+# %%[markdown]
+# | evaluation_by   |   count |   mean |    std |   min |    25% |    50% |   75% |   max |
+# |:----------------|--------:|-------:|-------:|------:|-------:|-------:|------:|------:|
+# | openai          |    1792 | 0.5786 | 0.4317 |     0 | 0      | 0.7556 |     1 |     1 |
+# | anthropic       |    1759 | 0.7114 | 0.3922 |     0 | 0.4778 | 0.95   |     1 |     1 |
+# | together        |     637 | 0.5182 | 0.442  |     0 | 0      | 0.5    |     1 |     1 |
+# | local           |    1792 | 0.445  | 0.4468 |     0 | 0      | 0.3333 |     1 |     1 |
+
 
 # %%
 print(retrieval_metrics[[col for col in metrics if "recall" in col]].to_markdown())
@@ -575,6 +445,21 @@ print(retrieval_metrics[[col for col in metrics if "recall" in col]].to_markdown
 # | markdown_together  |                0.354486 |                   0.52335  |                  0.267961 |               0.379621 |
 # | markdown_local     |                0.751547 |                   0.867002 |                  0.610267 |               0.703121 |
 
+# %%
+# look at stats per evaluator
+cr_stats = pd.DataFrame.from_dict(
+    {evaluator: retrieval_metrics_df[f"context_recall_{evaluator}"].describe().round(4) for evaluator in providers}
+).transpose()
+cr_stats.index.name = "evaluation_by"
+print(cr_stats.to_markdown())
+
+# %% [markdown]
+# | evaluation_by   |   count |   mean |    std |   min |    25% |    50% |   75% |   max |
+# |:----------------|--------:|-------:|-------:|------:|-------:|-------:|------:|------:|
+# | openai          |    1792 | 0.6828 | 0.4244 |     0 | 0.25   | 1      |     1 |     1 |
+# | anthropic       |    1701 | 0.8075 | 0.3717 |     0 | 1      | 1      |     1 |     1 |
+# | together        |    1328 | 0.5319 | 0.4728 |     0 | 0      | 0.6667 |     1 |     1 |
+# | local           |    1747 | 0.6501 | 0.4104 |     0 | 0.3333 | 1      |     1 |     1 |
 
 # %% [markdown]
 # ## RAG Response
@@ -624,6 +509,17 @@ print(response_missingness[["semantic_similarity"]].to_markdown())
 # | markdown_local     |                     0 |
 
 # %%
+print(response_missingness[[col for col in metrics if "answer_relevance" in col]].to_markdown())
+
+# %%[markdown]
+# | experiment         |   answer_relevance_openai |   answer_relevance_anthropic |   answer_relevance_together |   answer_relevance_local |
+# |:-------------------|--------------------------:|-----------------------------:|----------------------------:|-------------------------:|
+# | markdown_openai    |                         0 |                            0 |                    0.102679 |               0.0267857  |
+# | markdown_anthropic |                         0 |                            0 |                    0.109375 |               0          |
+# | markdown_together  |                         0 |                            0 |                    0.245536 |               0          |
+# | markdown_local     |                         0 |                            0 |                    0.133929 |               0.00223214 |
+
+# %%
 print(response_missingness[[col for col in metrics if "faithfulness" in col]].to_markdown())
 
 # %%[markdown]
@@ -634,16 +530,6 @@ print(response_missingness[[col for col in metrics if "faithfulness" in col]].to
 # | markdown_together  |             0.0803571 |            0.111607  |
 # | markdown_local     |             0.0446429 |            0.0625    |
 
-# %%
-print(response_missingness[[col for col in metrics if "answer_relevance" in col]].to_markdown())
-
-# %%[markdown]
-# | experiment         |   answer_relevance_openai |   answer_relevance_anthropic |   answer_relevance_together |   answer_relevance_local |
-# |:-------------------|--------------------------:|-----------------------------:|----------------------------:|-------------------------:|
-# | markdown_openai    |                         0 |                            0 |                    0.102679 |               0.0267857  |
-# | markdown_anthropic |                         0 |                            0 |                    0.109375 |               0          |
-# | markdown_together  |                         0 |                            0 |                    0.245536 |               0          |
-# | markdown_local     |                         0 |                            0 |                    0.133929 |               0.00223214 |
 
 # %%
 # metrics
@@ -669,16 +555,6 @@ print(response_metrics[["semantic_similarity"]].to_markdown())
 # | markdown_together  |              0.88384  |
 # | markdown_local     |              0.906305 |
 
-# %%
-print(response_metrics[[col for col in metrics if "faithfulness" in col]].to_markdown())
-
-# %%[markdown]
-# | experiment         |   faithfulness_openai |   faithfulness_local |
-# |:-------------------|----------------------:|---------------------:|
-# | markdown_openai    |              0.75366  |             0.701613 |
-# | markdown_anthropic |              0.767491 |             0.679363 |
-# | markdown_together  |              0.436331 |             0.421242 |
-# | markdown_local     |              0.626723 |             0.598187 |
 
 # %%
 print(response_metrics[[col for col in metrics if "answer_relevance" in col]].to_markdown())
@@ -690,6 +566,51 @@ print(response_metrics[[col for col in metrics if "answer_relevance" in col]].to
 # | markdown_anthropic |                  0.864219 |                     0.909169 |                    0.8972   |                 0.868209 |
 # | markdown_together  |                  0.747819 |                     0.784185 |                    0.783476 |                 0.777769 |
 # | markdown_local     |                  0.852791 |                     0.868579 |                    0.870687 |                 0.858142 |
+
+# %%
+# look at stats per evaluator
+ar_stats = pd.DataFrame.from_dict(
+    {evaluator: response_metrics_df[f"answer_relevance_{evaluator}"].describe().round(4) for evaluator in providers}
+).transpose()
+ar_stats.index.name = "evaluation_by"
+print(ar_stats.to_markdown())
+
+# %%[markdown]
+# | evaluation_by   |   count |   mean |    std |   min |    25% |    50% |    75% |   max |
+# |:----------------|--------:|-------:|-------:|------:|-------:|-------:|-------:|------:|
+# | openai          |    1792 | 0.8456 | 0.2493 |     0 | 0.8521 | 0.9217 | 0.9752 |     1 |
+# | anthropic       |    1792 | 0.8717 | 0.1862 |     0 | 0.8477 | 0.9193 | 0.9745 |     1 |
+# | together        |    1527 | 0.8706 | 0.1861 |     0 | 0.8496 | 0.9129 | 0.9689 |     1 |
+# | local           |    1779 | 0.8521 | 0.2079 |     0 | 0.8257 | 0.9057 | 0.9651 |     1 |
+
+# %%
+print(response_metrics[[col for col in metrics if "faithfulness" in col]].to_markdown())
+
+# %%
+# look at stats per evaluator
+ff_stats = pd.DataFrame.from_dict(
+    {
+        evaluator: response_metrics_df[f"faithfulness_{evaluator}"].describe().round(4)
+        for evaluator in providers
+        if f"faithfulness_{evaluator}" in response_metrics_df.columns
+    }
+).transpose()
+ff_stats.index.name = "evaluation_by"
+print(ff_stats.to_markdown())
+
+# %%[markdown]
+# | evaluation_by   |   count |   mean |    std |   min |   25% |    50% |   75% |   max |
+# |:----------------|--------:|-------:|-------:|------:|------:|-------:|------:|------:|
+# | openai          |    1685 | 0.6474 | 0.3595 |     0 | 0.359 | 0.75   |     1 |     1 |
+# | local           |    1668 | 0.6028 | 0.3603 |     0 | 0.315 | 0.6594 |     1 |     1 |
+
+# %%[markdown]
+# | experiment         |   faithfulness_openai |   faithfulness_local |
+# |:-------------------|----------------------:|---------------------:|
+# | markdown_openai    |              0.75366  |             0.701613 |
+# | markdown_anthropic |              0.767491 |             0.679363 |
+# | markdown_together  |              0.436331 |             0.421242 |
+# | markdown_local     |              0.626723 |             0.598187 |
 
 # %%
 # TODO
