@@ -283,6 +283,8 @@ else:
 
 # %% [markdown]
 # ### 3. RAG eval
+#
+# full factorial experiment will be too expensive to run
 
 # %%
 # cull experiment set to only markdown set
@@ -333,12 +335,10 @@ retrieval_df["retrieved_contexts"] = retrieval_df["retrieved_contexts"].apply(
     lambda row: [node["text"] for node in row]
 )
 
+
 # %%
 # run experiments for 'markdown' chunker
 for experiment in tqdm(experiment_names):
-    if not experiment.startswith("markdown"):
-        continue
-
     logger.info(f"Running retrieval analysis for {experiment}")
     source_df = retrieval_df[retrieval_df["experiment"] == experiment]
     run_ragas_evals(
@@ -356,11 +356,11 @@ for experiment in tqdm(experiment_names):
 # Approx token use over eval combinations
 #
 # - openai:
-#   - in:  7_376_630 (for 2 of 4)
-#   - out: 400_454 (for 2 of 4)
+#   - in:  15_921_001
+#   - out: 863_889
 # - anthropic
-#   - in:  8_899_712 (for 2 of 4)
-#   - out: 585_592 (for 2 of 4)
+#   - in:  20_196_082
+#   - out: 1_292_914
 # - together
 #   - in: ?
 #   - out ?

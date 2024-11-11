@@ -27,6 +27,8 @@ This is part two of a three-part series ([one]({{< ref "/blog/ragas-to-riches-1"
 Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas).
 
 In this post, I will dive into why I'm so excited about Ragas v0.2 and dive into how it works.
+Specifically, the I am referencing `Ragas v0.2.3`; the team is rapidly iterating and this series of posts will likely end up out of date quite quickly.
+It is my hope that the concepts will remain true, even if the specific procedures, prompts, or token use expectations change.
 
 ## Introducing Ragas v0.2
 
@@ -218,15 +220,16 @@ Assuming the test query is 64 tokens, the retrieved context is 256 \* 3 tokens, 
 
 ### Overall RAGAS token use for first run
 
-| phase                     | n docs | testset size |    tokens |
-| ------------------------- | -----: | -----------: | --------: |
-| knowledge graph           |    100 |            - | 5,133,400 |
-| testset+                  |      - |          100 |   661,550 |
-| base case (no RAG) eval++ |      - |          100 |    81,500 |
-| RAG eval+++               |      - |          100 |   803,900 |
+| phase                       | n docs | testset size |    tokens |
+| --------------------------- | -----: | -----------: | --------: |
+| knowledge graph             |    100 |            - | 5,133,400 |
+| testset\*                   |      - |          100 |   661,550 |
+| base case (no RAG) eval\*\* |      - |          100 |    81,500 |
+| RAG eval\*\*\*              |      - |          100 |   803,900 |
 
-> `+`assumes test set uses 25% abstract, 25% comparative abstract, and 50% specific query scenarios
-> `++` base case (no RAG) eval only analyzes `response relevance` > `+++` RAG eval analyzes `context precision`, `context recall`, `faithfulness`, and `response relevance`
+> \* assumes test set uses 25% abstract, 25% comparative abstract, and 50% specific query scenarios  
+> \*\* base case (no retrieval) eval only analyzes `response relevance`  
+> \*\*\* RAG eval analyzes `context precision`, `context recall`, `faithfulness`, and `response relevance`
 
 Given current (Q4 2024) prices (GPT-4o @ $2.50 / 1M tokens; Claude-3.5-Sonnet @ $3.00 / 1M tokens):
 
