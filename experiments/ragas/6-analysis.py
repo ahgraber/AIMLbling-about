@@ -20,7 +20,9 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
+import cmcrameri.cm as cmc
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # %%
 repo = subprocess.check_output(  # NOQA: S603
@@ -324,7 +326,6 @@ df = (
 display(df)
 
 # %%
-
 model = smf.ols(
     formula="answer_relevance ~ C(response_by, levels=providers) * C(eval_by, levels=providers)",
     data=df[["answer_relevance", "response_by", "eval_by"]],
@@ -332,6 +333,31 @@ model = smf.ols(
 results = model.fit()
 print(results.summary())
 
+# %%
+# alignment
+plt.figure(figsize=(6, 6))
+sns.heatmap(
+    (
+        baseline_df[
+            [
+                "answer_relevance_openai",
+                "answer_relevance_anthropic",
+                "answer_relevance_together",
+                "answer_relevance_local",
+            ]
+        ]
+        .rename(columns=lambda col: col.replace("answer_relevance_", ""))
+        .corr()
+    ),
+    annot=True,
+    linewidth=0.5,
+    cmap=cmc.vik,  # sns.diverging_palette(220, 20, as_cmap=True),
+    vmin=-1,
+    center=0,
+    vmax=1,
+    square=True,
+)
+plt.title("Baseline Answer Relevance")
 
 # %% [markdown]
 # ## RAG Retrieval
@@ -460,6 +486,59 @@ print(cr_stats.to_markdown())
 # | anthropic       |    1701 | 0.8075 | 0.3717 |     0 | 1      | 1      |     1 |     1 |
 # | together        |    1328 | 0.5319 | 0.4728 |     0 | 0      | 0.6667 |     1 |     1 |
 # | local           |    1747 | 0.6501 | 0.4104 |     0 | 0.3333 | 1      |     1 |     1 |
+
+# %%
+# alignment
+plt.figure(figsize=(6, 6))
+sns.heatmap(
+    (
+        retrieval_metrics_df[
+            [
+                "context_precision_openai",
+                "context_precision_anthropic",
+                "context_precision_together",
+                "context_precision_local",
+            ]
+        ]
+        .rename(columns=lambda col: col.replace("context_precision_", ""))
+        .corr()
+    ),
+    annot=True,
+    linewidth=0.5,
+    cmap=cmc.vik,  # sns.diverging_palette(220, 20, as_cmap=True),
+    vmin=-1,
+    center=0,
+    vmax=1,
+    square=True,
+)
+plt.title("Retrieval Context Precision")
+
+# %%
+# alignment
+plt.figure(figsize=(6, 6))
+sns.heatmap(
+    (
+        retrieval_metrics_df[
+            [
+                "context_recall_openai",
+                "context_recall_anthropic",
+                "context_recall_together",
+                "context_recall_local",
+            ]
+        ]
+        .rename(columns=lambda col: col.replace("context_recall_", ""))
+        .corr()
+    ),
+    annot=True,
+    linewidth=0.5,
+    cmap=cmc.vik,  # sns.diverging_palette(220, 20, as_cmap=True),
+    vmin=-1,
+    center=0,
+    vmax=1,
+    square=True,
+)
+plt.title("Retrieval Context Recall")
+
 
 # %% [markdown]
 # ## RAG Response
@@ -655,159 +734,56 @@ model = smf.ols(
 results = model.fit()
 print(results.summary())
 
-# %%[markdown]
-# ```txt
-#                             OLS Regression Results
-# ==============================================================================
-# Dep. Variable:       answer_relevance   R-squared:                       0.068
-# Model:                            OLS   Adj. R-squared:                  0.066
-# Method:                 Least Squares   F-statistic:                     33.30
-# Date:                Fri, 08 Nov 2024   Prob (F-statistic):           2.72e-93
-# Time:                        16:14:26   Log-Likelihood:                 1216.7
-# No. Observations:                6890   AIC:                            -2401.
-# Df Residuals:                    6874   BIC:                            -2292.
-# Df Model:                          15
-# Covariance Type:            nonrobust
-# ===========================================================================================================================================================
-#                                                                                               coef    std err          t      P>|t|      [0.025      0.975]
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------
-# Intercept                                                                                   0.9175      0.010     95.645      0.000       0.899       0.936
-# C(response_by, levels=providers)[T.anthropic]                                              -0.0533      0.014     -3.926      0.000      -0.080      -0.027
-# C(response_by, levels=providers)[T.together]                                               -0.1697      0.014    -12.507      0.000      -0.196      -0.143
-# C(response_by, levels=providers)[T.local]                                                  -0.0647      0.014     -4.769      0.000      -0.091      -0.038
-# C(eval_by, levels=providers)[T.anthropic]                                                   0.0073      0.014      0.540      0.590      -0.019       0.034
-# C(eval_by, levels=providers)[T.together]                                                   -0.0002      0.014     -0.014      0.989      -0.028       0.027
-# C(eval_by, levels=providers)[T.local]                                                      -0.0117      0.014     -0.859      0.390      -0.039       0.015
-# C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.anthropic]     0.0376      0.019      1.961      0.050    2.22e-05       0.075
-# C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.anthropic]      0.0290      0.019      1.514      0.130      -0.009       0.067
-# C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.anthropic]         0.0085      0.019      0.441      0.659      -0.029       0.046
-# C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.together]      0.0332      0.020      1.680      0.093      -0.006       0.072
-# C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.together]       0.0359      0.020      1.774      0.076      -0.004       0.075
-# C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.together]          0.0181      0.020      0.913      0.361      -0.021       0.057
-# C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.local]         0.0157      0.019      0.817      0.414      -0.022       0.053
-# C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.local]          0.0417      0.019      2.166      0.030       0.004       0.079
-# C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.local]             0.0171      0.019      0.887      0.375      -0.021       0.055
-# ==============================================================================
-# Omnibus:                     4417.436   Durbin-Watson:                   1.892
-# Prob(Omnibus):                  0.000   Jarque-Bera (JB):            40235.917
-# Skew:                          -3.092   Prob(JB):                         0.00
-# Kurtosis:                      13.096   Cond. No.                         22.6
-# ==============================================================================
-
-# Notes:
-# [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-# ```
+# %%
+# alignment
+plt.figure(figsize=(6, 6))
+sns.heatmap(
+    (
+        response_metrics_df[
+            [
+                "answer_relevance_openai",
+                "answer_relevance_anthropic",
+                "answer_relevance_together",
+                "answer_relevance_local",
+            ]
+        ]
+        .rename(columns=lambda col: col.replace("answer_relevance_", ""))
+        .corr()
+    ),
+    annot=True,
+    linewidth=0.5,
+    cmap=cmc.vik,  # sns.diverging_palette(220, 20, as_cmap=True),
+    vmin=-1,
+    center=0,
+    vmax=1,
+    square=True,
+)
+plt.title("RAG Answer Relevance")
 
 # %%
-print(results.summary().as_html())
-
-# %% [markdown]
-# <table class="simpletable">
-# <caption>OLS Regression Results</caption>
-# <tr>
-#   <th>Dep. Variable:</th>    <td>answer_relevance</td> <th>  R-squared:         </th> <td>   0.068</td>
-# </tr>
-# <tr>
-#   <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.066</td>
-# </tr>
-# <tr>
-#   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   33.30</td>
-# </tr>
-# <tr>
-#   <th>Date:</th>             <td>Fri, 08 Nov 2024</td> <th>  Prob (F-statistic):</th> <td>2.72e-93</td>
-# </tr>
-# <tr>
-#   <th>Time:</th>                 <td>16:14:42</td>     <th>  Log-Likelihood:    </th> <td>  1216.7</td>
-# </tr>
-# <tr>
-#   <th>No. Observations:</th>      <td>  6890</td>      <th>  AIC:               </th> <td>  -2401.</td>
-# </tr>
-# <tr>
-#   <th>Df Residuals:</th>          <td>  6874</td>      <th>  BIC:               </th> <td>  -2292.</td>
-# </tr>
-# <tr>
-#   <th>Df Model:</th>              <td>    15</td>      <th>                     </th>     <td> </td>
-# </tr>
-# <tr>
-#   <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>
-# </tr>
-# </table>
-# <table class="simpletable">
-# <tr>
-#                                              <td></td>                                                <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>
-# </tr>
-# <tr>
-#   <th>Intercept</th>                                                                               <td>    0.9175</td> <td>    0.010</td> <td>   95.645</td> <td> 0.000</td> <td>    0.899</td> <td>    0.936</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]</th>                                           <td>   -0.0533</td> <td>    0.014</td> <td>   -3.926</td> <td> 0.000</td> <td>   -0.080</td> <td>   -0.027</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]</th>                                            <td>   -0.1697</td> <td>    0.014</td> <td>  -12.507</td> <td> 0.000</td> <td>   -0.196</td> <td>   -0.143</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]</th>                                               <td>   -0.0647</td> <td>    0.014</td> <td>   -4.769</td> <td> 0.000</td> <td>   -0.091</td> <td>   -0.038</td>
-# </tr>
-# <tr>
-#   <th>C(eval_by, levels=providers)[T.anthropic]</th>                                               <td>    0.0073</td> <td>    0.014</td> <td>    0.540</td> <td> 0.590</td> <td>   -0.019</td> <td>    0.034</td>
-# </tr>
-# <tr>
-#   <th>C(eval_by, levels=providers)[T.together]</th>                                                <td>   -0.0002</td> <td>    0.014</td> <td>   -0.014</td> <td> 0.989</td> <td>   -0.028</td> <td>    0.027</td>
-# </tr>
-# <tr>
-#   <th>C(eval_by, levels=providers)[T.local]</th>                                                   <td>   -0.0117</td> <td>    0.014</td> <td>   -0.859</td> <td> 0.390</td> <td>   -0.039</td> <td>    0.015</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.anthropic]</th> <td>    0.0376</td> <td>    0.019</td> <td>    1.961</td> <td> 0.050</td> <td> 2.22e-05</td> <td>    0.075</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.anthropic]</th>  <td>    0.0290</td> <td>    0.019</td> <td>    1.514</td> <td> 0.130</td> <td>   -0.009</td> <td>    0.067</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.anthropic]</th>     <td>    0.0085</td> <td>    0.019</td> <td>    0.441</td> <td> 0.659</td> <td>   -0.029</td> <td>    0.046</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.together]</th>  <td>    0.0332</td> <td>    0.020</td> <td>    1.680</td> <td> 0.093</td> <td>   -0.006</td> <td>    0.072</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.together]</th>   <td>    0.0359</td> <td>    0.020</td> <td>    1.774</td> <td> 0.076</td> <td>   -0.004</td> <td>    0.075</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.together]</th>      <td>    0.0181</td> <td>    0.020</td> <td>    0.913</td> <td> 0.361</td> <td>   -0.021</td> <td>    0.057</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.anthropic]:C(eval_by, levels=providers)[T.local]</th>     <td>    0.0157</td> <td>    0.019</td> <td>    0.817</td> <td> 0.414</td> <td>   -0.022</td> <td>    0.053</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.together]:C(eval_by, levels=providers)[T.local]</th>      <td>    0.0417</td> <td>    0.019</td> <td>    2.166</td> <td> 0.030</td> <td>    0.004</td> <td>    0.079</td>
-# </tr>
-# <tr>
-#   <th>C(response_by, levels=providers)[T.local]:C(eval_by, levels=providers)[T.local]</th>         <td>    0.0171</td> <td>    0.019</td> <td>    0.887</td> <td> 0.375</td> <td>   -0.021</td> <td>    0.055</td>
-# </tr>
-# </table>
-# <table class="simpletable">
-# <tr>
-#   <th>Omnibus:</th>       <td>4417.436</td> <th>  Durbin-Watson:     </th> <td>   1.892</td>
-# </tr>
-# <tr>
-#   <th>Prob(Omnibus):</th>  <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td>40235.917</td>
-# </tr>
-# <tr>
-#   <th>Skew:</th>           <td>-3.092</td>  <th>  Prob(JB):          </th> <td>    0.00</td>
-# </tr>
-# <tr>
-#   <th>Kurtosis:</th>       <td>13.096</td>  <th>  Cond. No.          </th> <td>    22.6</td>
-# </tr>
-# </table><br/><br/>Notes:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-
-#
-#
-# R-squared and Adjusted R-squared: The R-squared value is 0.068, which means that the independent variables in the model explain about 6.8% of the variance in the dependent variable. The adjusted R-squared, which takes into account the number of predictors, is 0.066, so the model fit is relatively low.
-# F-statistic and p-value: The F-statistic is 33.30, with a p-value of 2.72e-93, which indicates that the model as a whole is statistically significant.
-# Coefficients: The coefficients represent the change in the dependent variable (answer_relevance) associated with a one-unit change in the independent variable, while holding all other variables constant.
-#
-# The intercept of 0.9092 represents the expected value of answer_relevance when all other variables are 0.
-# The coefficients for the interaction terms (e.g., C(response_by)[T.local]:C(eval_by)[anthropic]) represent the difference in the effect of the "response_by" variable depending on the "eval_by" variable.
-# For example, the coefficient of -0.0406 for C(response_by)[T.local]:C(eval_by)[anthropic] means that when the response is by "local" and the evaluation is by "anthropic", the expected answer_relevance is 0.0406 lower compared to the baseline.
+# alignment
+plt.figure(figsize=(6, 6))
+sns.heatmap(
+    (
+        response_metrics_df[
+            [
+                "faithfulness_openai",
+                # "faithfulness_anthropic",
+                # "faithfulness_together",
+                "faithfulness_local",
+            ]
+        ]
+        .rename(columns=lambda col: col.replace("faithfulness_", ""))
+        .corr()
+    ),
+    annot=True,
+    linewidth=0.5,
+    cmap=cmc.vik,  # sns.diverging_palette(220, 20, as_cmap=True),
+    vmin=-1,
+    center=0,
+    vmax=1,
+    square=True,
+)
+plt.title("RAG Faithfulness")
 
 # %%
