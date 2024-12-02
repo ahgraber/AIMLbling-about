@@ -55,7 +55,7 @@ This helps ensure the response is grounded and reduces the likelihood of halluci
 
 {{< figure
     src="images/RAG.png"
-    link="<https://docs.llamaindex.ai/en/stable/_static/getting_started/basic_rag.png>"
+    link="https://docs.llamaindex.ai/en/stable/"
     caption="Retrieval Augmented Generation.  Credit: LlamaIndex" >}}
 {{% /details %}}
 
