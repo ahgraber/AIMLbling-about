@@ -1,6 +1,6 @@
 ---
 title: "For Some Definition of 'Open'"
-date: 2024-11-30
+date: 2024-12-05
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -19,7 +19,7 @@ series: []
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 While I generally attempt to avoid pendantry, I am acutely aware that word choice -- and the specific connotations and denotations of the selected terms -- matter.
