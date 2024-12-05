@@ -33,3 +33,4 @@ MD024:
   siblings_only: true
 
 MD033: false
+MD034: false # no bare URLs
