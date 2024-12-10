@@ -237,10 +237,9 @@ OpenAI, and Google.[^cooling] Li, et al. report:
 > 500ml bottle of water for roughly 10-50 responses, depending on when and where it is deployed. These numbers may
 > increase for the newly-launched GPT-4 that reportedly has a substantially larger model size.[^thirsty]
 
-Microsoft shared in their 2024 sustainability report that they consumed over 7 million gallons (close to 30 million
-liters) in 2023, but did not break consumption down by source.[^microsoft-2024-sust] Although "consumption" here does
+Microsoft shared in their 2024 sustainability report that they consumed over 8 million liters (over 2 million gallons) of water in 2023, but did not break consumption down by source.[^microsoft-2024-sust] Although "consumption" here does
 not "lose" water per se (the water re-enters the water cycle), the evaporation of water removes it from the local area,
-which has negative impacts on areas effected by drought or extreme temperatures.
+which has negative impacts on "high stress" areas effected by drought or extreme temperatures.
 
 There's one other method that uses water to cool computers -- direct radiation. Microsoft has experimented with sinking
 data centers into the ocean and using water temperatures to cool the server components.[^underwater] Given concerns
