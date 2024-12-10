@@ -246,9 +246,9 @@ data centers into the ocean and using water temperatures to cool the server comp
 about ocean warming and icecap melting, I wanted to understand how much directly dumping heat into the ocean would
 effect temperatures:  
 Total global electricity production is estimated to be 24,816,400 GWh/year.[^wiki] If the global electricity production
-was used directly to heat the ocean with no losses, it would increase global ocean temperature by 0.00002$\degree$C per
+was used directly to heat the ocean with no losses, it would increase global ocean temperature by 0.00002\\$\degree\\$C per
 year, assuming electricity production does not change. What a relief!(?) Of course, this assumes the heat is
-dissapated; I imagine that exposing 90$\degree$C hotspots directly to ocean ecosystems would have negative impacts.
+dissapated; I imagine that exposing 90\\$\degree\\$C hotspots directly to ocean ecosystems would have negative impacts.
 
 <!-- ```sh
 #   global power production / ocean volume / water density / water specific heat
