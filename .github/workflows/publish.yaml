@@ -8,7 +8,7 @@ on: # yamllint disable-line rule:truthy
   #   paths: ["content/**", "assets/**", "config/**", "layouts/**", "static/**"]
   push: # Runs on pushes targeting the default branch; merged PRs result in pushes
     branches: ["main"]
-    paths: ["content/**", "assets/**", "config/**", "layouts/**", "static/**"]
+    paths: ["hugo/**"] #, "content/**", "assets/**", "config/**", "layouts/**", "static/**"]
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 # yamllint disable rule:colons
@@ -84,7 +84,7 @@ jobs:
           platforms: ${{ env.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: .  # explicitly include checked-out context with .git/ dir
+          context: ./hugo  # explicitly include checked-out context with .git/ dir
           file: ./docker/Dockerfile
           push: true
           labels: ${{ steps.meta.outputs.labels }}

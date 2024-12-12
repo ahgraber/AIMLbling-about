@@ -15,8 +15,8 @@
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
   "ignorePaths": [
-    "/public/**",
-    "/resources/**",
-    "/themes/**"
+    "/hugo/public/**",
+    "/hugo/resources/**",
+    "/hugo/themes/**"
   ],
 }

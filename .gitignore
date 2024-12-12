@@ -1,11 +1,11 @@
 # gitignore
 
 # hugo files
-/assets/jsconfig.json
-/public/
-/resources/
-.hugo_build.lock
-hugo_stats.json
+/hugo/assets/jsconfig.json
+/hugo/public/
+/hugo/resources/
+/hugo/.hugo_build.lock
+/hugo/hugo_stats.json
 
 # Editors
 .vscode/

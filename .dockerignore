@@ -1,12 +1,19 @@
 # ignore dirs
 
+.*_cache/
 .github/
 .taskfiles/
+.venv/
 node_modules/
 
-# ignore dotfiles
+docs/
+experiments/
+
+# ignore dotfiles & config
 
 .*
+flake.*
+/*.yaml
 
 # include .gitignore'd things
 
