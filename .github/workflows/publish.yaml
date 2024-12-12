@@ -84,8 +84,8 @@ jobs:
           platforms: ${{ env.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: ./hugo  # explicitly include checked-out context with .git/ dir
-          file: ./docker/Dockerfile
+          context: .  # explicitly include checked-out context with .git/ dir
+          file: ./hugo/docker/Dockerfile
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
