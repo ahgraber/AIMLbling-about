@@ -8,7 +8,7 @@ RUN  apk add --no-cache \
 WORKDIR /src
 COPY . .
 RUN --mount=type=cache,target=/tmp/hugo_cache \
-    hugo --minify
+    hugo --minify -s ./hugo
 
 FROM docker.io/library/nginx:1.27@sha256:fb197595ebe76b9c0c14ab68159fd3c08bd067ec62300583543f0ebda353b5be
 # implement changes required to run NGINX as an less-privileged user
@@ -20,7 +20,7 @@ RUN  sed -i 's,/var/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
   && chown -R 101:0 /etc/nginx \
   && chmod -R g+w /etc/nginx
 
-COPY --chown=nginx:nginx --from=build /src/public /site
-COPY --chown=nginx:nginx ./docker/default.conf /etc/nginx/conf.d/
+COPY --chown=nginx:nginx --from=build /src/hugo/public /site
+COPY --chown=nginx:nginx ./hugo/docker/default.conf /etc/nginx/conf.d/
 
 USER nginx

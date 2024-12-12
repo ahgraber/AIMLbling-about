@@ -11,6 +11,23 @@ I also use [Task](https://taskfile.dev/) to define standard tasks (see ./Taskfil
 such as automatically creating a new branch per post for drafting (`task: hugo:new title="<title>"`),
 and publishing posts when ready (`task hugo:publish path="<relative path to index.md>"`).
 
+### Updating theme
+
+The Hextra theme is added as a git submodule:
+
+```sh
+git submodule add git@github.com:imfing/hextra.git hugo/themes/hextra
+```
+
+To update/pin the submodule to a tag:
+
+```sh
+cd hugo/themes/hextra # path/to/submodule
+git checkout <tag or commit sha>
+# commit with detailed message
+cd ../../..; git commit -am "feat: Pinned hextra@<version or tag>" -S
+```
+
 ## Drafting new posts
 
 Drafts are managed in their own `blog/<title>` branch.

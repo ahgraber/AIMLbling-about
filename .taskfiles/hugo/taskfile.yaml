@@ -3,7 +3,8 @@
 version: "3"
 
 vars:
-  CONTENT_DIR: "./content/"
+  HUGO_DIR: "./hugo"
+  CONTENT_DIR: "{{ .HUGO_DIR }}/content/"
   BLOG_DIR: "{{ .CONTENT_DIR }}/blog"
 
 tasks:
@@ -11,7 +12,7 @@ tasks:
     desc: Create a new draft post from template
     cmds:
       - git checkout -b blog/{{ .name }} main
-      - hugo new content blog/{{ .name }}/index.md
+      - hugo new content blog/{{ .name }}/index.md -s {{.HUGO_DIR}}
       # NOTE: using gnu sed via nix; if using osx sed may have to use `sed -i ''`
       - |
         sed -i "/title: \"\"/c\title: '\{\{ title \"{{ .title }}\" \}\}'" {{ .BLOG_DIR }}/{{ .name }}/index.md
@@ -65,15 +66,15 @@ tasks:
 
   demo:
     desc: Serve the site (with drafts enabled)
-    cmd: hugo server -D --disableFastRender
+    cmd: hugo server -D --disableFastRender -s {{ .HUGO_DIR }}
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
-  render:
-    desc: Render all static site content
+  clean:
+    desc: CLean all rendered static site content
     cmds:
-      - "[[ ! -d {{.ROOT_DIR}}/public ]] || rm -r {{.ROOT_DIR}}/public"
-      - "[[ ! -d {{.ROOT_DIR}}/resources ]] || rm -r {{.ROOT_DIR}}/resources"
+      - "[[ ! -d {{.HUGO_DIR}}/public ]] || rm -r {{.HUGO_DIR}}/public"
+      - "[[ ! -d {{.HUGO_DIR}}/resources ]] || rm -r {{.HUGO_DIR}}/resources"
       - hugo --gc
     # cmd: nix build '.?submodules=1'
     preconditions:
@@ -86,7 +87,7 @@ tasks:
     preconditions:
       - {msg: "Colima not found", sh: "type colima"}
 
-  run:
+  build:
     desc: Build site with colima/docker
     deps:
       - task: _start
@@ -95,9 +96,19 @@ tasks:
       - |
         docker build \
           -t ghcr.io/ahgraber/aimlbling-about:debug \
-          -f ./docker/Dockerfile \
+          -f {{.HUGO_DIR}}/docker/Dockerfile \
           .
+      - echo "Run 'colima stop' to clean up!"
+    preconditions:
+      - {msg: "Docker not found", sh: "type docker"}
+
+  run:
+    desc: Run colima/docker container
+    deps:
+      - task: _start
+        # silent: true
+    cmds:
       - docker run --rm -p 8080:8080 ghcr.io/ahgraber/aimlbling-about:debug
-      - echo "Run `colima stop` to clean up!"
+      - echo "Run 'colima stop' to clean up!"
     preconditions:
       - {msg: "Docker not found", sh: "type docker"}
