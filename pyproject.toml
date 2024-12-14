@@ -1,0 +1,50 @@
+# --- project ----------------------------------------------------------------
+[project]
+name = "aimlbling-about"
+version = "v0.beta"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+  "aiml[ds,db,plot]", # default venv
+  "pydantic>=2",
+]
+
+[dependency-groups]
+dev = ["aiml[dev]"]
+lint = ["ruff>=0.8"]
+test = ["aiml[test]"]
+
+[project.urls]
+Repository = "https://github.com/ahgraber/AIMLbling-about"
+
+# --- uv ---------------------------------------------------------------------
+# This file serves as the root pyproject.toml definition.
+# The base project for the workspace is `./experiments/aiml`
+
+[tool.uv]
+package = false
+default-groups = ["dev", "test"]
+
+[tool.uv.sources]
+aiml = { workspace = true }
+# aiml = { path = "./experiments/aiml" }
+
+torch = [
+  { index = "pytorch-cpu", marker = "platform_system != 'Darwin'" },
+  # { index = "pytorch-gpu", extra="gpu", marker = "platform_system != 'Darwin'" },
+]
+
+[tool.uv.workspace]
+members = ["./experiments/*"]
+exclude = ["./docs", "./hugo"]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-gpu"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true

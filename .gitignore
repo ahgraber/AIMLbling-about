@@ -37,6 +37,7 @@ Thumbs.db
 TODO.md
 
 #extras
+.venv
 *pytest*
 *cache*
 node_modules/

@@ -27,24 +27,19 @@ from llama_index.embeddings.together import TogetherEmbedding
 from llama_index.embeddings.voyageai import VoyageEmbedding
 from llama_index.vector_stores.duckdb import DuckDBVectorStore
 
-# %%
-repo = subprocess.check_output(  # NOQA: S603
-    ["git", "rev-parse", "--show-toplevel"],  # NOQA: S607
-    cwd=Path(__file__).parent,
-    encoding="utf-8",
-).strip()
-repo = Path(repo).resolve()
-
-datadir = Path(__file__).parent / "data"
+from aiml.utils import basic_log_config, get_repo_path, this_file
 
 # %%
-sys.path.insert(0, str(Path(__file__).parent))
+repo = get_repo_path(this_file())
+
+datadir = Path(this_file()).parent / "data"
+
+# %%
+sys.path.insert(0, str(Path(this_file()).parent))
 from src.utils import check_torch_device, hugo_title_to_h1  # NOQA: E402
 
 # %%
-LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
-
-logging.basicConfig(format=LOG_FMT)
+basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 

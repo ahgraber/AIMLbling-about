@@ -30,33 +30,22 @@ import matplotlib.pyplot as plt
 from mizani.formatters import percent_format
 from plotnine import *
 
-# %%
-LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+from aiml.utils import basic_log_config, get_repo_path, this_file, torch_device
 
-logging.basicConfig(format=LOG_FMT)
+# %%
+basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-
 # %%
-def check_torch_device():
-    """Check which device pytorch will use."""
-    if torch.cuda.is_available():
-        device = torch.device("cuda:0")
-    elif torch.backends.mps.is_available():
-        device = torch.device("mps:0")
-    else:
-        device = torch.device("cpu")
+repo = get_repo_path(this_file())
 
-    logger.info(f"Found pytorch device '{device.type}'")
-    return device
-
-
-device = check_torch_device()
 
 # %%
 load_dotenv()
 token = os.getenv("HF_TOKEN")
+
+device = torch_device()
 
 # %%
 models = {
