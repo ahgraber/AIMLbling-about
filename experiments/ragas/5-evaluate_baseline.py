@@ -41,25 +41,18 @@ from ragas.metrics import (
 
 import matplotlib.pyplot as plt
 
-# %%
-repo = subprocess.check_output(  # NOQA: S603
-    ["git", "rev-parse", "--show-toplevel"],  # NOQA: S607
-    cwd=Path(__file__).parent,
-    encoding="utf-8",
-).strip()
-repo = Path(repo).resolve()
+from aiml.utils import basic_log_config, get_repo_path, this_file
 
-datadir = Path(__file__).parent / "data"
-
-# %%
-sys.path.insert(0, str(Path(__file__).parent))
 from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
 from src.utils import check_torch_device  # NOQA: E402
 
 # %%
-LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+repo = get_repo_path(this_file())
 
-logging.basicConfig(format=LOG_FMT)
+datadir = Path(this_file()).parent / "data"
+
+# %%
+basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logging.getLogger("src").setLevel(logging.DEBUG)
