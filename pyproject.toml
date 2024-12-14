@@ -5,10 +5,16 @@ version = "v0.beta"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
-dependencies = ["aiml", "pydantic>=2", "typing-extensions>=4.12"]
+dependencies = [
+  "aiml[ds,db,plot]", # default venv
+  "pydantic>=2",
+]
 
 [dependency-groups]
-dev = ["ipython>=8.8", "ipywidgets>=8.1.5", "notebook>=7.3.1"]
+dev = ["aiml[dev]"]
+lint = ["ruff>=0.8"]
+test = ["aiml[test]"]
+
 [project.urls]
 Repository = "https://github.com/ahgraber/AIMLbling-about"
 
@@ -18,7 +24,7 @@ Repository = "https://github.com/ahgraber/AIMLbling-about"
 
 [tool.uv]
 package = false
-default-groups = ["dev"]
+default-groups = ["dev", "test"]
 
 [tool.uv.sources]
 aiml = { workspace = true }
@@ -30,8 +36,8 @@ torch = [
 ]
 
 [tool.uv.workspace]
-members = ["./experiments/aiml"]
-exclude = ["./docs", "./hugo", "./experiments/__pycache__", "./experiments/**/__pycache__"]
+members = ["./experiments/*"]
+exclude = ["./docs", "./hugo"]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"

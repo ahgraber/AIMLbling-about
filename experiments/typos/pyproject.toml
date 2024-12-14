@@ -1,0 +1,81 @@
+[project]
+name = "typos-experiment"
+version = "0.0.1"
+description = ""
+requires-python = ">=3.10, <3.13"
+dependencies = ["aiml[ds,db,plot,nlp,torch,transformers,llm]"]
+
+[dependency-groups]
+dev = ["aiml[dev]"]
+lint = ["aiml[lint]"]
+test = ["aiml[test]"]
+
+[tool.uv]
+package = true
+default-groups = ["dev", "test"]
+
+[tool.uv.sources]
+aiml = { path = "../aiml", editable = true }
+
+# --- build-system -----------------------------------------------------------
+# ref: https://packaging.python.org/en/latest/tutorials/packaging-projects/
+# these should match the "setup-requires" packages in `setup.cfg`
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+only-include = ["./src/VERSION", "src", "tests"]
+skip-excluded-dirs = true
+# sources = ["src"]
+
+[tool.hatch.build.targets.sdist]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+macos-max-compat = true
+
+# --- pytest -----------------------------------------------------------------
+# ref: https://docs.pytest.org/en/7.3.x/reference/customize.html
+[tool.pytest.ini_options]
+addopts = '''
+    -ra
+    --strict-markers
+    --ignore=docs/conf.py
+    --ignore=setup.py
+    --ignore=ci
+    --ignore=.eggs
+    --import-mode=importlib
+    --tb=short
+'''
+# --doctest-modules
+# --doctest-glob=\*.rst
+norecursedirs = [
+  ".env",
+  ".git",
+  ".nox",
+  ".pytest_cache",
+  ".tox",
+  "__pycache__",
+  "dist",
+  "docs",
+  "build",
+  "migrations",
+  "notebooks",
+  "writeup",
+]
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+pythonpath = "src"
+testpaths = ["tests"]
+# log_cli = true
+
+# --- coverage ---------------------------------------------------------------
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true

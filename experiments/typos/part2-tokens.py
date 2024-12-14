@@ -14,12 +14,15 @@ import matplotlib.pyplot as plt
 from mizani.formatters import percent_format
 from plotnine import *
 
-# %%
-LOG_FMT = "%(asctime)s - %(levelname)-8s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+from aiml.utils import basic_log_config, get_repo_path, this_file
 
-logging.basicConfig(format=LOG_FMT)
+# %%
+basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+# %%
+repo = get_repo_path(this_file())
 
 # %%
 load_dotenv()

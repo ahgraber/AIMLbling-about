@@ -1,6 +1,7 @@
 # %%
-from damerau_levenshtein import *
 import pytest
+
+from src.damerau_levenshtein import *
 
 
 # %%
