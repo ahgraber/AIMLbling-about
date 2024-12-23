@@ -4,8 +4,8 @@ version: "3"
 
 vars:
   HUGO_DIR: "./hugo"
-  CONTENT_DIR: "{{ .HUGO_DIR }}/content/"
-  BLOG_DIR: "{{ .CONTENT_DIR }}/blog"
+  CONTENT_DIR: "./hugo/content"
+  BLOG_DIR: "./hugo/content/blog"
 
 tasks:
   new:
