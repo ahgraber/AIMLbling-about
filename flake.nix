@@ -1,9 +1,11 @@
 {
   description = "A simple flake to install Hugo test environment";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.devshell.url = "github:numtide/devshell";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    devshell.url = "github:numtide/devshell";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
 
   outputs = { self, devshell, flake-utils, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system: {

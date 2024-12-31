@@ -126,6 +126,7 @@ repos:
           (?x)^(
             ^.*(typos\.toml)$ |
             ^.*(\.sops\.yaml)$ |
+            ^.*(\.csv)$ |
             ^.*(\.dat)$ |
             ^.*(\.git.*)$
           )$
