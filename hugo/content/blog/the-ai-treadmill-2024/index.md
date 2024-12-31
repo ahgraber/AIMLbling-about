@@ -1,6 +1,6 @@
 ---
 title: The AI Treadmill (2024)
-date: 2024-12-23T15:25:00-05:00
+date: 2024-12-31
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -21,7 +21,7 @@ series: []
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 At the end of 2023, I was transferred to the team working on [PMI Infinity](https://www.pmi.org/infinity), an AI-powered tool and product for Project Managers,
