@@ -40,16 +40,10 @@ I present the consolidated list of links I found relevant or interesting enough 
 
 **By the numbers** <!-- markdownlint-disable-line MD036 -->
 
-In 2024, the AI Treadmill comprised approximately 101 emails linking to 2000 different articles, posts, code repos, documentation sites, or whitepapers.
-37% (743) of these are papers hosted on arxive.org; 162 are social media posts (LinkedIn, Twitter/X), 150 are Github repos, 52 are discussions on HackerNews, and at least 45 are hosted on Medium.
+In 2024, the AI Treadmill comprised ~100 emails linking to ~2000 different articles, posts, code repos, documentation sites, or whitepapers.
+38% (757) of these are papers hosted on [arxiv.org](https://arxiv.org); 85 are social media posts (LinkedIn, Twitter/X), 154 are Github repos, 53 are discussions on HackerNews, and at least 50 are hosted on Medium or Substack.
 
-{{% details title="AI Treadmill, 2024" closed="true" %}}
-
-In (roughly) temporal order of inclusion in AI Treadmill newsletter (deduplication may have thrown off the order here and there):
-
-{{< table path="treadmill.csv" header="true" caption="AI Treadmill, 2024" >}}
-
-{{% /details %}}
+[**Here**](./treadmill_2024.csv) are all of the links, in (roughly) temporal order of inclusion in AI Treadmill newsletter (deduplication may have thrown off the order here and there)
 
 ## Thoughts / Lessons Learned
 
@@ -74,18 +68,18 @@ In (roughly) temporal order of inclusion in AI Treadmill newsletter (deduplicati
 
    Some good folks to follow (listing by name; you can follow in LinkedIn, X/Twitter, Bluesky, wherever)
 
-   - Eugene Yan
-   - Chip Huyen
-   - Clem Delangue
-   - Philipp Schmid
-   - Niels Rogge
-   - Lilian Weng
-   - Simon Willison
-   - Paul Iusztin
-   - Ethan Mollick
-   - Andrew Ng
-   - Hamel Husain
-   - Vicki Boykis
+   - [Eugene Yan](https://eugeneyan.com/)
+   - [Chip Huyen](https://huyenchip.com/)
+   - [Clem Delangue](https://huggingface.co/clem)
+   - [Philipp Schmid](https://www.philschmid.de/)
+   - [Niels Rogge](https://huggingface.co/nielsr)
+   - [Lilian Weng](https://lilianweng.github.io/)
+   - [Simon Willison](https://simonwillison.net/)
+   - [Paul Iusztin](https://www.pauliusztin.me/)
+   - [Ethan Mollick](https://mgmt.wharton.upenn.edu/profile/emollick/)
+   - [Andrew Ng](https://www.andrewng.org/)
+   - [Hamel Husain](https://hamel.dev/)
+   - [Vicki Boykis](https://vickiboykis.com/)
 
 3. I have no idea how successful the newsletter is (anecdotally I know it is appreciated, but I have no tracking on what the open/clickthrough rates are).
 
