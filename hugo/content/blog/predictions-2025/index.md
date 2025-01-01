@@ -1,6 +1,6 @@
 ---
 title: Predictions 2025
-date: 2024-12-31T14:22:57-05:00
+date: 2025-01-01
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -18,7 +18,7 @@ series: []
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 <!-- markdownlint-disable-file MD036 -->
