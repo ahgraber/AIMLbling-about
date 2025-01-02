@@ -138,7 +138,14 @@ exclude = []
 > Every directory included by the members globs (and not excluded by the exclude globs) must contain a pyproject.toml file.
 
 By default, `uv run` and `uv sync` operates on the workspace _root_.
-To run in a specific workspace, use `uv run --package <name>`.
+To use the environment of a specific workspace, use
+
+```sh
+# update the dependencies for the workspace
+uv sync --package <name>
+# run a command in a workspace with workspace dependencies
+uv run --package <name> <command>
+```
 
 Dependencies specified in `[tool.uv.sources]` of the workspace root apply to all members (unless overridden on a per-member basis)
 
