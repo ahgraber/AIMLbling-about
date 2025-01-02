@@ -243,7 +243,7 @@ HN Discussion,https://news.ycombinator.com/item?id=39809177
 Which AI should I use? Superpowers and the State of Play,https://www.oneusefulthing.org/p/which-ai-should-i-use-superpowers
 LLM API Pricing,https://www.botgenuity.com/tools/llm-pricing
 Y2Z/monolith: ⬛️ CLI tool for saving complete web pages as a single HTML file,https://github.com/Y2Z/monolith
-https://www.linkedin.com/posts/a-roucher_%3F%3F%3F%3F%3F%3F-%3F%3F-%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F-activity-7178079605495353347-Yoq9?utm_source=share&utm_medium=member_ios,https://www.linkedin.com/posts/a-roucher_%3F%3F%3F%3F%3F%3F-%3F%3F-%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F-activity-7178079605495353347-Yoq9?utm_source=share&utm_medium=member_ios
+https://www.linkedin.com/posts/a-roucher_%3F%3F%3F%3F%3F%3F-%3F%3F-%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F-activity-7178079605495353347-Yoq9,https://www.linkedin.com/posts/a-roucher_%3F%3F%3F%3F%3F%3F-%3F%3F-%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F-activity-7178079605495353347-Yoq9
 Wired News,https://www.wired.com/story/eight-google-employees-invented-modern-ai-transformers-paper/
 2402.02622 - DenseFormer: Enhancing Information Flow in Transformers via Depth Weighted Averaging,https://arxiv.org/abs/2402.02622
 How LLMs boost AI progress: Devin's demo | Andrew Ng posted on the topic,https://www.linkedin.com/feed/update/urn:li:activity:7176663393708224512
@@ -255,8 +255,7 @@ Ask HN: What are you building LLM/RAG chatbots with,https://news.ycombinator.com
 World,https://arstechnica.com/information-technology/2024/03/worlds-first-global-ai-resolution-unanimously-adopted-by-united-nations/
 2403.10949 - SelfIE: Self-Interpretation of Large Language Model Embeddings,https://arxiv.org/abs/2403.10949
 2403.13793 - Evaluating Frontier Models for Dangerous Capabilities,https://arxiv.org/abs/2403.13793
-HN discussion,https://app.fastmail.com/mail/Inbox/%E2%80%A2https:/news.ycombinator.com/item?id=39443972&u=6b394014
-Unstructured.io,https://unstructured.io/
+HN discussion,https://unstructured.io/
 "Arize-ai/phoenix: AI Observability & Evaluation - Evaluate, troubleshoot, and fine tune your LLM, CV, and NLP models in a notebook.",https://github.com/Arize-ai/phoenix/tree/main
 "How to perform, evaluate and track Advanced RAG using LlamaIndex, Ragas and AzureML",https://www.linkedin.com/pulse/performing-evaluating-tracking-advanced-rag-ft-azureml-prabhat-i1rkc/
 "The Journey of RAG Development: From Notebook to Microservices | by Wenqi Glantz | Feb, 2024 | Towards Data Science",https://archive.is/jUaOr
@@ -275,7 +274,7 @@ LiteLLM,https://github.com/BerriAI/litellm
 https://codingwithintelligence.com/,https://codingwithintelligence.com/
 https://generatingconversation.substack.com/,https://generatingconversation.substack.com/
 Machine Learning: The High Interest Credit Card of Technical Debt,https://research.google/pubs/machine-learning-the-high-interest-credit-card-of-technical-debt/
-OpenAccess-AI-Collective/axolotl: Go ahead and axolotl questions,https://app.fastmail.com/mail/Inbox/%5baxolotl/README.md%20at%20main%20%C2%B7%20OpenAccess-AI-Collective/axolotl%20%C2%B7%20GitHub%5d(https:/github.com/OpenAccess-AI-Collective/axolotl/blob/main/README.md?u=6b394014#axolotl-supports)
+OpenAccess-AI-Collective/axolotl: Go ahead and axolotl questions,https://github.com/axolotl-ai-cloud/axolotl/tree/main
 NVIDIA/NeMo-Guardrails,https://github.com/NVIDIA/NeMo-Guardrails
 https://pastebin.com/vnxJ7kQk,https://pastebin.com/vnxJ7kQk
 LangChain,https://www.youtube.com/watch?v=wd7TZ4w1mSw&list=PLfaIDFEXuae2LXbO1_PKyVJiQ23ZztA0x&pp=iAQB
@@ -284,7 +283,7 @@ MiniCPM: Unveiling the Potential of End-side Large Language Models,https://sheng
 2402.01781 - When Benchmarks are Targets: Revealing the Sensitivity of Large Language Model Leaderboards,https://arxiv.org/abs/2402.01781
 Mastering RAG: How To Architect An Enterprise RAG System - Galileo,https://www.rungalileo.io/blog/mastering-rag-how-to-architect-an-enterprise-rag-system#multi-tenancy
 Scaling RAG for Production - VectorHub,https://hub.superlinked.com/scaling-rag-for-production
-RAG + Agents w/ Llamaindex,https://www.linkedin.com/posts/llamaindex_4-levels-of-agents-for-rag-theres-activity-7155596883472596992-WZGA?utm_source=share&utm_medium=member_ios
+RAG + Agents w/ Llamaindex,https://www.linkedin.com/posts/llamaindex_4-levels-of-agents-for-rag-theres-activity-7155596883472596992-WZGA
 RAKE,https://www.analyticsvidhya.com/blog/2021/10/rapid-keyword-extraction-rake-algorithm-in-natural-language-processing/
 Introducing the Enterprise Scenarios Leaderboard: a Leaderboard for Real World Use Cases,https://huggingface.co/blog/leaderboards-on-the-hub-patronus
 Seminar,https://www.ctouniverse.com/frs/25388599/llmops-for-your-data--best-practices-to-ensure-safety--quality--and-cost/download
@@ -460,9 +459,8 @@ Niels Rogge on LinkedIn: #documentai #microsoft #huggingface #artificialintellig
 stealing part of a production LLM,https://arxiv.org/abs/2403.06634
 New paper on search-in-the-Chain by Shicheng Xu | LlamaIndex posted on the topic,https://www.linkedin.com/posts/llamaindex_search-in-the-chain-this-paper-by-shicheng-activity-7174801183054729216-K3MC
 "Likelihood functions, p-values, and the replication crisis - Arbital",https://arbital.com/p/likelihoods_not_pvalues/?l=4xx
-How LLMs boost AI progress: Devin's demo | Andrew Ng posted on the topic,"https://www.linkedin.com/feed/update/urn:li:activity:7176663393708224512?commentUrn=urn:li:comment:(activity:7176663393708224512,7176742541713707008)&dashCommentUrn=urn:li:fsd_comment:(7176742541713707008,urn:li:activity:7176663393708224512)"
+How LLMs boost AI progress: Devin's demo | Andrew Ng posted on the topic,https://www.linkedin.com/feed/update/urn:li:activity:7176663393708224512?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7176663393708224512%2C7176742541713707008%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287176742541713707008%2Curn%3Ali%3Aactivity%3A7176663393708224512%29
 mshumer/gpt-prompt-engineer,https://github.com/mshumer/gpt-prompt-engineer
-Aymeric Roucher on LinkedIn: 𝐁𝐞𝐰𝐚𝐫𝐞 𝐨𝐟 𝐋𝐞𝐚𝐝𝐞𝐫𝐛𝐨𝐚𝐫𝐝𝐬 - 𝐁𝐮𝐢𝐥𝐝 𝐲𝐨𝐮𝐫 𝐨𝐰𝐧… | 14 comments,https://www.linkedin.com/posts/a-roucher_%3F%3F%3F%3F%3F%3F-%3F%3F-%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F%3F-activity-7178079605495353347-Yoq9
 Eduardo Ordax on LinkedIn: #rag #genai #llmops | 13 comments,https://www.linkedin.com/posts/eordax_rag-genai-llmops-activity-7178771071121170432-Cs86
 Microsoft Project Sophia,https://adoption.microsoft.com/en-us/project-sophia/
 Claude 3 beats GPT-4 on Aider,https://aider.chat/2024/03/08/claude-3.html
@@ -1830,7 +1828,7 @@ They Said It Couldn't Be Done,https://huggingface.co/blog/Pclanglais/common-mode
 Getting Started - Turftopic,https://x-tabdeveloping.github.io/turftopic/
 ZenML - LLMOps Database,https://www.zenml.io/llmops-database
 "Codium-ai/AlphaCodium: Official implementation for the paper: ""Code Generation with AlphaCodium: From Prompt Engineering to Flow Engineering""""",https://github.com/Codium-ai/AlphaCodium/tree/main
-"AI Engineering: Building Applications with Foundation Models: Huyen, Chip: 9781098166304: Amazon.com: Books",https://www.amazon.com/AI-Engineering-Building-Applications-Foundation/dp/1098166302?=&language=en_US
+"AI Engineering: Building Applications with Foundation Models: Huyen, Chip: 9781098166304: Amazon.com: Books",https://www.amazon.com/AI-Engineering-Building-Applications-Foundation/dp/1098166302?language=en_US
 AILuminate - MLCommons,https://mlcommons.org/ailuminate/
 A New Benchmark for the Risks of AI | WIRED,https://www.wired.com/story/benchmark-for-ai-risks/
 "gusye1234/nano-graphrag: A simple, easy-to-hack GraphRAG implementation",https://github.com/gusye1234/nano-graphrag
@@ -1970,8 +1968,14 @@ The Year in LlamaIndex: 2024 — LlamaIndex - Build Knowledge Assistants over yo
 Nvidia in 2024: year in review | TechRadar,https://www.techradar.com/computing/gpu/nvidia-in-2024-year-in-review
 What We've Learned From A Year of Building with LLMs – Applied LLMs,https://applied-llms.org/
 A Global Capability Center leader's guide for driving Generative AI adoption,https://www2.deloitte.com/content/dam/Deloitte/in/Documents/strategy/in-strategy-a-gcc-leaders-guide-for-driving-gen-ai-adoption-single-page-web-version-v5-noexp.pdf
+Things we learned about LLMs in 2024,https://simonwillison.net/2024/Dec/31/llms-in-2024/
+What just happened - by Ethan Mollick - One Useful Thing,https://www.oneusefulthing.org/p/what-just-happened
+The biggest AI flops of 2024 | MIT Technology Review,https://www.technologyreview.com/2024/12/31/1109612/biggest-worst-ai-artificial-intelligence-flops-fails-2024/
+Noteworthy AI Research Papers of 2024 (Part One),https://magazine.sebastianraschka.com/p/ai-research-papers-2024-part-1
+"Happy New Year! Hopes For 2025 With Mustafa Suleyman, Audrey Tang, Albert Gu, Hanno Basse, and more...",https://www.deeplearning.ai/the-batch/issue-282/
 "🌁#80: What's in 2025? From Elad Gil, François Chollet, Maxime Labonne, swyx and others",https://www.turingpost.com/p/fod80
 "Clem Delangue 🤗: ""Six predictions for AI in 2025 (and a review of how my 2024 predictions turned out):"" — Bluesky",https://bsky.app/profile/clem.hf.co/post/3lcdceiv7vk2h
+"25 AI Predictions for 2025, from Marcus on AI",https://garymarcus.substack.com/p/25-ai-predictions-for-2025-from-marcus
 12 AI predictions for 2025 | CIO,https://www.cio.com/article/3630070/12-ai-predictions-for-2025.html
 "From AI agents to enterprise budgets, 20 VCs share their predictions on enterprise tech in 2025 | TechCrunch",https://techcrunch.com/2024/12/30/from-ai-agents-to-enterprise-budgets-20-vcs-share-their-predictions-on-enterprise-tech-in-2025/
 20 Predictions For AI in 2025 - by Alberto Romero,https://www.thealgorithmicbridge.com/p/20-predictions-for-ai-in-2025
