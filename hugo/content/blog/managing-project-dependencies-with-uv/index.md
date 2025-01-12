@@ -17,8 +17,7 @@ draft: true
 
 I've recently started using [uv](https://github.com/astral-sh/uv) to manage my python dependencies.
 Previously, I primarily managed my dependencies with `conda`, and supplemented with `pip` when packages were not available through anaconda.org.
-The majority of this change is due to workflow friction - it was unpleasant to jump through the required hoops myself, and unreasonable to expect
-others to do it when had such frustrations.
+This process update is the result of workflow friction when using `conda` - it was unpleasant to jump through the required hoops myself, and unreasonable to expect others to do it when had such issues.
 
 ## Bill of Grievances
 
@@ -226,18 +225,20 @@ uv add --editable /path/to/projects/bar/
 
 ## Example - Workspaces with central dependency
 
-As an example, I'll use the needs I have for this blog:
+As an example, I'll share the configuration I use for this blog:
 
-1. I have a local package `aiml` where I define convenience functions used across all of my experiments
-2. Each experiment has a different set of dependencies and is managed as a workspace
-3. When possible, I expect the workspaces to use the same dependencies/versions
+1. I have a local package `aiml` where I define convenience functions used across all of my experiments.
+   Due to the organizational decision to separate blog content (`hugo/`) from experiments (`experiments/`), I don't use a standard `src` style layout.
+   Typically, the main local package would be at `src/<packagename>/`.
+2. Each experiment has a different set of dependencies and is managed as a workspace.
+3. When possible, workspaces use the same dependencies/versions.
 
 As a result, I end up with a fairly complex configuration:
 
 - The `pyproject.toml` at the repo root defines a "default" python environment based on the local `aiml` package (1, 3).
 - `experiments\aiml\pyproject.toml` defines the local `aiml` package (1) and sets of optional dependencies for easy installation (3)
 - `experiments\*\pyproject.toml` define the workspace dependencies, and typically leverate the predefined sets with `aiml[set1, set2,...]` (2, 3).
-  If needed, the workspace can define additional dependencies or override the optional dependencies specified in `aiml`
+  If needed, the workspace can define additional dependencies or override the optional dependencies specified in `aiml`.
 
 {{< tabs items="root,main,workspace" >}}
 
@@ -260,7 +261,7 @@ dependencies = [
 
 [dependency-groups]
 dev = ["aiml[dev]"]
-lint = ["ruff>=0.8"]
+lint = ["aiml[lint]"]
 test = ["aiml[test]"]
 
 # --- uv ---------------------------------------------------------------------
@@ -298,7 +299,7 @@ explicit = true
 {{< /tab >}}
 {{< tab >}}
 
-This is the `pyproject.toml` of the "main" codebase; we assume this local package will be available in all other workspaces
+This is the `experiments\aiml\pyproject.toml` for the "main" codebase; we assume this local package will be available in all other workspaces
 and declare a standardized set of dependencies for the project that can be used per-workspace
 
 ```toml
@@ -319,7 +320,7 @@ dependencies = [
 
 [dependency-groups]
 dev = ["aiml[dev]"]
-lint = ["ruff>=0.8"]
+lint = ["aiml[lint]"]
 test = ["aiml[test]"]
 
 [project.optional-dependencies]
@@ -446,7 +447,7 @@ macos-max-compat = true
 {{< /tab >}}
 {{< tab >}}
 
-This is the `pyproject.toml` of a workspace.
+This is the `experiments\*\pyproject.toml` of a workspace.
 
 ```toml
 [project]

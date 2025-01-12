@@ -315,7 +315,7 @@ dev = [
     { name = "aiml", extra = ["dev"] },
 ]
 lint = [
-    { name = "ruff" },
+    { name = "aiml", extra = ["lint"] },
 ]
 test = [
     { name = "aiml", extra = ["test"] },
@@ -326,7 +326,7 @@ requires-dist = [{ name = "aiml", extras = ["ds", "db", "plot"], editable = "exp
 
 [package.metadata.requires-dev]
 dev = [{ name = "aiml", extras = ["dev"], editable = "experiments/aiml" }]
-lint = [{ name = "ruff", specifier = ">=0.8" }]
+lint = [{ name = "aiml", extras = ["lint"], editable = "experiments/aiml" }]
 test = [{ name = "aiml", extras = ["test"], editable = "experiments/aiml" }]
 
 [[package]]

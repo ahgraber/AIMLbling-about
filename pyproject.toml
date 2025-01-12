@@ -11,7 +11,7 @@ dependencies = [
 
 [dependency-groups]
 dev = ["aiml[dev]"]
-lint = ["ruff>=0.8"]
+lint = ["aiml[lint]"]
 test = ["aiml[test]"]
 
 [project.urls]
