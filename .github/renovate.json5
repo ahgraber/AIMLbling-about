@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
     "config:best-practices",
     "docker:enableMajor",
     ":automergeDigest",
@@ -12,11 +12,32 @@
     ":skipStatusChecks",
     ":timezone(America/New_York)",
   ],
-  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
-  "ignorePaths": [
-    "/hugo/public/**",
-    "/hugo/resources/**",
-    "/hugo/themes/**"
+  dependencyDashboardTitle: "Renovate Dashboard 🤖",
+  suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
+  ignorePaths: ["/hugo/public/**", "/hugo/resources/**", "/hugo/themes/**"],
+  packageRules: [
+    {
+      description: ["Auto-merge updates for trusted pre-commit packages"],
+      matchDatasources: ["github-tags"],
+      automerge: true,
+      automergeType: "branch",
+      matchUpdateTypes: ["patch"],
+      matchPackageNames: [
+        "/adrienverge/yamllint/",
+        "/charliermarsh/ruff-pre-commit/",
+        "/crate-ci/typos/",
+        "/igorshubovych/markdownlint-cli/",
+        "/sirosen/texthooks/",
+        "/zricethezav/gitleaks/",
+      ],
+    },
+    {
+      description: ["Auto-merge GitHub Actions for minor and patch"],
+      matchManagers: ["github-actions"],
+      matchDatasources: ["github-tags"],
+      automerge: true,
+      automergeType: "branch",
+      matchUpdateTypes: ["minor", "patch"],
+    },
   ],
 }

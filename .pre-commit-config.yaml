@@ -63,7 +63,7 @@ repos:
       - id: fix-ligatures
         stages: [pre-commit]
   - repo: https://github.com/zricethezav/gitleaks
-    rev: "v8.21.2"
+    rev: "v8.22.1"
     hooks:
       - id: gitleaks
   - repo: https://github.com/stefmolin/exif-stripper
@@ -107,7 +107,7 @@ repos:
           # - "--ignore-path '**/*.y*ml'"
         stages: [pre-commit]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.8.3"
+    rev: "v0.9.1"
     hooks:
       - id: ruff
         name: Lint and Format with Ruff
@@ -117,7 +117,7 @@ repos:
   ### in order for typos pre-commit hook to read it.
   ### In this case, comment out this block until ".typos.toml" has been committed successfully
   - repo: https://github.com/crate-ci/typos
-    rev: "v1.28.3"
+    rev: "v1.29.4"
     hooks:
       - id: typos
         name: Spellcheck with Typos
@@ -126,6 +126,7 @@ repos:
           (?x)^(
             ^.*(typos\.toml)$ |
             ^.*(\.sops\.yaml)$ |
+            ^.*(\.csv)$ |
             ^.*(\.dat)$ |
             ^.*(\.git.*)$
           )$

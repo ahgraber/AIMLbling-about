@@ -19,6 +19,7 @@ test = ["aiml[test]"]
 
 [project.optional-dependencies]
 dev = ["hatchling>=1.26.3"]
+lint = ["ruff>=0.8"]
 test = ["coverage>=4.2", "pytest>=8.3.4", "pytest-asyncio>=0.24.0", "pytest-cov>=6.0.0"]
 ds = [
   # ref: https://scientific-python.org/specs/spec-0000/
@@ -51,11 +52,11 @@ nlp = [
 torch = [
   "tensorboard>=2.18",
   "torch>=2",
-  "torchaudio>=2.5",
+  "torchaudio>=2",
   "torchdata>=0.10",
   "torchmetrics>=1.6",
-  "torchtext>=0.18",
-  "torchvision>=0.20",
+  "torchtext>=0.16",
+  "torchvision>=0.16",
 ]
 transformers = [
   "accelerate>=1.2.0",
@@ -80,7 +81,8 @@ langchain = [
   "langchain-voyageai>=0.1.3",
 ]
 llm = [
-  # "aisuite[all]>=0.1.3",
+  # "aisuite[all]>=0.1.6",
+  "anthropic",                     #>=0.30",
   "bert-score>=0.3.13",
   "bm25s>=0.2.5",
   "dspy-ai>=2.5",
@@ -96,27 +98,27 @@ llm = [
   "tenacity>=8.5",
   "tiktoken>=0.8",
   "together>=1.3.5",
-  "unstructured>=0.16.11",
+  "unstructured>=0.16",
   "voyageai>=0.3.2",
 ]
 llamaindex = [
-  "llama-index-agent-openai>=0.4.0",
+  "llama-index-agent-openai>=0.4",
   "llama-index>=0.11,<0.13",
-  "llama-index-embeddings-huggingface>=0.4.0",
-  "llama-index-embeddings-openai>=0.3.1",
-  "llama-index-embeddings-together>=0.3.0",
-  "llama-index-embeddings-voyageai>=0.3.1",
-  "llama-index-llms-anthropic>=0.5.0",
-  "llama-index-llms-huggingface>=0.4.1",
-  "llama-index-llms-huggingface-api>=0.3.0",
-  "llama-index-llms-openai-like>=0.3.3",
-  "llama-index-llms-together>=0.3.1",
-  "llama-index-program-openai>=0.3.1",
-  "llama-index-question-gen-openai>=0.3.0",
-  "llama-index-readers-file>=0.4.1",
-  "llama-index-readers-llama-parse>=0.4.0",
-  "llama-index-retrievers-bm25>=0.5.0",
-  "llama-index-vector-stores-duckdb>=0.3.0",
+  "llama-index-embeddings-huggingface>=0.4",
+  "llama-index-embeddings-openai>=0.3",
+  "llama-index-embeddings-together>=0.3",
+  "llama-index-embeddings-voyageai>=0.3",
+  "llama-index-llms-anthropic>=0.5",
+  "llama-index-llms-huggingface>=0.4",
+  "llama-index-llms-huggingface-api>=0.3",
+  "llama-index-llms-openai-like>=0.3",
+  "llama-index-llms-together>=0.3",
+  "llama-index-program-openai>=0.3",
+  "llama-index-question-gen-openai>=0.3",
+  "llama-index-readers-file>=0.4",
+  "llama-index-readers-llama-parse>=0.4",
+  "llama-index-retrievers-bm25>=0.5",
+  "llama-index-vector-stores-duckdb>=0.3",
 ]
 lint = ["ruff>=0.8"]
 
