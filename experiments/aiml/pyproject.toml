@@ -14,7 +14,7 @@ dependencies = [
 
 [dependency-groups]
 dev = ["aiml[dev]"]
-lint = ["ruff>=0.8"]
+lint = ["aiml[lint]"]
 test = ["aiml[test]"]
 
 [project.optional-dependencies]
@@ -37,13 +37,7 @@ ds = [
   "tabulate>=0.9.0",
   "xlrd>=2.0",
 ]
-db = [
-  "pyodbc>=5",
-  # "redis>=5",
-  # "snowflake-connector-python>=3.11",
-  # "snowflake-sqlalchemy>=1.6",
-  "sqlalchemy>=2",
-]
+db = ["pyodbc>=5", "sqlalchemy>=2"]
 plot = ["cmcrameri>=1.9", "matplotlib>=3.8", "mizani>=0.13", "plotly>=5.24", "plotnine>=0.14", "seaborn>=0.13"]
 api = ["fastapi>=0.115.6", "uvicorn>=0.32.1"]
 nlp = [
@@ -124,6 +118,7 @@ llamaindex = [
   "llama-index-retrievers-bm25>=0.5.0",
   "llama-index-vector-stores-duckdb>=0.3.0",
 ]
+lint = ["ruff>=0.8"]
 
 [tool.uv]
 package = true
