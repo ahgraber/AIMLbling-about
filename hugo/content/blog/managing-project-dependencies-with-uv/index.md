@@ -1,6 +1,6 @@
 ---
 title: Managing Project Dependencies With `uv`
-date: 2024-12-14T16:01:57-05:00
+date: 2025-01-12
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -8,11 +8,12 @@ authors:
 tags:
   # meta
   - "blogumentation"
+  - "opinion"
 series: []
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 I've recently started using [uv](https://github.com/astral-sh/uv) to manage my python dependencies.
@@ -42,6 +43,8 @@ but then you have to ensure the dependencies of the pip-installed packages are a
 Forget `--no-deps`? Start over. 🤦🏻‍♂️
 
 ## Unified dependency management with `uv`
+
+![uv](./images/uv.png)
 
 `uv` makes the workflow much simpler. Dependencies are defined in `pyproject.toml` or can reuse an existing `requirements.txt`.
 Virtual environments are automatically created and used. `uv` can manage and install python versions independent of system python.
