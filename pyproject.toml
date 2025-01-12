@@ -7,12 +7,11 @@ readme = "README.md"
 requires-python = ">=3.10,<3.13"
 dependencies = [
   "aiml[ds,db,plot]", # default venv
-  "pydantic>=2",
 ]
 
 [dependency-groups]
 dev = ["aiml[dev]"]
-lint = ["ruff>=0.8"]
+lint = ["aiml[lint]"]
 test = ["aiml[test]"]
 
 [project.urls]
@@ -25,6 +24,7 @@ Repository = "https://github.com/ahgraber/AIMLbling-about"
 [tool.uv]
 package = false
 default-groups = ["dev", "test"]
+python-preference = "managed"
 
 [tool.uv.sources]
 aiml = { workspace = true }

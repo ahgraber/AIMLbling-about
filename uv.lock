@@ -187,6 +187,9 @@ transformers = [
 dev = [
     { name = "aiml", extra = ["dev"] },
 ]
+lint = [
+    { name = "aiml", extra = ["lint"] },
+]
 test = [
     { name = "aiml", extra = ["test"] },
 ]
@@ -298,6 +301,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [{ name = "aiml", extras = ["dev"] }]
+lint = [{ name = "aiml", extras = ["lint"] }]
 test = [{ name = "aiml", extras = ["test"] }]
 
 [[package]]
@@ -306,7 +310,6 @@ version = "0b0"
 source = { virtual = "." }
 dependencies = [
     { name = "aiml", extra = ["db", "ds", "plot"] },
-    { name = "pydantic" },
 ]
 
 [package.dev-dependencies]
@@ -314,21 +317,18 @@ dev = [
     { name = "aiml", extra = ["dev"] },
 ]
 lint = [
-    { name = "ruff" },
+    { name = "aiml", extra = ["lint"] },
 ]
 test = [
     { name = "aiml", extra = ["test"] },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "aiml", extras = ["ds", "db", "plot"], editable = "experiments/aiml" },
-    { name = "pydantic", specifier = ">=2" },
-]
+requires-dist = [{ name = "aiml", extras = ["ds", "db", "plot"], editable = "experiments/aiml" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "aiml", extras = ["dev"], editable = "experiments/aiml" }]
-lint = [{ name = "ruff", specifier = ">=0.8" }]
+lint = [{ name = "aiml", extras = ["lint"], editable = "experiments/aiml" }]
 test = [{ name = "aiml", extras = ["test"], editable = "experiments/aiml" }]
 
 [[package]]
@@ -3687,6 +3687,9 @@ wheels = [
 name = "nvidia-cufft-cu12"
 version = "11.0.2.54"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nvidia-nvjitlink-cu12", marker = "sys_platform != 'darwin'" },
+]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/86/94/eb540db023ce1d162e7bea9f8f5aa781d57c65aed513c33ee9a5123ead4d/nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl", hash = "sha256:794e3948a1aa71fd817c3775866943936774d1c14e7628c74f6f7417224cdf56", size = 121635161 },
 ]
@@ -6125,9 +6128,11 @@ dependencies = [
     { name = "nvidia-cusolver-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "nvidia-cusparse-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "nvidia-nccl-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "nvidia-nvjitlink-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "nvidia-nvtx-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "setuptools", marker = "python_full_version >= '3.12'" },
     { name = "sympy" },
-    { name = "triton", marker = "python_full_version < '3.12' and platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "triton", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "typing-extensions" },
 ]
 wheels = [
@@ -6324,7 +6329,7 @@ name = "triton"
 version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "filelock", marker = "python_full_version < '3.12' and sys_platform != 'darwin'" },
+    { name = "filelock", marker = "sys_platform != 'darwin'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/95/05/ed974ce87fe8c8843855daa2136b3409ee1c126707ab54a8b72815c08b49/triton-2.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a2294514340cfe4e8f4f9e5c66c702744c4a117d25e618bd08469d0bfed1e2e5", size = 167900779 },
