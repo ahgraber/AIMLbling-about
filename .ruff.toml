@@ -135,7 +135,7 @@ section-order = ["future", "standard-library", "third-party", "torch", "llm", "w
 [lint.isort.sections]
 "sci" = ["numpy", "pandas", "scipy", "sklearn", "statsmodels"]
 "nlp" = ["nltk", "spacy", "langcodes"]
-"torch" = ["datasets", "lightning", "torch", "torch*", "tokenizers", "transformers", "sentence_transformers", "spacy"]
+"torch" = ["datasets", "lightning", "torch", "torch*", "tokenizers", "transformers", "sentence_transformers"]
 "llm" = ["aisuite", "langchain*", "llama_index*", "openai", "semantic_kernel", "ragas", "tiktoken"]
 "plot" = ["cmcrameri", "matplotlib", "mizani", "plotly", "plotnine", "seaborn"]
 "web" = ["fastapi", "reflex*", "requests", "responses", "tenacity"]
