@@ -71,7 +71,7 @@ repos:
     hooks:
       - id: strip-exif
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: "3.0.3"
+    rev: "3.1.2"
     hooks:
       - id: editorconfig-checker
         name: Check editorconfig compliance
