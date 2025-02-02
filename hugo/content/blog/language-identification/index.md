@@ -1,6 +1,6 @@
 ---
 title: "When the Babel Fish Dies: Replacing Legacy Language Detection"
-date: 2025-01-26T09:18:54-05:00
+date: 2025-02-01
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -15,7 +15,7 @@ series: []
 layout: single
 toc: true
 math: false
-draft: true
+draft: false
 ---
 
 Facebook's [`fasttext`](https://github.com/facebookresearch/fastText) and Google's [`cl3d`](https://github.com/google/cld3)) were both deprecated mid-2024.
