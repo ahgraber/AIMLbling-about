@@ -13,14 +13,14 @@ import warnings
 
 from dotenv import load_dotenv
 from IPython.display import Markdown, display
+from rouge_score import rouge_scorer
+from tqdm.asyncio import tqdm as atqdm
 from tqdm.auto import tqdm
-
-import numpy as np
-import pandas as pd
 
 from langchain_huggingface import HuggingFaceEmbeddings
 
 # use Llamaindex for the rest of the integrations
+from llama_index.core import VectorStoreIndex
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.together import TogetherEmbedding
@@ -29,7 +29,10 @@ from llama_index.llms.anthropic import Anthropic
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.openai_like import OpenAILike
 from llama_index.llms.together import TogetherLLM
-from ragas.async_utils import run_async_tasks
+from llama_index.vector_stores.duckdb import DuckDBVectorStore
+
+import numpy as np
+import pandas as pd
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
@@ -40,7 +43,6 @@ datadir = Path(this_file()).parent / "data"
 
 # %%
 sys.path.insert(0, str(Path(this_file()).parent))
-from src.llamaindex.prompt_templates import BASELINE_QA_PROMPT, DEFAULT_TEXT_QA_PROMPT  # NOQA: E402
 from src.utils import check_torch_device  # NOQA: E402
 
 # %%
@@ -67,14 +69,14 @@ device = check_torch_device()
 # %%
 providers = {
     "local": {
-        "llm": OpenAILike(
-            api_base=os.environ["_LOCAL_BASE_URL"],
-            api_key=os.environ["_LOCAL_API_KEY"],
-            model="mistral-nemo-instruct-2407",
-            **LLM_KWARGS,
-            max_retries=10,
-            timeout=120,
-        ),
+        # "llm": OpenAILike(
+        #     api_base=os.environ["_LOCAL_BASE_URL"],
+        #     api_key=os.environ["_LOCAL_API_KEY"],
+        #     model="mistral-nemo-instruct-2407",
+        #     **LLM_KWARGS,
+        #     max_retries=10,
+        #     timeout=120,
+        # ),
         "em": HuggingFaceEmbedding(
             model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
             trust_remote_code=True,
@@ -91,12 +93,12 @@ providers = {
         ),
     },
     "openai": {
-        "llm": OpenAI(
-            api_key=os.environ["_OPENAI_API_KEY"],
-            model="gpt-4o-mini",
-            **LLM_KWARGS,
-            **RESILIENCE_KWARGS,
-        ),
+        # "llm": OpenAI(
+        #     api_key=os.environ["_OPENAI_API_KEY"],
+        #     model="gpt-4o-mini",
+        #     **LLM_KWARGS,
+        #     **RESILIENCE_KWARGS,
+        # ),
         "em": OpenAIEmbedding(
             api_key=os.environ["_OPENAI_API_KEY"],
             model="text-embedding-3-small",
@@ -105,13 +107,13 @@ providers = {
         ),
     },
     "anthropic": {
-        "llm": Anthropic(
-            api_key=os.environ["_ANTHROPIC_API_KEY"],
-            model="claude-3-haiku-20240307",
-            # model="claude-3-5-sonnet-20240620",
-            **LLM_KWARGS,
-            **RESILIENCE_KWARGS,
-        ),
+        # "llm": Anthropic(
+        #     api_key=os.environ["_ANTHROPIC_API_KEY"],
+        #     model="claude-3-haiku-20240307",
+        #     # model="claude-3-5-sonnet-20240620",
+        #     **LLM_KWARGS,
+        #     **RESILIENCE_KWARGS,
+        # ),
         "em": VoyageEmbedding(
             voyage_api_key=os.environ["_VOYAGE_API_KEY"],
             model_name="voyage-3-lite",
@@ -120,14 +122,14 @@ providers = {
         ),
     },
     "together": {
-        "llm": OpenAILike(
-            api_base="https://api.together.xyz/v1",
-            api_key=os.environ["_TOGETHER_API_KEY"],
-            model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-            # model="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-            **LLM_KWARGS,
-            **RESILIENCE_KWARGS,
-        ),
+        # "llm": OpenAILike(
+        #     api_base="https://api.together.xyz/v1",
+        #     api_key=os.environ["_TOGETHER_API_KEY"],
+        #     model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+        #     # model="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+        #     **LLM_KWARGS,
+        #     **RESILIENCE_KWARGS,
+        # ),
         "em": TogetherEmbedding(
             api_base="https://api.together.xyz/v1",
             api_key=os.environ["_TOGETHER_API_KEY"],
@@ -191,46 +193,47 @@ testset_df = pd.concat(dfs, ignore_index=True)
 display(testset_df)
 del dfs
 
-
-# %% [markdown]
-# ## Generate Baseline (no-RAG) A's for all Q's in testset for all providers
+# %%[markdown]
+# ## Run retrieval for all testset queries
 
 # %%
-for provider in tqdm(providers):
-    if (datadir / f"qa_response_baseline_{provider}.jsonl").exists():
-        logger.info(f"'qa_response_baseline_{provider}.jsonl' exists, skipping generation...")
-        continue
+fname = "rag_retrievals.jsonl"
+if (datadir / fname).exists():
+    logger.info(f"Prior {fname} exists, skipping evaluation...")
+    del fname
+else:
+    logger.info("Running retrievals across all vector indexes...")
 
-    logger.info(f"Evaluating responses for {provider}...")
+    top_k = 5
+    queries = testset_df["user_input"].to_list()
+    retrievals = {"query": queries}
 
-    df = testset_df.copy()
+    for experiment in tqdm(experiments):
+        experiment_name = "_".join(experiment)
+        logger.info(f"Retrieving contexts for {experiment_name} experiment...")
 
-    # don't need to wrap in LlamaIndexLLMWrapper b/c using LlamaIndex directly here
-    llm = providers[provider]["llm"]
+        chunker, provider = experiment
 
-    tasks = [llm.achat(messages=BASELINE_QA_PROMPT.format_messages(query_str=query)) for query in df["user_input"]]
+        # load vector store from disk
+        vector_store = DuckDBVectorStore.from_local(str(datadir / "vectordb" / f"{experiment_name}.duckdb"))
+        index = VectorStoreIndex.from_vector_store(
+            vector_store,
+            embed_model=providers[provider]["em"],
+        )
 
-    # run async to help reduce timeout errors (especially on local generation)
-    # # responses = [run_async_tasks(tasks=batch, show_progress=True) for batch in tqdm(batched(tasks, n=5), leave=False)]
-    responses = run_async_tasks(  # requires https://github.com/explodinggradients/ragas/pull/1589
-        tasks=tasks, show_progress=True, batch_size=20
-    )
+        # init retriever
+        retriever = index.as_retriever(llm=None, similarity_top_k=top_k)
 
-    df["response"] = [response.message.content for response in responses]
-    df.to_json(datadir / f"qa_response_baseline_{provider}.jsonl", orient="records", lines=True)
+        # run retrievals
+        # TODO: async? https://docs.llamaindex.ai/en/stable/examples/pipeline/query_pipeline_async/#query-pipeline-with-asyncparallel-execution
+        retrievals[experiment_name] = [retriever.retrieve(query) for query in tqdm(queries, leave=False)]
 
-logger.info("Baseline answer generation complete.")
+    retrieval_df = pd.DataFrame.from_dict(retrievals)
+    retrieval_df.to_json(datadir / fname, orient="records", lines=True)
+    display(retrieval_df.head())
+    del retrievals, fname
 
-# %% [markdown]
-# Approx token use for generation
-# Note: switch to Haiku due to daily token limit!!
-#
-# - openai
-#   - in: 19_059
-#   - out: 184_290
-# - anthropic
-#   - in: 21_150
-#   - out: 176_198
-# - together
-#   - in: ?
-#   - out ?
+    assert all(testset_df["user_input"] == retrieval_df["query"]), "Error: testset_df and retrieval_df are not aligned"  # NOQA SIM104
+    logger.info("Retrievals complete.")
+
+# %%

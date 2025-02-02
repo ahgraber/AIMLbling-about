@@ -17,9 +17,6 @@ from dotenv import load_dotenv
 from IPython.display import Markdown, display
 from tqdm.auto import tqdm
 
-import numpy as np
-import pandas as pd
-
 from langchain_huggingface import HuggingFaceEmbeddings
 
 # use Llamaindex for the rest of the integrations
@@ -38,6 +35,9 @@ from ragas.metrics import (
     ResponseRelevancy,
     SemanticSimilarity,
 )
+
+import numpy as np
+import pandas as pd
 
 import matplotlib.pyplot as plt
 

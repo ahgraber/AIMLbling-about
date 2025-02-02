@@ -29,6 +29,7 @@ ds = [
   "numpy>=1.26",
   "openpyxl>=3.1",
   "pandas>=2",
+  "pyarrow>=19.0.0",
   "pydantic>=2",
   "python-dateutil>=2.9",
   "python-dotenv>=1.0",
@@ -120,7 +121,6 @@ llamaindex = [
   "llama-index-retrievers-bm25>=0.5",
   "llama-index-vector-stores-duckdb>=0.3",
 ]
-lint = ["ruff>=0.8"]
 
 [tool.uv]
 package = true

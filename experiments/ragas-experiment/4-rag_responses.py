@@ -15,9 +15,6 @@ from dotenv import load_dotenv
 from IPython.display import Markdown, display
 from tqdm.auto import tqdm
 
-import numpy as np
-import pandas as pd
-
 from langchain_huggingface import HuggingFaceEmbeddings
 
 # use Llamaindex for the rest of the integrations
@@ -30,6 +27,9 @@ from llama_index.llms.openai import OpenAI
 from llama_index.llms.openai_like import OpenAILike
 from llama_index.llms.together import TogetherLLM
 from ragas.async_utils import run_async_tasks
+
+import numpy as np
+import pandas as pd
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 

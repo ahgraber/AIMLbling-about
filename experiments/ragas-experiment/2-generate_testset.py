@@ -12,10 +12,7 @@ import sys
 from dotenv import load_dotenv
 from IPython.display import display
 from pydantic import BaseModel
-import tiktoken
 from tqdm.auto import tqdm
-
-import pandas as pd
 
 # NOTE: RAGAS uses langchain as primary integration, so use it for convenience
 from langchain_anthropic import ChatAnthropic
@@ -34,6 +31,9 @@ from ragas.testset.synthesizers import (
     ComparativeAbstractQuerySynthesizer,
     SpecificQuerySynthesizer,
 )
+import tiktoken
+
+import pandas as pd
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 

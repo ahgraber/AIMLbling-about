@@ -12,9 +12,6 @@ from IPython.display import display
 from jinja2 import Template
 from tqdm.auto import tqdm
 
-import numpy as np
-import pandas as pd
-
 import torch
 from datasets import load_dataset
 import torch.nn.functional as F  # NOQA: N812  # NOQA: N812
@@ -25,6 +22,9 @@ from transformers import (
     StoppingCriteriaList,
     StopStringCriteria,
 )
+
+import numpy as np
+import pandas as pd
 
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format

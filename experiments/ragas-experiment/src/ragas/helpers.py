@@ -5,14 +5,14 @@ import typing as t
 
 from rouge_score import rouge_scorer
 
-import numpy as np
-import pandas as pd
-
 from ragas import EvaluationDataset, evaluate
 from ragas.metrics.base import (
     MetricWithEmbeddings,
     MetricWithLLM,
 )
+
+import numpy as np
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 

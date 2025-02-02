@@ -5,10 +5,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from transformers import AutoTokenizer
+
 import pandas as pd
 from scipy.stats import sem
-
-from transformers import AutoTokenizer
 
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format

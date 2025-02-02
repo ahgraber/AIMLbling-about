@@ -8,13 +8,13 @@ from dotenv import load_dotenv
 from IPython.display import display
 from tqdm.auto import tqdm
 
-import numpy as np
-import pandas as pd
-
 import torch
 from sentence_transformers import SentenceTransformer
 import torch.nn.functional as F  # NOQA: N812
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding
+
+import numpy as np
+import pandas as pd
 
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format

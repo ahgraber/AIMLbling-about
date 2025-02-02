@@ -17,9 +17,6 @@ from dotenv import load_dotenv
 from IPython.display import Markdown, display
 from tqdm.auto import tqdm
 
-import numpy as np
-import pandas as pd
-
 from langchain_huggingface import HuggingFaceEmbeddings
 
 # use Llamaindex for the rest of the integrations
@@ -35,17 +32,20 @@ from ragas import EvaluationDataset, MultiTurnSample, SingleTurnSample, evaluate
 from ragas.embeddings import LangchainEmbeddingsWrapper, LlamaIndexEmbeddingsWrapper
 from ragas.llms import LlamaIndexLLMWrapper
 from ragas.metrics import (
-    Faithfulness,
-    ResponseRelevancy,
-    SemanticSimilarity,
+    LLMContextPrecisionWithoutReference,
+    LLMContextRecall,
 )
+from ragas.metrics._context_precision import LLMContextPrecisionWithReference
+
+import numpy as np
+import pandas as pd
 
 import matplotlib.pyplot as plt
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
 from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
-from src.utils import check_torch_device  # NOQA: E402
+from src.utils import check_torch_device, filter_dict_by_keys  # NOQA: E402
 
 # %%
 repo = get_repo_path(this_file())
@@ -84,7 +84,7 @@ providers = {
             model="mistral-nemo-instruct-2407",
             **LLM_KWARGS,
             max_retries=10,
-            timeout=240,
+            timeout=120,
         ),
         "em": HuggingFaceEmbedding(
             model_name="nomic-ai/nomic-embed-text-v1.5",  # default context 2048 tokens
@@ -200,24 +200,79 @@ display(testset_df)
 del dfs
 
 # %%
-# load RAG responses
-dfs = []
-for file in datadir.glob("qa_response_rag_*.jsonl"):
-    df = pd.read_json(file, orient="records", lines=True)
-    df["response_by"] = file.stem.split("_")[-1]
-    dfs.append(df)
+# Load retrievals from vector indexes
 
-rag_response_df = pd.concat(dfs, ignore_index=True)
+# reduce memory footprint by removing unnecessary info from retrieved nodes during load
+filter_node_metadata = partial(filter_dict_by_keys, keys=("node_id", "metadata", "text", "score"))
 
-if not all(
-    testset_df["user_input"].tolist() * len(testset_df["generated_by"].unique()) * len(experiments)
-    == rag_response_df["user_input"]
-):
+with (datadir / "rag_retrievals.jsonl").open("r") as f:
+    data = [
+        {
+            k: [filter_node_metadata(node) for node in v] if k in experiment_names else v
+            for k, v in json.loads(line).items()
+        }
+        for line in f
+    ]
+
+# join testset_df and retrieval data
+retrieval_df = pd.concat([testset_df, pd.DataFrame.from_records(data)], axis="columns")
+
+if not all(retrieval_df["user_input"] == retrieval_df["query"]):
     raise AssertionError("Error: testset_df and retrieval_df are not aligned!")
 
-display(rag_response_df)
-# 14336 rows (testset * providers * experiments)
-del dfs
+# reshape into baseline_df format with cols:
+# ['user_input', 'reference_contexts', 'reference', 'synthesizer_name', 'generated_by', 'response']
+retrieval_df = retrieval_df.drop(columns="query").melt(
+    id_vars=testset_df.columns, value_vars=experiment_names, value_name="retrieved_contexts", var_name="experiment"
+)
+
+display(retrieval_df)
+# 3584 rows (testset * experiments)
+
+# %% [markdown]
+# ### 2. Evaluate retrievals
+
+# %% [markdown]
+# #### Check similarity in retrievals
+#
+# Since source documents are the same, we compare using chunk text; ROUGE-L should work great
+#
+# Retrieval based on Together embeddings seem to perform poorly / differently than retrieval based on embeddings from other providers
+
+# %%
+# Retriever self-reported relevance
+fname = "retriever_relevance.csv"
+if (datadir / "retriever_relevance.csv").exists():
+    logger.info(f"Prior '{fname}' exists, will not rerun.")
+    del fname
+else:
+    relevance_df = retrieval_df.copy()
+    # pull the retrieval scores from the retrieved chunks
+    relevance_df["scores"] = relevance_df["retrieved_contexts"].apply(
+        lambda row: np.array([node["score"] for node in row])
+    )
+    relevance_df["mean_retrieved_relevance"] = relevance_df["scores"].apply(np.mean)
+    relevance_df[["experiment", "mean_retrieved_relevance"]].groupby("experiment").mean()
+
+    relevance_df.groupby("experiment")["mean_retrieved_relevance"].describe().to_csv(datadir / fname)
+    display(relevance_df[["experiment", "mean_retrieved_relevance"]].groupby("experiment").mean())
+    # MarkdownNodeParser outperforms SentenceSplitter@512
+
+    del relevance_df, fname
+
+# %% [markdown]
+# | experiment         |   count |     mean |       std |      min |      25% |      50% |      75% |      max |
+# |:-------------------|--------:|---------:|----------:|---------:|---------:|---------:|---------:|---------:|
+# | markdown_anthropic |     448 | 0.535638 | 0.0896168 | 0.24064  | 0.479275 | 0.535012 | 0.598882 | 0.781517 |
+# | markdown_local     |     448 | 0.673358 | 0.0563549 | 0.536583 | 0.633552 | 0.671418 | 0.714183 | 0.834795 |
+# | markdown_openai    |     448 | 0.505379 | 0.097424  | 0.178659 | 0.440267 | 0.504686 | 0.578345 | 0.765099 |
+# | markdown_together  |     448 | 0.636722 | 0.116947  | 0.328021 | 0.55386  | 0.6473   | 0.724252 | 0.886935 |
+# | sentence_anthropic |     448 | 0.507325 | 0.0891611 | 0.234116 | 0.458913 | 0.508267 | 0.559096 | 0.790512 |
+# | sentence_local     |     448 | 0.664001 | 0.0566214 | 0.535727 | 0.624531 | 0.662381 | 0.704818 | 0.826115 |
+# | sentence_openai    |     448 | 0.481724 | 0.0985733 | 0.169161 | 0.412585 | 0.482945 | 0.553362 | 0.761959 |
+# | sentence_together  |     448 | 0.612881 | 0.117678  | 0.296082 | 0.528364 | 0.623194 | 0.702294 | 0.859675 |
+#
+# MarkdownNodeParser outperforms SentenceSplitter@512
 
 # %% [markdown]
 # ### 3. RAG eval
@@ -225,108 +280,80 @@ del dfs
 # full factorial experiment will be too expensive to run
 
 # %%
-# - cull experiment set to only markdown set
+# cull experiment set to only markdown set
 experiments = [x for x in experiments if x[0] == "markdown"]
 experiment_names = ["_".join(x) for x in experiments]
-
-# - don't need the cross between retrievers, and responders
-# (i.e., don't care about who generated the question; want to limit retriever/responder to same provider)
-rag_response_df = pd.concat(
-    [
-        rag_response_df[
-            (rag_response_df["experiment"] == f"markdown_{provider}") & (rag_response_df["response_by"] == provider)
-        ]
-        for provider in providers
-    ],
-    ignore_index=True,
-)
-display(rag_response_df)
+retrieval_df = retrieval_df[retrieval_df["experiment"].isin(experiment_names)]
 
 # %% [markdown]
-# #### RAGAS RAG Response Evals
+# #### RAGAS Retrieval Evals
 #
-# - Faithfulness -
-# - Answer/Response Relevance - Is response relevant to the original input?
-#   Generate a question based on the response and get the similarity between the original question and generated question
-
+# - Context Precision - Was the retrieved context "useful at arriving at the" in the ground truth _reference_?
+#   ContextPrecisionWithoutReference - Was the retrieved context "useful at arriving at the" in the _response_? --> This has strong overlap with Context Recall
+# - Context Recall - Can sentences in _reference _ be attributed to the retrieved context?
 
 # %%
+retrieval_metrics = [
+    *[
+        LLMContextPrecisionWithReference(  # retrieved_context relevant to _reference answer_
+            name=f"context_precision_{evaluator}",
+            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+        )
+        for evaluator in providers
+    ],
+    # *[
+    #     LLMContextPrecisionWithoutReference(  # retrieved_context relevant to _generated response_ --> strong overlap w/ ContextRecall
+    #         name=f"context_precision_noref_{evaluator}",
+    #         llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+    #     )
+    #     for evaluator in providers
+    # ],
+    *[
+        LLMContextRecall(  # retrieved_context used in _reference answer_
+            name=f"context_recall_{evaluator}",
+            llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
+        )
+        for evaluator in providers
+    ],
+]
+required_cols = set(
+    itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in retrieval_metrics)
+)
+
+validate_metrics(retrieval_metrics)
+logger.info(f"API calls: {len(retrieval_df)=} * {len(retrieval_metrics)=}")
+
 # convert retrieved_contexts to list of strings
-rag_response_df["retrieved_contexts"] = rag_response_df["retrieved_contexts"].apply(
+retrieval_df["retrieved_contexts"] = retrieval_df["retrieved_contexts"].apply(
     lambda row: [node["text"] for node in row]
 )
 
+
 # %%
-# for experiment, evaluator in itertools.product(experiment_names, providers):
-#     # experiment = experiment_names[3]  # "markdown_local"
-#     # evaluator = "anthropic"
+# run experiments for 'markdown' chunker
 for experiment in tqdm(experiment_names):
-    logger.info(f"Running evals with for {experiment}...")
-
-    source_df = rag_response_df[rag_response_df["experiment"] == experiment].reset_index(drop=True)
-
-    response_metrics = [
-        SemanticSimilarity(
-            llm=LlamaIndexLLMWrapper(providers["local"]["llm"]),  # I don't think this is used
-            embeddings=LangchainEmbeddingsWrapper(default_em),
-        ),
-        *[
-            Faithfulness(  # response wrt retrieved_context
-                name=f"faithfulness_{evaluator}",
-                llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
-            )
-            for evaluator in providers
-            if evaluator in ["local", "openai"]  # anthropic, together have high error rates here
-        ],
-        *[
-            ResponseRelevancy(  # response wrt input
-                name=f"answer_relevance_{evaluator}",
-                llm=LlamaIndexLLMWrapper(providers[evaluator]["llm"]),
-                embeddings=LangchainEmbeddingsWrapper(default_em),
-            )
-            for evaluator in providers
-        ],
-    ]
-    required_cols = set(
-        itertools.chain.from_iterable(metric.required_columns["SINGLE_TURN"] for metric in response_metrics)
-    )
-
-    validate_metrics(response_metrics)
-    # calculate # evals; some evals need > 1 API call
-    logger.info(
-        f"Evaluations: {len(source_df)=} * {len(response_metrics)=} = {len(source_df) * len(response_metrics):_}"
-    )
-
+    logger.info(f"Running retrieval analysis for {experiment}")
+    source_df = retrieval_df[retrieval_df["experiment"] == experiment]
     run_ragas_evals(
         source_df=source_df,
-        metrics=response_metrics,
-        outfile=datadir / f"eval_rag_response_{experiment}.jsonl",
-        batch_size=20,
+        metrics=retrieval_metrics,
+        outfile=datadir / f"eval_rag_retrieval_{experiment}.jsonl",
     )
 
     gc.collect()
 
+# TODO: redo with together only, merge files
 
 # %% [markdown]
-# Approx 4 hours per provider (16 hours total)
-# Approx token use over eval combinations: 448 questions * 4 experiments * evals
+# Estimated approx 2.75 hours per experiment
+# Approx token use over eval combinations
 #
 # - openai:
-#   - in:  2_742_623 (for 1 of 4) // 11_839_585
-#   - out: 656_508 (for 1 of 4) // 3_027_981
-# - anthropic --> anthropic fails for faithfulness response formatting
-#   - in:  5_350_500 (no faithfulness)
-#   - out: 323_710 (no faithfulness)
-# - together --> llama fails for faithfulness and response relevance response formatting
+#   - in:  15_921_001
+#   - out: 863_889
+# - anthropic
+#   - in:  20_196_082
+#   - out: 1_292_914
+# - together
 #   - in: ?
 #   - out ?
-
-# %%
-e1 = "markdown_together"
-e2 = "local"
-df = pd.read_json(datadir / f"eval_rag_response_{e1}-{e2}.jsonl", orient="records", lines=True)
-
-eval_cols = ["semantic_similarity", f"faithfulness_{e2}", f"answer_relevance_{e2}"]
-df[eval_cols].isnull().mean()  # % missingness
-
-# %%

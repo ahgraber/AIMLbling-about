@@ -10,10 +10,7 @@ import sys
 
 from dotenv import load_dotenv
 from IPython.display import Markdown, display
-import tiktoken
 from tqdm.auto import tqdm
-
-import pandas as pd
 
 # use Llamaindex for the rest of the integrations
 from llama_index.core import Document as LlamaDoc, StorageContext, VectorStoreIndex, load_index_from_storage
@@ -26,6 +23,9 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.together import TogetherEmbedding
 from llama_index.embeddings.voyageai import VoyageEmbedding
 from llama_index.vector_stores.duckdb import DuckDBVectorStore
+import tiktoken
+
+import pandas as pd
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 

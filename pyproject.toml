@@ -27,17 +27,21 @@ default-groups = ["dev", "test"]
 python-preference = "managed"
 
 [tool.uv.sources]
-aiml = { workspace = true }
-# aiml = { path = "./experiments/aiml" }
+#aiml = { workspace = true }
+aiml = { path = "./experiments/aiml" }
+# language-detection = { path = "./experiments/language-detection" }
+# ragas-experiment = { path = "./experiments/ragas-experiment" }
+# sk-rant = { path = "./experiments/sk-rant" }
+# typos-experiment = { path = "./experiments/typos-experiment" }
 
 torch = [
   { index = "pytorch-cpu", marker = "platform_system != 'Darwin'" },
   # { index = "pytorch-gpu", extra="gpu", marker = "platform_system != 'Darwin'" },
 ]
 
-[tool.uv.workspace]
-members = ["./experiments/*"]
-exclude = ["./docs", "./hugo"]
+#[tool.uv.workspace]
+#members = ["./experiments/*"]
+#exclude = ["./docs", "./hugo", "./experiments/aiml", "./experiments/language-detection"]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"

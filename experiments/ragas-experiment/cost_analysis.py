@@ -10,11 +10,6 @@ import sys
 import textwrap
 import typing as t
 
-import tiktoken
-
-import numpy as np
-import pandas as pd
-
 from ragas.metrics import (
     Faithfulness,
     LLMContextRecall,
@@ -39,6 +34,10 @@ from ragas.testset.transforms.extractors.llm_based import (
     SummaryExtractorPrompt,
     TitleExtractorPrompt,
 )
+import tiktoken
+
+import numpy as np
+import pandas as pd
 
 import matplotlib.pyplot as plt
 

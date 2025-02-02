@@ -1,0 +1,14 @@
+[project]
+name = "ragas-experiment"
+version = "0.0.1"
+description = ""
+requires-python = ">=3.10, <3.13"
+dependencies = ["aiml[ds,db,plot,nlp,torch,transformers,langchain,llm,llamaindex]"]
+
+[dependency-groups]
+dev = ["aiml[dev]"]
+lint = ["aiml[lint]"]
+test = ["aiml[test]"]
+
+[tool.uv.sources]
+aiml = { path = "../aiml", editable = true }

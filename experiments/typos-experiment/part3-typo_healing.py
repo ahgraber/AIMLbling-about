@@ -9,12 +9,12 @@ import re
 from dotenv import load_dotenv
 from tqdm.auto import tqdm
 
-import pandas as pd
-
 import torch
 from sentence_transformers import SentenceTransformer
 import torch.nn.functional as F  # NOQA: N812  # NOQA: N812
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+import pandas as pd
 
 import matplotlib.pyplot as plt
 from mizani.formatters import percent_format

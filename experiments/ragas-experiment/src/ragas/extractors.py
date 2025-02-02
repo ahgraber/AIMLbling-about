@@ -7,11 +7,10 @@ import re
 import typing as t
 
 from pydantic import BaseModel
-from tqdm.auto import tqdm
-
 import spacy
 from spacy.language import Language
 from spacy.pipeline import EntityRecognizer
+from tqdm.auto import tqdm
 
 from ragas import RunConfig
 from ragas.embeddings import LangchainEmbeddingsWrapper
