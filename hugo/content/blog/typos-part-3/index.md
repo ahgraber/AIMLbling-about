@@ -15,7 +15,7 @@ math: true
 ---
 
 This is part three of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}), [two]({{< ref "/blog/typos-part-2" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine the influence typos have on LLM response quality. Code
-from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos).
+from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos-experiment).
 
 In this post, I induce typos in a standardized set of prompts with increasing frequency in the hopes of understanding how typos influence meaning as represented by **sentence embeddings**.
 
@@ -125,5 +125,7 @@ exact original text is not recovered, _the gist of it is_!
 ## References
 
 [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
+
 [^stackoverflow]: [artificial intelligence - Sentence embeddings from LLAMA 2 Huggingface opensource - Stack Overflow](https://stackoverflow.com/questions/76926025/sentence-embeddings-from-llama-2-huggingface-opensource)
+
 [^jaccard]: [[2110.09619] Further Generalizations of the Jaccard Index](https://arxiv.org/abs/2110.09619)

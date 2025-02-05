@@ -27,6 +27,9 @@ A few weeks ago at work, I wanted to ensure that the prompt template we used wit
 Little did I know that this simple objective would take me a few days, several experimental notebooks, a thorough tour through the Semantic Kernel's dev blog and (limited) documentation,
 and a review of pretty much the entire python package source code, unit tests, and example library.
 
+Code from these experiments is available
+[here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/sk-rant).
+
 ## What is Semantic Kernel?
 
 ### Overview

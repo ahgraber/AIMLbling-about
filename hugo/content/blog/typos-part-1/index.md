@@ -29,7 +29,7 @@ some resilience to erroneous inputs[^resilience].
 <!-- markdownlint-enable -->
 
 This is part one of a four-part series ([two]({{< ref "/blog/typos-part-2" >}}), [three]({{< ref "/blog/typos-part-3" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine these questions. Code from these experiments is available
-[here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos).
+[here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos-experiment).
 
 In this post, I'll lay out my plan of attack and explain how I plan to induce typos in a controlled manner for experimentation. In later posts, I plan to use the typo generation function to induce typos with increasing frequency in the
 hopes of understanding how typos influence tokenization, embedding, and generation.
@@ -179,11 +179,19 @@ possible reason for the near miss is the inclusion of both prose and code in the
 ## References
 
 [^promptbench]: [[2306.04528] PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts](https://arxiv.org/abs/2306.04528)
+
 [^noisy]: [[2311.00258] Noisy Exemplars Make Large Language Models More Robust: A Domain-Agnostic Behavioral Analysis](https://arxiv.org/abs/2311.00258)
+
 [^resilience]: [[2404.09754] Resilience of Large Language Models for Noisy Instructions](https://arxiv.org/abs/2404.09754)
+
 [^corpora]: [Corpora of misspellings for download](https://www.dcs.bbk.ac.uk/~ROGER/corpora.html)
+
 [^microsoft]: [Microsoft Research Spelling-Correction Data](https://www.microsoft.com/en-us/download/details.aspx?id=52418)
+
 [^typokit]: [Collection of common typos & spelling mistakes and their fixes](https://github.com/feramhq/typokit)
+
 [^github]: [GitHub Typo Corpus: A Large-Scale Multilingual Dataset of Misspellings and Grammatical Errors](https://github.com/mhagiwara/github-typo-corpus?tab=readme-ov-file)
+
 [^commit]: [Typos | src-d/datasets](https://github.com/src-d/datasets/blob/master/Typos/README.md)
+
 [^denoise]: [[2105.05977] Spelling Correction with Denoising Transformer](https://arxiv.org/abs/2105.05977)

@@ -24,7 +24,7 @@ draft: false
 ---
 
 This is part two of a three-part series ([one]({{< ref "/blog/ragas-to-riches-1" >}}), [three]({{< ref "/blog/ragas-to-riches-3" >}})) where I explore best practices for evaluating RAG architecture via Ragas' recent v0.2 release.
-Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas).
+Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas-experiment).
 
 In this post, I will dive into why I'm so excited about Ragas v0.2 and dive into how it works.
 Specifically, the I am referencing `Ragas v0.2.3`; the team is rapidly iterating and this series of posts will likely end up out of date quite quickly.
@@ -63,7 +63,7 @@ I modified the default pipeline, breaking it into 3 phases for a bit more contro
 and allowing me to save the interim transformations.
 I also wrote custom `MarkdownTitleExtractor` and `SpacyNERExtractor` classes that are customized to my use case,
 and reduce the overall number of LLM API calls I make (thus reducing my costs).
-See [1-build_knowledgegraph.py](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas/1-build_knowledgegraph.py) for details.
+See [1-build_knowledgegraph.py](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/1-build_knowledgegraph.py) for details.
 
 ```py
 stage1 = [
@@ -120,7 +120,7 @@ A single-turn question is when an interaction is simply the user asks a question
 A multi-turn question wouldrequire answering a question at the tail end of a conversation that requires full conversational context.
 Currently (as of v0.2.3), Ragas does not support generation of synthetic multi-turn questions, though that feature is currently being explored.
 
-[Generating the testset is quite simple once the knowledge graph is created](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas/2-generate_testset.py):
+[Generating the testset is quite simple once the knowledge graph is created](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/2-generate_testset.py):
 
 ```py
   kg = KnowledgeGraph().load("ragas_knowledgegraph.json")
@@ -153,10 +153,10 @@ Currently (as of v0.2.3), Ragas does not support generation of synthetic multi-t
 
 ### Evaluation
 
-I used [LlamaIndex to create a local vector database](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas/3-build_index_llamaindex.py), and then iterated over the testset,
-asking my LlamaIndex RAG system to [retrieve contexts](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas/4-rag_reretrievals.py) and
-[generate responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas/4-rag_responses.py) for each question in the testset.
-I also [created a baseline set of responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas/4-baseline_responses.p),
+I used [LlamaIndex to create a local vector database](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/3-build_index_llamaindex.py), and then iterated over the testset,
+asking my LlamaIndex RAG system to [retrieve contexts](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-rag_reretrievals.py) and
+[generate responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-rag_responses.py) for each question in the testset.
+I also [created a baseline set of responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-baseline_responses.p),
 using the LLM to generate responses to the testset questions without providing the retrieved context -- a closed-book exam, metaphorically speaking.
 
 I elected to use `context precision`, `context recall`, `faithfulness`, and `response relevance` as my evaluation metrics, which we covered in at a high level in [part one]({{< ref "/blog/ragas-to-riches-1#rag-evaluation" >}}).
@@ -187,7 +187,7 @@ Unfortunately, using Ragas' cost estimation functionality requires actually call
 
 In order to preemptively estimate token use (and therefore cost), I extracted the prompts used for every LLM call in the knowledgegraph creation, testset generation, and evaluation process.
 Then, given some assumptions, I estimated the _input_ token use over these use cases.
-Code is available [in this Jupyter notebook](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas/cost_analysis.ipynb).
+Code is available [in this Jupyter notebook](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/cost_analysis.ipynb).
 
 {{< callout type="warning" >}} _NOTE:_ Token utilization estimates only analyze _input_ tokens using the `tiktoken` tokenizer;
 actual use (even if these estimates are perfect) will be higher because the analysis does not take _output_ tokens into account. {{< /callout >}}
@@ -270,6 +270,9 @@ adding a new document to the knowledge graph, adding questions to the test set, 
 ## References
 
 [^ragas_arxiv]: [[2309.15217] RAGAS: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
+
 [^ragas]: [explodinggradients/ragas: Supercharge Your LLM Application Evaluations 🚀](https://github.com/explodinggradients/ragas/tree/main)
+
 [^ragas_v0.2]: [Announcing Ragas v0.2](https://blog.ragas.io/announcing-ragas-02)
+
 [^chunking]: [Evaluating Chunking Strategies for Retrieval | Chroma Research](https://research.trychroma.com/evaluating-chunking)
