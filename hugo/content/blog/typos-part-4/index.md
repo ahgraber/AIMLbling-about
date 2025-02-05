@@ -15,7 +15,7 @@ math: true
 ---
 
 This is part four of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}), [two]({{< ref "/blog/typos-part-2" >}}), [three]({{< ref "/blog/typos-part-3" >}})) where I examine the influence typos have on LLM response quality. Code
-from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos).
+from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos-experiment).
 
 In this post, I induce typos in a standardized set of prompts with increasing frequency in the hopes of understanding how typos influence **generation**.
 
@@ -237,8 +237,13 @@ This has been a fun experiment, but it is by no means exhaustive or without conf
 ## References
 
 [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
+
 [^promptperplexity]: [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
+
 [^perplexity]: [Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity)
+
 [^perplexity.py]: [perplexity.py · evaluate-measurement/perplexity](https://huggingface.co/spaces/evaluate-measurement/perplexity/blob/main/perplexity.py)
+
 [^mmlu]: [Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
+
 [^llama3]: [Introducing Meta Llama 3: The most capable openly available LLM to date](https://ai.meta.com/blog/meta-llama-3/)

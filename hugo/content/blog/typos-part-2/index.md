@@ -15,7 +15,7 @@ math: true
 ---
 
 This is part two of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}), [three]({{< ref "/blog/typos-part-3" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine the influence typos have on LLM response quality. Code
-from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos).
+from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos-experiment).
 
 In this post, I use the typo generation function to induce typos with increasing frequency in the hopes of understanding how typos influence **tokenization**.
 

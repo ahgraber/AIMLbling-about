@@ -24,7 +24,7 @@ draft: false
 ---
 
 This is part one of a three-part series ([two]({{< ref "/blog/ragas-to-riches-2" >}}), [three]({{< ref "/blog/ragas-to-riches-3" >}})) where I explore best practices for evaluating RAG architecture via Ragas' recent v0.2 release.
-Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas).
+Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas-experiment).
 
 This post covers the preliminary / background material.
 In later posts, I'll cover what makes Ragas v0.2 so special, how it works, and run an experiment with it.
@@ -113,12 +113,21 @@ Conversely, recent research indicates that smaller, semantically-defined chunks 
 ## References
 
 [^rag]: [[2005.11401] Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
+
 [^methodology]: [[2410.08801] A Methodology for Evaluating RAG Systems: A Case Study On Configuration Dependency Validation](https://arxiv.org/abs/2410.08801)
+
 [^precision-recall]: [Precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall)
+
 [^precision]: [context precision](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/context_precision/)
+
 [^recall]: [context recall](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/context_recall/)
+
 [^faithfulness]: [faithfulness](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/faithfulness/)
+
 [^response_relevance]: [response relevancy](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/answer_relevance/)
+
 [^ragas]: [explodinggradients/ragas: Supercharge Your LLM Application Evaluations 🚀](https://github.com/explodinggradients/ragas/tree/main)
+
 [^ragas_arxiv]: [[2309.15217] RAGAS: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
+
 [^chunking]: [Evaluating Chunking Strategies for Retrieval | Chroma Research](https://research.trychroma.com/evaluating-chunking)
