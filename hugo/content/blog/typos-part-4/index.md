@@ -181,6 +181,7 @@ prediction step, which would also increase perplexity.
 
 {{< figure
 src="images/perplexity.png"
+alt="perplexity"
 caption="Typo Occurrence Rate Increases Model Perplexity" >}}
 
 While the perplexity results are fairly conclusive, the results from the _tinyBenchmarks_ MMLU benchmark are less so. Do typos reduce question-answering performance? They seem to... but it depends on best-case MMLU performance. Llama 2
@@ -191,6 +192,7 @@ performance decrease, with a 17 point reduction from baseline to worst-case on t
 
 {{< figure
 src="images/mmlu-accuracy.png"
+alt="mmlu accuracy"
 caption="Typo Occurrence Rate Decreases Question-Answering Accuracy" >}}
 
 ## Conclusion

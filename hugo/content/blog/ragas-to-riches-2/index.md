@@ -246,9 +246,11 @@ Therefore, parameters like node/chunk size and numbers of nodes/chunks provided 
 
 {{< figure
   src="images/testset_chunk_tokens.png"
+  alt="prompt length dominates influence of chunk size on token utilization"
   caption="Prompt length dominates influence of chunk size on token utilization" >}}
 {{< figure
   src="images/eval_n_context_chunks.png"
+  alt="prompt length dominates influence of chunk count on token utilization"
   caption="Prompt length dominates influence of chunk count on token utilization" >}}
 
 > 'scaled' divides the total token use by the x axis variable
@@ -259,9 +261,11 @@ adding a new document to the knowledge graph, adding questions to the test set, 
 
 {{< figure
   src="images/testset_n_questions.png"
+  alt="tokens per question remain constant"
   caption="Testset size multiplies the total token use, but tokens per question remain constant" >}}
 {{< figure
   src="images/eval_n_questions.png"
+  alt="tokens per question remain constant"
   caption="Testset size multiplies the total token use, but tokens per question remain constant" >}}
 
 > Because the templated prompts dominate token use, leveraging API features such as token caching become an incredibly effective way to save money on API use.

@@ -24,6 +24,7 @@ some resilience to erroneous inputs[^resilience].
 
 {{< figure
   src="images/promptbench%20-%20fig_1%20-%20prompt_perturbation.png"
+  alt="prompt perturbation"
   caption="Zhu, K., Wang, J., Zhou, J., Wang, Z., Chen, H., Wang, Y., Yang, L., Ye, W., Gong, N.Z., Zhang, Y., & Xie, X. (2023). PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts. ArXiv, abs/2306.04528." >}}
 
 <!-- markdownlint-enable -->
@@ -78,16 +79,19 @@ I identified the type of typo using the four Damerau-Levenshtein edit operations
 
 {{< figure
   src="images/editprob.png"
+  alt="Edit probabilities"
   caption="Overall probability an edit operation is used to fix a typo." >}}
 
 {{< figure
   src="images/locations.png"
+  alt="Edit locations"
   caption="Likelihood that an error occurred at a given (relative) location in a word." >}}
 
 Then, for a given location and edit operation, I mined the likelihoods for character corrections.
 
 {{< figure
   src="images/correction-letters.png"
+  alt="Correction matrix"
   caption="Overall correction matrix.  The generation function uses a similar matrix per location and edit operation." >}}
 
 ### Generation

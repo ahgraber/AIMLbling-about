@@ -58,6 +58,7 @@ This helps ensure the response is grounded and reduces the likelihood of halluci
 
 {{< figure
     src="images/RAG.png"
+    alt="retrieval augmented generation"
     link="https://docs.llamaindex.ai/en/stable/"
     caption="Retrieval Augmented Generation.  Credit: LlamaIndex" >}}
 {{% /details %}}
@@ -166,6 +167,7 @@ The below image is from a call graph I made during the investigation.
 
 {{< figure
 src="images/trace-tree.png"
+alt="traces"
 caption="Simplified call graph of `kernel.invoke`" >}}
 
 The most useful thing was actually reviewing the unit tests! Github issues and discussions did not provide much help, and the documentation was either too high level or pointed to dead pages.

@@ -39,10 +39,12 @@ As this process is repeated, the distribution reduces to the mean.
 <tr>
   <td style="width:50%">{{< figure
     src="images/model-collapse1.png"
+    alt="model collapse intuition"
     caption="Model Collapse intuition via [[2305.17493] The Curse of Recursion: Training on Generated Data Makes Models Forget](https://arxiv.org/abs/2305.17493)" >}}
   </td>
     <td style="width:50%">{{< figure
     src="images/model-collapse2.png"
+    alt="model collapse to the mean"
     caption="Model Collapse reduction to the mean via [[2305.17493] The Curse of Recursion: Training on Generated Data Makes Models Forget](https://arxiv.org/abs/2305.17493)" >}}
   </td>
 </tr>
@@ -84,6 +86,7 @@ This is also improbable; models are constantly updated with new data.
 
 {{< figure
   src="images/model-collapse3.png"
+  alt="model collapse static"
   caption="Model Collapse assumes static data0 via [[2305.17493] The Curse of Recursion: Training on Generated Data Makes Models Forget](https://arxiv.org/abs/2305.17493)" >}}
 
 Other research makes the importance of data mixing more explicit --
@@ -93,6 +96,7 @@ these results hold across a range of model sizes, architectures, and hyperparame
 
 {{< figure
   src="images/inevitable.png"
+  alt="inevitable"
   caption="Accumulating data avoids model collapse via [[2404.01413] Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data](https://arxiv.org/abs/2404.01413)" >}}
 
 ### Data pipelines and training procedures for modern LLMs reduce risk of model collapse
@@ -113,11 +117,19 @@ Managing model outputs vis-a-vis these low-probability events is the point of in
 ## References
 
 [^nature]: [AI models collapse when trained on recursively generated data | Nature](https://www.nature.com/articles/s41586-024-07566-y)
+
 [^bloomberg]: [AI 'Model Collapse': Why Researchers Are Raising Alarms - Bloomberg](https://www.bloomberg.com/news/articles/2024-08-05/ai-model-collapse-why-researchers-are-raising-alarms)
+
 [^conversation]: [What is 'model collapse'? An expert explains the rumours about an impending AI doom](https://theconversation.com/what-is-model-collapse-an-expert-explains-the-rumours-about-an-impending-ai-doom-236415) 18 Aug
+
 [^recursion]: [[2305.17493] The Curse of Recursion: Training on Generated Data Makes Models Forget](https://arxiv.org/abs/2305.17493)
+
 [^mad]: [[2307.01850] Self-Consuming Generative Models Go MAD](https://arxiv.org/abs/2307.01850)
+
 [^llama3]: [[2407.21783] The Llama 3 Herd of Models](https://arxiv.org/abs/2407.21783)
+
 [^stability]: [[2310.00429] On the Stability of Iterative Retraining of Generative Models on their own Data](https://arxiv.org/abs/2310.00429)
+
 [^inevitable]: [[2404.01413] Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data](https://arxiv.org/abs/2404.01413)
+
 [^beyond]: [[2406.07515] Beyond Model Collapse: Scaling Up with Synthesized Data Requires Reinforcement](https://arxiv.org/abs/2406.07515)

@@ -43,6 +43,7 @@ RAG systems require a corpus of knowledge to search over, a method for searching
 
 {{< figure
   src="images/RAG.png"
+  alt="retrieval augmented generation"
   caption="Retrieval Augmented Generation via [Best Practices in Retrieval Augmented Generation - Gradient Flow](https://gradientflow.com/best-practices-in-retrieval-augmented-generation/)" >}}
 
 The above diagram from [GradientFlow](https://gradientflow.com/best-practices-in-retrieval-augmented-generation/) provides a fantastic overview of the RAG procedure.
@@ -97,6 +98,7 @@ This means that (a) we need a baseline to compare against - likely LLM performan
 
 {{< figure
   src="images/RAG experimentation.png"
+  alt="empirical evaluations of RAG"
   caption="Key considerations for sound empirical evaluations of RAG systems via [[2410.08801] A Methodology for Evaluating RAG Systems: A Case Study On Configuration Dependency Validation](https://arxiv.org/abs/2410.08801)" >}}
 
 Finally, in the case where the benchmark is artificially generated, it is important that the process of defining the benchmark dataset is independent of the decisions and architectures upon which the RAG system we are evaluating are based.

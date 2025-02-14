@@ -54,6 +54,7 @@ The benchmark dataset is composed of samples from 4 different datasets:
 
 {{< figure
   src="images/language_samples.png"
+  alt="language samples"
   caption="The final dataset contains 80 languages, most with 5000+ samples" >}}
 
 ### Evaluation
@@ -71,6 +72,7 @@ Classification performance is evaluated for each run for each model using multi-
 
 {{< figure
   src="images/runtime.png"
+  alt="experiment runtime"
   caption="Runtime for 100 samples (lower is better). fasttext and Lingua are >10x faster than LangId and Stanza" >}}
 
 | model    | Mean Runtime |
@@ -101,7 +103,8 @@ Take the following with a grain of salt.
 Therefore the performance ceiling for other models is lower.
 
 {{< figure
-  src="images/f1score.png" >}}
+  src="images/f1score.png"
+  alt="f1 performance">}}
 
 #### Supported Languages
 
@@ -109,7 +112,8 @@ When considering the subset of languages supported by each model, `Lingua` outp
 we're still covering the majority of languages found on the web.
 
 {{< figure
-  src="images/f1score-supported.png" >}}
+  src="images/f1score-supported.png"
+  alt="f1 on supported languages">}}
 
 | F1 Score | fasttext | langid | lingua | stanza |
 | :------- | -------: | -----: | -----: | -----: |
@@ -121,10 +125,12 @@ we're still covering the majority of languages found on the web.
 Constraining the experiment further, I examine performance on the 20 most frequent languages found on the web ([according to wikipedia](https://en.wikipedia.org/wiki/Languages_used_on_the_Internet))
 
 {{< figure
-  src="images/f1score-web.png">}}
+  src="images/f1score-web.png"
+  alt="f1 on web languages">}}
 
 {{< figure
-  src="images/f1score-web-heatmap.png">}}
+  src="images/f1score-web-heatmap.png"
+  alt="f1 heatmap">}}
 
 {{< callout type="warning" >}}
 Chinese ('zh') appears to pull down fasttext's performance considerably.
