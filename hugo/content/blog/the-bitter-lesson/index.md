@@ -65,13 +65,12 @@ Therefore, most startups in the AI space are building systems on top of foundati
 They might do this by fine-tuning a model to do better at a particular task, by adding a curated set knowledge to the model so it knows about it as it responds,
 or by building "agentic" software systems around the model that allow it to act on the user's behalf.
 
-{{< callout type="info" >}}
-The AI industry expects 2025 to be [the year of Agentic AI](https://finance.yahoo.com/news/nvidia-jensen-huang-says-ai-044815659.html).
-Exact definitions for what an AI "Agent" is are still debated.
-My opinion (aligned with [Anthropic's definition](https://www.anthropic.com/research/building-effective-agents)) is that `agentic AI` is where the system acts on behalf of the user.
-In this sense, `agentic` can take the form of `workflows` composed of predetermined steps (typically curated by people),
-and `agents` are more dynamic systems where the AI system itself determines how to proceed to accomplish a given task.
-{{< /callout >}}
+> [!NOTE]
+> The AI industry expects 2025 to be [the year of Agentic AI](https://finance.yahoo.com/news/nvidia-jensen-huang-says-ai-044815659.html).
+> Exact definitions for what an AI "Agent" is are still debated.
+> My opinion (aligned with [Anthropic's definition](https://www.anthropic.com/research/building-effective-agents)) is that `agentic AI` is where the system acts on behalf of the user.
+> In this sense, `agentic` can take the form of `workflows` composed of predetermined steps (typically curated by people),
+> and `agents` are more dynamic systems where the AI system itself determines how to proceed to accomplish a given task.
 
 In any of these cases, the startup alters the base AI model by making it better at specific things, by making it more autonomous, or both. And currently, the approach to customizing AI models takes a lot of engineering effort.
 Lukas Petersson wrote [a series of blog posts](https://lukaspetersson.com/blog/2025/bitter-vertical/) applying the Bitter Lesson to AI products, where he conceptualizes a quadrant map defining these product capabilities:
@@ -115,17 +114,16 @@ Vertical AI is easy to recognize, as it is what most startups in the AI applicat
 After a market analysis with Hamilton Helmer's 7 Powers, Petersson concludes that the strongest moat for a specialist product (especially for a startup) is a _cornered resource_, though the conditions for success are stringent:
 "The resource has to be truly exclusive—that is, it should not be available for sale at any price. It also has to be truly required to operate in that vertical, meaning without it, your product cannot succeed regardless of other factors"[^bl_ch2]
 
-{{< callout type="info" >}}
-[Hamilton Helmer's 7 Powers](https://7powers.com/) is a framework for analyzing competitive advantage. The powers are: [^7_powers] [^moat]
-
-1. **Scale economies** - unit costs are amortized over volume
-2. **Network economies** - customer value increases as customer base increase
-3. **Counter-positioning** - a business model that cannot be mimicked by competitors
-4. **Switching costs** - switching loses a customer more than it gains them
-5. **Branding** - brand recognition increases perceived value of product
-6. **Cornered Resource** - preferential or exclusive access to an otherwise constrained/limited resource
-7. **Process Power** - business processes (such as manufacturing) that lead to lower costs and/or superior products
-   {{< /callout >}}
+> [!NOTE]  
+> [Hamilton Helmer's 7 Powers](https://7powers.com/) is a framework for analyzing competitive advantage.[^7_powers] [^moat] The powers are:
+>
+> 1. **Scale economies** - unit costs are amortized over volume
+> 2. **Network economies** - customer value increases as customer base increase
+> 3. **Counter-positioning** - a business model that cannot be mimicked by competitors
+> 4. **Switching costs** - switching loses a customer more than it gains them
+> 5. **Branding** - brand recognition increases perceived value of product
+> 6. **Cornered Resource** - preferential or exclusive access to an otherwise constrained/limited resource
+> 7. **Process Power** - business processes (such as manufacturing) that lead to lower costs and/or superior products
 
 He concludes that it is not really a question of _whether_ startups in the AI space are doomed, but _when_ [^bl_ch3].
 This is because startups are likely specialists as it is unlike they have the ability to generalize or scale like the foundation labs or big tech incumbents.

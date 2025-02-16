@@ -66,15 +66,13 @@ Command: `uv init [OPTIONS] [PATH]`
 - **lib** -`uv init --lib` - a project that provides functions and objects for other projects to consume
   - intended to be built and distributed as a Python package; implies `--package`
 
-{{< callout type="warning" >}}
-Don't forget to activate the environment!
-
-```sh
-source .venv/bin/activate # macOS, Linux
-.venv\Scripts\activate # windows
-```
-
-{{< /callout >}}
+> [!TIP]
+> Don't forget to activate the environment!
+>
+> ```sh
+> source .venv/bin/activate # macOS, Linux
+> .venv\Scripts\activate # windows
+> ```
 
 ### [Environment management](https://docs.astral.sh/uv/concepts/projects/dependencies/#adding-dependencies)
 
@@ -196,12 +194,11 @@ uv run --package <workspace_name> <command>
 
 Dependencies specified in `[tool.uv.sources]` of the workspace root apply to all members (unless overridden on a per-member basis)
 
-{{< callout type="info" >}}
-Workspace switching takes advantage of the fact that direnv/vscode/etc. assume a single environment per repo.
-Updating the workspace updates the single repo `.venv` directory (this is fast because `uv` caches dependencies).
-This means that vscode, for instance, will always use the expected workspace dependencies when working in a repo because it uses the single `.venv` location;
-it is only the contents of the virtual environment that change when switching workspaces.
-{{< /callout >}}
+> [!NOTE]
+> Workspace switching takes advantage of the fact that direnv/vscode/etc. assume a single environment per repo.
+> Updating the workspace updates the single repo `.venv` directory (this is fast because `uv` caches dependencies).
+> This means that vscode, for instance, will always use the expected workspace dependencies when working in a repo because it uses the single `.venv` location;
+> it is only the contents of the virtual environment that change when switching workspaces.
 
 #### Path dependencies
 

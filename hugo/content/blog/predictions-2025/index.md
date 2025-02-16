@@ -42,11 +42,10 @@ _Probability: 100%_
 "Slow thinking" AI models like OpenAI's [o1](https://openai.com/o1/) and [o3](https://arcprize.org/blog/oai-o3-pub-breakthrough) models (as opposed to the "fast thinking" immediate response of standard LLMs)
 demonstrate that existing models can be deployed/instructed to think deliberately about a problem to solve it iteratively.
 
-{{< callout type="info" >}}
-I'm avoiding describing the extended thinking as "reasoning".
-I recognize that's the popular term; while to some degree it does represent the process of inference-time compute,
-I think it will take at least until the next generation of models for them to exhibit full-fledged planning, reasoning, or metacognition.
-{{< /callout >}}
+> [!NOTE]
+> I'm avoiding describing the extended thinking as "reasoning".
+> I recognize that's the popular term; while to some degree it does represent the process of inference-time compute,
+> I think it will take at least until the next generation of models for them to exhibit full-fledged planning, reasoning, or metacognition.
 
 We will see more new models and use of models using inference-time compute in 2025 in situations where low latency is not required, especially to boost performance of small models[^test-time-scaling]
 or where near-human performance is required to automate complex, out-of-domain tasks[^o3].
@@ -61,9 +60,8 @@ or (b) gpt-5-generation models will alter what has become the standard model arc
 
 _Probability: 50/50_
 
-{{< callout type="info" >}}
-If I had to bet, Western/U.S. labs (Meta, Google, OpenAI) will fall prey to slowly improving the status quo, while Chinese labs (DeepSeek, Qwen) will experiment with new architectures. Anthropic and Mistral are wildcards.
-{{< /callout >}}
+> [!NOTE]
+> If I had to bet, Western/U.S. labs (Meta, Google, OpenAI) will fall prey to slowly improving the status quo, > while Chinese labs (DeepSeek, Qwen) will experiment with new architectures. Anthropic and Mistral are wildcards.
 
 ### Next-gen Architectural changes
 
@@ -77,11 +75,10 @@ or sampling[^top-n] [^coconut].
 
 _Probability: 75%_
 
-{{< callout >}}
-Bonus:<br>
-Inspired by [ModernBert](https://arxiv.org/abs/2412.13663), other "deprecated" architectures will be given "modern" makeovers<br>
-_Probability: 60%_
-{{< /callout >}}
+> [!NOTE]
+> Bonus:<br>
+> Inspired by [ModernBert](https://arxiv.org/abs/2412.13663), other "deprecated" architectures will be given "modern" makeovers<br>  
+> _Probability: 60%_
 
 ## Multimodal-first training
 
@@ -104,22 +101,41 @@ _Probability: 80%_
 ## References
 
 [^outlines]: [Structured Generation Improves LLM performance: GSM8K Benchmark](https://blog.dottxt.co/performance-gsm8k.html)
+
 [^structured_outputs]: [Introducing Structured Outputs in the API | OpenAI](https://openai.com/index/introducing-structured-outputs-in-the-api/)
+
 [^o3]: [OpenAI o3 Breakthrough High Score on ARC-AGI-Pub](https://arcprize.org/blog/oai-o3-pub-breakthrough)
+
 [^test-time-scaling]: [Scaling test-time compute - a Hugging Face Space by HuggingFaceH4](https://huggingface.co/spaces/HuggingFaceH4/blogpost-scaling-test-time-compute)
+
 [^gpt5]: [OpenAI's GPT-5 reportedly falling short of expectations | TechCrunch](https://techcrunch.com/2024/12/21/openais-gpt-5-reportedly-falling-short-of-expectations/)
+
 [^pause]: [[2310.02226] Think before you speak: Training Language Models With Pause Tokens](https://arxiv.org/abs/2310.02226)
+
 [^patch]: [[2407.12665] Patch-Level Training for Large Language Models](https://arxiv.org/abs/2407.12665)
+
 [^counting]: [[2410.19730] Counting Ability of Large Language Models and Impact of Tokenization](https://arxiv.org/abs/2410.19730)
+
 [^bytes]: [[2412.09871] Byte Latent Transformer: Patches Scale Better Than Tokens](https://arxiv.org/abs/2412.09871)
+
 [^mamba]: [[2312.00752] Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/abs/2312.00752)
+
 [^rwkv]: [[2305.13048] RWKV: Reinventing RNNs for the Transformer Era](https://arxiv.org/abs/2305.13048)
+
 [^jamba]: [[2403.19887] Jamba: A Hybrid Transformer-Mamba Language Model](https://arxiv.org/abs/2403.19887)
+
 [^cottention]: [[2409.18747] Cottention: Linear Transformers With Cosine Attention](https://arxiv.org/abs/2409.18747)
+
 [^multitoken]: [[2404.19737] Better & Faster Large Language Models via Multi-token Prediction](https://arxiv.org/abs/2404.19737)
+
 [^JEPA]: [A Path Towards Autonomous Machine Intelligence | OpenReview](https://openreview.net/forum?id=BZ5a1r-kVsf)
+
 [^top-n]: [[2411.07641] Top-nσ: Not All Logits Are You Need](https://arxiv.org/abs/2411.07641)
+
 [^coconut]: [[2412.06769] Training Large Language Models to Reason in a Continuous Latent Space](https://arxiv.org/abs/2412.06769)
+
 [^platonic]: [[2405.07987] The Platonic Representation Hypothesis](https://arxiv.org/abs/2405.07987)
+
 [^mllms]: [Understanding Multimodal LLMs - by Sebastian Raschka, PhD](https://magazine.sebastianraschka.com/p/understanding-multimodal-llms)
+
 [^vqa]: [[2401.06209] Eyes Wide Shut? Exploring the Visual Shortcomings of Multimodal LLMs](https://arxiv.org/abs/2401.06209)

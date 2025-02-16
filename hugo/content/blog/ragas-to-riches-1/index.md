@@ -51,10 +51,11 @@ Pieces of content are split into chunks, converted into vector embeddings, and s
 When a user request comes in, the system locates that request into the same vector embedding space as the corpus of information and identifies the most relevant document chunks with respect to that input.
 Then we provide user query _and_ the most relevant chunks for the LLM to generate the response.
 
-{{< callout type="info" >}} The description of RAG procedure above assumes the use of an embedding model and vector database.
-While this is the "typical" implementation, it is not the only one.
-BM25 is a type of keyword search that does not require an embedding model or vectorization but provides fast, well-studied text search, and often serves as a "baseline".
-Other methods for text comparison, such as TF-IDF, are also theoretically plausible as search methods, but tend to underperform BM25 and vector search. {{< /callout >}}
+> [!NOTE]
+> The description of RAG procedure above assumes the use of an embedding model and vector database.
+> While this is the "typical" implementation, it is not the only one.
+> BM25 is a type of keyword search that does not require an embedding model or vectorization but provides fast, well-studied text search, and often serves as a "baseline".
+> Other methods for text comparison, such as TF-IDF, are also theoretically plausible as search methods, but tend to underperform BM25 and vector search.
 
 ## RAG Optimization
 
@@ -85,7 +86,8 @@ As retrieval is essentially a recommendation system, AI/ML Engineers have repurp
 `context precision` measures the proportion of information retrieved by the RAG system that is relevant to the ground truth / known good answer. [^precision]
 `context recall` calculates the proportion of the claims made in the ground truth answer that are supported by retrieved information. [^recall] [^precision-recall]
 
-{{< callout type="info" emoji="💡" >}} I find [Wikipedia's image-based explanation of precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall) super helpful when thinking these definitions through {{< /callout >}}
+> [!TIP]
+> I find [Wikipedia's image-based explanation of precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall) super helpful when thinking these definitions through
 
 For response evaluation, faithfulness and response relevance are frequently used.
 `faithfulness` measures how consistent the final answer is with respect to the retrieved information.[^faithfulness]

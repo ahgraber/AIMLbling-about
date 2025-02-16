@@ -16,20 +16,22 @@ draft: false
 The "open weights" or "open model" LLM ecosystem is thriving, with major new releases from Meta, Microsoft, Databricks, and Snowflake in the past two months. Given that Meta's Llama 2 family became a standard for comparison for all other
 models, I thought it would be useful that aggregate all of the information of the 'Llama 3 cohort' in a single place. I've included Llama 2 as a point of comparison. Models are ordered by date of introduction.
 
-{{< callout type="question" emoji="📣" >}} I've done my best to make these table not-terrible, but they're probably still trash on mobile or non-wide aspect ratios. Sorry. {{< /callout >}}
+> [!NOTE]
+> I've done my best to make these table not-terrible, but they're probably still trash on mobile or non-wide aspect ratios. Sorry.
 
 ## Architectures
 
 {{< table path="architectures.csv" header="true" caption="A comparison of model architectures" >}}
 
-{{< callout type="warning" >}} I've not included ChatGPT 3.5 or 4, or Anthropic's Claude because they're completely closed models and I was unable to find any information worth comparing. {{< /callout >}}
+> [!WARNING]
+> I've not included ChatGPT 3.5 or 4, or Anthropic's Claude because they're completely closed models and I was unable to find any information worth comparing.
 
 ## Performance
 
-{{< callout type="question" emoji="📣" >}}
-
-1. I've transposed table rows/columns from here on (they fit better that way).
-2. I've included benchmarks from OpenAI's GPT4 paper and Anthropic's Claude 3 announcement as points of comparison. {{< /callout >}}
+> [!NOTE]
+>
+> 1. I've transposed table rows/columns from here on (they fit better that way).
+> 2. I've included benchmarks from OpenAI's GPT4 paper and Anthropic's Claude 3 announcement as points of comparison.
 
 {{< table path="benchmarks.csv" header="true" caption="A comparison of model architectures" >}}
 
@@ -56,8 +58,9 @@ be closer to the "data optimal" regime for small models."[^phi] Meta echo this i
 found that model performance continues to improve even after the model is trained on two orders of magnitude more data. Both our 8B and 70B parameter models continued to improve log-linearly after we trained them on up to 15T tokens.
 _Larger models can match the performance of these smaller models with less training compute, but smaller models are generally preferred because they are much more efficient during inference_"[^llama3] (emphasis mine).
 
-{{< callout type="info" emoji="💡" >}} The Chinchilla "laws" describe the relationship between model size (parameters), dataset size (tokens), performance (loss), and cost of compute (FLOPs). Historically, the Chinchilla laws have been
-used to understand the "compute optimal" point, or the point of diminishing returns (in terms of model performance improvement) associated with additional compute, given a static model size and dataset. {{< /callout >}}
+> [!NOTE]
+> The Chinchilla "laws" describe the relationship between model size (parameters), dataset size (tokens), performance (loss), and cost of compute (FLOPs). Historically, the Chinchilla laws have been
+> used to understand the "compute optimal" point, or the point of diminishing returns (in terms of model performance improvement) associated with additional compute, given a static model size and dataset.
 
 Why is this? Well, it turns out that inference costs are expensive. _Really expensive_. Like, OpenAI-might-go-bankrupt-because-it-costs-$700,000-per-day expensive.[^cost] LLM providers want efficiency, but they also need to show
 improvements over the last generation. To do this, they have transitioned toward the "data optimal" (or more importantly, inference-efficient) training paradigm. The Chinchilla laws suggest that you can reach the same performance as a
@@ -94,10 +97,11 @@ reported for Arctic adds weight to this theory). Perhaps the additional overpara
 
 ### Inference implications
 
-{{< callout type="question" emoji="📣" >}} Most of what I'll mention here is a rehash of what I learned listening to [Dylan Patel (of SemiAnalysis) on the Latent Space podcast](https://www.latent.space/p/semianalysis). It is 100% worth the
-listen (or reviewing the transcript).
-
-In fact, go do that now. I'll wait. {{< /callout >}}
+> [!NOTE]
+> Most of what I'll mention here is a rehash of what I learned listening to [Dylan Patel (of SemiAnalysis) on the Latent Space podcast](https://www.latent.space/p/semianalysis). It is 100% worth the
+> listen (or reviewing the transcript).
+>
+> In fact, go do that now. I'll wait.
 
 As Dylan Patel pointed out, training LLMs tends to be compute-intensive; compute FLOPs are the bottleneck. You get as close to 100% utilization (MFU - model FLOPs utilization) as you can (given network/communication and sharding
 inefficiencies) during training. At inference time, you need _half_ the compute needed when training (you only need the forward pass, no backpropagation). If you want to get more responses to more prompts, you need memory. If you want to
@@ -154,20 +158,37 @@ tCO\\$_2\\$eq.
 ## Works Cited
 
 [^compute]: [Estimating Training Compute of Deep Learning Models – Epoch AI](https://epochai.org/blog/estimating-training-compute)
+
 [^dbrx]: [Introducing DBRX: A New State-of-the-Art Open LLM | Databricks Blog](https://www.databricks.com/blog/introducing-dbrx-new-state-art-open-llm)
+
 [^phi]: [[2404.14219] Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone](https://arxiv.org/abs/2404.14219)
+
 [^llama3]: [Introducing Meta Llama 3: The most capable openly available LLM to date](https://ai.meta.com/blog/meta-llama-3/)
+
 [^cost]: [The Inference Cost Of Search Disruption – Large Language Model Cost Analysis](https://www.semianalysis.com/p/the-inference-cost-of-search-disruption)
+
 [^law]: [Revised Chinchilla scaling laws – LLM compute and token requirements – Educating Silicon](https://www.educatingsilicon.com/2024/04/29/revised-chinchilla-scaling-laws-impact-on-llm-compute-and-token-requirements/)
+
 [^mqa]: [[1911.02150] Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/abs/1911.02150)
+
 [^gqa]: [[2305.13245] GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/abs/2305.13245)
+
 [^swa]: [[2004.05150v2] Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150v2)
+
 [^snk]: [[2309.17453] Efficient Streaming Language Models with Attention Sinks](https://arxiv.org/abs/2309.17453)
+
 [^snow]: [Snowflake Arctic - LLM for Enterprise AI](https://www.snowflake.com/blog/arctic-open-efficient-foundation-language-models-snowflake/)
+
 [^mla]: [[2405.04434v2] DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model](https://arxiv.org/abs/2405.04434v2)
+
 [^flash]: [[2205.14135] FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness](https://arxiv.org/abs/2205.14135)
+
 [^short]: [[2403.03853] ShortGPT: Layers in Large Language Models are More Redundant Than You Expect](https://arxiv.org/abs/2403.03853)
+
 [^prune]: [[2306.11695] A Simple and Effective Pruning Approach for Large Language Models](https://arxiv.org/abs/2306.11695)
+
 [^huggingface]: [Models - Hugging Face](https://huggingface.co/models)
+
 [^openllm]: [What's going on with the Open LLM Leaderboard?](https://huggingface.co/blog/open-llm-leaderboard-mmlu)
+
 [^benchmarks]: [[2402.01781v1] When Benchmarks are Targets: Revealing the Sensitivity of Large Language Model Leaderboards](https://arxiv.org/abs/2402.01781v1?trk=public_post_comment-text)

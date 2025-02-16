@@ -31,15 +31,16 @@ The generational difference in GPU power draw (W) is due to upgrades in training
 _V100_ accelerators (300-330W), Llama 2 trained on NVIDIA _A100_-80GB accelerators (TDP of 350 or 400W), and Llama 3
 trained on NVIDIA _H100_-80GB accelerators (TDP of 700W).
 
-{{< callout type="info" >}} Sidebar: `TDP` stands for "Thermal Design Power", and represents the maximum power draw of
-the component (a GPU, in this case) due to its ability to remain at a safe operating temperature.
-
-If you're familiar with overclocking, you've brushed against the concept of TDP.  
- At risk of oversimplifying - the goal of overclocking is to run a computer (CPU or GPU) faster than stock settings. This
-is possible because chips are limited to stay in a safe thermal envelope for all chips in all situations. These limits are
-typically done by regulating the amount of electricity a chip can draw; running faster requires more power, but more power
-generates more heat. The secret to overclocking, then, is to have a better-than-standard cooling configuration that can
-keep the chip within its safe thermal envelope, even at extreme power draw. {{< /callout >}}
+> [!NOTE]
+> Sidebar: `TDP` stands for "Thermal Design Power", and represents the maximum power draw of
+> the component (a GPU, in this case) due to its ability to remain at a safe operating temperature.
+>
+> If you're familiar with overclocking, you've brushed against the concept of TDP.  
+> At risk of oversimplifying - the goal of overclocking is to run a computer (CPU or GPU) faster than stock settings. This
+> is possible because chips are limited to stay in a safe thermal envelope for all chips in all situations. These limits are
+> typically done by regulating the amount of electricity a chip can draw; running faster requires more power, but more power
+> generates more heat. The secret to overclocking, then, is to have a better-than-standard cooling configuration that can
+> keep the chip within its safe thermal envelope, even at extreme power draw.
 
 ## Training is only half of the lifecycle
 
@@ -59,27 +60,29 @@ paper that "generating 100 pages of content from a trained model can cost on the
 words/page and assuming (per OpenAI[^tokens]) 500 words ≈ 683 tokens, then 100 pages ≈ 68,300 tokens. Where a Llama2-7B
 equivalent uses 0.1 kWh to generate 10k tokens, GPT-3 generates only 17k tokens with the same power.
 
-{{< callout type="warning" >}} Note: GPT-3 at 175B having greater efficiency than a 7B class model seems strange, but
-these metrics are not truly comparable. The 7B estimate is based on 1000, 10-token generations (and therefore must also
-process 1000 inputs of unknown length), while the GPT-3 estimate is derived from an assumption-laden calculation based
-on data that gives no insight into the number of inferences or length of inputs required to generate text of that
-cumulative length. {{< /callout >}}
+> [!WARNING]
+> Note: GPT-3 at 175B having greater efficiency than a 7B class model seems strange, but
+> these metrics are not truly comparable. The 7B estimate is based on 1000, 10-token generations (and therefore must also
+> process 1000 inputs of unknown length), while the GPT-3 estimate is derived from an assumption-laden calculation based
+> on data that gives no insight into the number of inferences or length of inputs required to generate text of that
+> cumulative length.
 
 Unfortunately, it is ~~difficult~~ impossible to calculate _actual_ cumulative inference costs of open models because
 they can be deployed by anyone, anywhere there is sufficient hardware to run the inference. Given that 7B (or 8B) class
 models can be quantized to run on consumer GPUs, there are many systems that meet that hardware requirement (i.e., most
 modern PCs with a discrete graphics card).
 
-{{< callout type="info" >}} Luccioni et al. use the cost-per-generation estimates to calculate the breakeven point
-where the cost of inference meets the cost of training.
-
-Replicating this exercise:  
-Given the generation cost of the Llama2-7B analogue (0.1 kWh / 1k 10-tokens inferences), Llama2-7B needs an estimated
-526 million 10-token inferences and Llama3-8B would require approximately 8.75 billion 10-token inferences to be
-equivalent to use the same energy used in training. For GPT-3, generating 52 million max-length responses (2k tokens)
-would use approximately the same energy as used in training. These numbers should only be used as estimates, because
-the length of the input context will also effect compute requirements (and therefore power consumption); none of the
-references controlled for input length. {{< /callout >}}
+> [!NOTE]
+> Luccioni et al. use the cost-per-generation estimates to calculate the breakeven point
+> where the cost of inference meets the cost of training.
+>
+> Replicating this exercise:  
+> Given the generation cost of the Llama2-7B analogue (0.1 kWh / 1k 10-tokens inferences), Llama2-7B needs an estimated
+> 526 million 10-token inferences and Llama3-8B would require approximately 8.75 billion 10-token inferences to be
+> equivalent to use the same energy used in training. For GPT-3, generating 52 million max-length responses (2k tokens)
+> would use approximately the same energy as used in training. These numbers should only be used as estimates, because
+> the length of the input context will also effect compute requirements (and therefore power consumption); none of the
+> references controlled for input length.
 
 ## Estimating the maximum
 
@@ -189,8 +192,9 @@ CO\\$_2\\$ output rate in 2021.[^epa] While not exactly as claimed by Meta, this
 |                               Llama 3 70B<br>(training only) |                      4,480 |                                  1870 |              8,960 |                                      3740 |
 | theoretical GPU max consumption<br>Training and/or Inference |                 53,000,000 |                            22,000,000 |        106,000,000 |                                44,000,000 |
 
-{{< callout type="info">}} You may notice that I did not include the A/C power consumption in the CO\\$_2\\$
-calculation above. I'll get to that in the next section. {{< /callout >}}
+> [!NOTE]
+> You may notice that I did not include the A/C power consumption in the CO\\$_2\\$
+> calculation above. I'll get to that in the next section.
 
 Extending our max-consumption exercise from above, the estimated CO\\$_2\\$ emissions from running all recent
 datacenter GPUs and their associated hardware is 44 million metric tons per year. Or, given the estimates from "Power
@@ -210,11 +214,10 @@ To put these numbers in scale, I'll share some equivalents I've found using the 
 The world's largest carbon capture facility can capture 36,000 tons of CO\\$_2\\$ per year.[^capture] Capturing the
 carbon emitted by the electricity consumed by datacenters hosting GPU clusters would require 1,200 of them.
 
-{{< callout type="info" >}} Microsoft just published their
-[2024 Environmental Sustainability Report](https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lhhu). In it,
-they note that while their direct CO\\$_2\\$ emissions from the datacenter have actually decreased from 2020, their
-overall CO\\$_2\\$ emissions have _increased_, due to emissions related to constructing new data centers.
-{{< /callout >}}
+> [!NOTE]
+> Microsoft just published their [2024 Environmental Sustainability Report](https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lhhu). In it,
+> they note that while their direct CO\\$_2\\$ emissions from the datacenter have actually decreased from 2020, their
+> overall CO\\$_2\\$ emissions have _increased_, due to emissions related to constructing new data centers.
 
 ## Water consumption
 
@@ -316,23 +319,43 @@ Meta continues to build out its datacenter infrastructure. [^meta-consumption-in
 ## Works Cited
 
 [^llama2]: [[2307.09288] Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
+
 [^llama3]: [Llama3 | MODEL_CARD](https://github.com/meta-llama/llama3/blob/main/MODEL_CARD.md)
+
 [^gpt3]: [[2005.14165] Language Models are Few-Shot Learners](https://arxiv.org/pdf/2005.14165)
+
 [^gpt3-est]: [[2104.10350] Carbon Emissions and Large Neural Network Training](https://arxiv.org/pdf/2104.10350)
+
 [^watts]: [[2311.16863] Power Hungry Processing: Watts Driving the Cost of AI Deployment?](https://arxiv.org/abs/2311.16863)
+
 [^tokens]: [What are tokens and how to count them? | OpenAI Help Center](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them)
+
 [^tpu]: [Google Tensor Processing Unit](https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Fifth_generation_TPU)
+
 [^nvidia]: [Nvidia datacenter GPUs](https://en.wikipedia.org/wiki/List_of_Nvidia_graphics_processing_units#Data_Center_GPUs)
+
 [^viking]: [Viking 7B: The first open LLM for the Nordic languages](https://www.silo.ai//blog/viking-7b-the-first-open-llm-for-the-nordic-languages)
+
 [^antares]: [How The "Antares" MI300 GPU Ramp Will Save AMD's Datacenter Business](https://www.nextplatform.com/2024/01/31/how-the-antares-mi300-gpu-ramp-will-save-amds-datacenter-business/)
+
 [^gpu-poors]: [Google Gemini Eats The World – Gemini Smashes GPT-4 By 5X, The GPU-Poors](https://www.semianalysis.com/p/google-gemini-eats-the-world-gemini)
+
 [^toms1]: [Nvidia to Sell 550,000 H100 GPUs for AI in 2023: Report | Tom's Hardware](https://www.tomshardware.com/news/nvidia-to-sell-550000-h100-compute-gpus-in-2023-report)
+
 [^toms2]: [Nvidia sold half a million H100 AI GPUs in Q3 thanks to Meta, Facebook — lead times stretch up to 52 weeks: Report | Tom's Hardware](https://www.tomshardware.com/tech-industry/nvidia-ai-and-hpc-gpu-sales-reportedly-approached-half-a-million-units-in-q3-thanks-to-meta-facebook)
+
 [^wiki]: [List of countries by electricity production](https://en.wikipedia.org/wiki/List_of_countries_by_electricity_production)
+
 [^epa]: [Greenhouse Gases Equivalencies Calculator - Calculations and References | US EPA](https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references)
+
 [^capture]: [The world's largest direct carbon capture plant just went online](https://www.engadget.com/the-worlds-largest-direct-carbon-capture-plant-just-went-online-172447811.html)
+
 [^thirsty]: [[2304.03271] Making AI Less "Thirsty": Uncovering and Addressing the Secret Water Footprint of AI Models](https://arxiv.org/abs/2304.03271)
+
 [^cooling]: [Artificial intelligence technology behind ChatGPT was built in Iowa — with a lot of water | AP News](https://apnews.com/article/chatgpt-gpt4-iowa-ai-water-consumption-microsoft-f551fde98083d17a7e8d904f8be822c4)
+
 [^microsoft-2024-sust]: [Our 2024 Environmental Sustainability Report - Microsoft On the Issues](https://blogs.microsoft.com/on-the-issues/2024/05/15/microsoft-environmental-sustainability-report-2024/)
+
 [^underwater]: [Microsoft finds underwater datacenters are reliable, practical and use energy sustainably - Source](https://news.microsoft.com/source/features/sustainability/project-natick-underwater-datacenter/)
+
 [^meta-consumption-increase]: [Meta data center electricity consumption hits 14,975GWh, leased data center use nearly doubles - DCD](https://www.datacenterdynamics.com/en/news/meta-data-center-electricity-consumption-hits-14975gwh-leased-data-center-use-nearly-doubles/)

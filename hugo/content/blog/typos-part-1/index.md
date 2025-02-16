@@ -45,8 +45,9 @@ Increasing the typo frequency is equivalent to introducing data drift, moving th
 3. Typos increase error rates -- as typos alter the tokenization and embedding pipeline, the language model experiences distribution shift and cannot predict as well for the error-laden inputs. Text with typos will have higher perplexity
    than correct text, and questions with typos will have lower response accuracy than correct questions.
 
-{{< callout type="warning" >}} **Caveat:** The forthcoming analyses hold true for English. I assume that the influence of typos on performance with other languages _increases_ proportionately to how well-represented the language is in the
-tokenizer and LLM training sets. {{< /callout >}}
+> [!WARNING]  
+> **Caveat:** The forthcoming analyses hold true for English. I assume that the influence of typos on performance with other languages _increases_ proportionately to how well-represented the language is in the
+> tokenizer and LLM training sets.
 
 ## Typo Generation
 
@@ -68,8 +69,9 @@ Given this intuition, I've gathered the following datasets that contain both "in
 
 After parsing the data, the final collection contains 753,569 character-level edits/corrections for statistical summarization and data mining.
 
-{{< callout type="warning" >}} Some of these datasets provide frequency information (Holbrook, Microsoft), while others are a (deduplicated) collection of common errors. This means the aggregate collection is **not** a representative
-sample of error frequencies; however, for the purpose of this exercise, _I will be acting as though it is_, and inferring probabilities of occurrence from these data. {{< /callout >}}
+> [!WARNING]
+> Some of these datasets provide frequency information (Holbrook, Microsoft), while others are a (deduplicated) collection of common errors. This means the aggregate collection is **not** a representative
+> sample of error frequencies; however, for the purpose of this exercise, _I will be acting as though it is_, and inferring probabilities of occurrence from these data.
 
 ### Analysis
 

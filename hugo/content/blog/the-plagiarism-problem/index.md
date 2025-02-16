@@ -54,10 +54,9 @@ _or_ via unintentional reproduction of the source text based the internalization
 Without deep mechanistic introspection with respect to the generative process, it is impossible for the end user to determine whether the replicated content was memorized or reconstructed.
 [^memorization]
 
-{{< callout type="question" emoji="💡" >}}
-Verbatim plagiarism is made less likely due to the variety of probabilistic decoding techniques (beam search, temperature, nucleus sampling, etc.) that are designed to allow models to avoid only picking the highest-probability token.
-These techniques add user-selectable levels of randomness to the generative process.
-{{< /callout >}}
+> [!NOTE]
+> Verbatim plagiarism is made less likely due to the variety of probabilistic decoding techniques (beam search, temperature, nucleus sampling, etc.) that are designed to allow models to avoid only picking the highest-probability token.
+> These techniques add user-selectable levels of randomness to the generative process.
 
 Because it is impossible for the end user to distinguish, researchers from Google do not make the distinction between the two in the recent Gemma 2 technical paper, and define memorization as:
 
@@ -100,11 +99,10 @@ A search engine indexes that content so it knows what is available, and surfaces
 The audience clicks through to the content, driving ad revenue / views / clout for the creator.
 [^creator]
 
-{{< callout type="info" >}}
-This representation of the internet / creator economy is simplistic, idealistic, and somewhat out-of-date.
-The point is that AI-based answer engines fundamentally change the way people consume content on the internet,
-and the storybook model of the internet economy based on early web 2.0 is illustrative.
-{{< /callout >}}
+> [!NOTE]
+> This representation of the internet / creator economy is simplistic, idealistic, and somewhat out-of-date.
+> The point is that AI-based answer engines fundamentally change the way people consume content on the internet,
+> and the storybook model of the internet economy based on early web 2.0 is illustrative.
 
 When an answer engine provides the answer directly, it removes the need for the audience to click through to the underlying source pages, which deprives creators of views and ad revenue.
 
@@ -167,9 +165,15 @@ I've linked several papers below for further reading.
 ## References
 
 [^creator]: [Understanding the Creator Economy: A Complete Guide | GRIN](https://grin.co/blog/understanding-the-creator-economy/)
+
 [^knowledge]: [Knowledge Mechanisms in Large Language Models: A Survey and Perspective](https://arxiv.org/abs/2407.15017)
+
 [^memorization]: [Demystifying Verbatim Memorization in Large Language Models](https://arxiv.org/abs/2407.17817)
+
 [^gemma2]: [[2408.00118] Gemma 2: Improving Open Language Models at a Practical Size](https://arxiv.org/abs/2408.00118)
+
 [^profit-sharing]: [AI search engine accused of plagiarism announces publisher revenue-sharing plan | Ars Technica](https://arstechnica.com/information-technology/2024/07/ai-search-engine-accused-of-plagiarism-announces-publisher-revenue-sharing-plan/)
+
 [^gemma-scope]: [Gemma Scope: helping the safety community shed light on the inner workings of language models - Google DeepMind](https://deepmind.google/discover/blog/gemma-scope-helping-the-safety-community-shed-light-on-the-inner-workings-of-language-models/)
+
 [^sentence-transformers]: [[1908.10084] Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks](https://arxiv.org/abs/1908.10084)
