@@ -46,6 +46,7 @@ additional tokens to represent the typos than Llama 3.
 
 {{< figure
   src="images/count-differences.png"
+  alt="count differences"
   caption="Llama 2 requires a greater increase in token use to represent typo-laden text than Llama 3." >}}
 
 However, since Llama 3 uses fewer tokens in the baseline (its larger vocabulary includes larger "word chunks" as tokens, reducing token count overall), it shows a larger _proportional_ increase in the number of tokens required to represent
@@ -53,6 +54,7 @@ the typo-laden questions.
 
 {{< figure
   src="images/pct-differences.png"
+  alt="pct differences"
   caption="Llama 3 uses fewer tokens in the baseline, so the token use increase is proportionally larger." >}}
 
 ## References

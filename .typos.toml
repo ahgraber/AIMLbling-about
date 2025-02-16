@@ -53,6 +53,7 @@ AKS = "AKS"
 keypair = "keypair"
 raison = "raison"
 ba = "ba"
+autonymous = "autonymous"
 
 ## Specific rules for lockfiles
 [type.lock]

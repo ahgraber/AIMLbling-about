@@ -82,16 +82,19 @@ The diagrams below visually describe the evaluation process _(click the tabs lab
 {{< tab >}}
 {{< figure
   src="images/baseline.png"
+  alt="ragas baseline"
   caption="Baseline response and analysis" >}}
 {{< /tab >}}
 {{< tab >}}
 {{< figure
   src="images/retrieval.png"
+  alt="context retrieval"
   caption="Context retrieval and analysis" >}}
 {{< /tab >}}
 {{< tab >}}
 {{< figure
   src="images/rag.png"
+  alt="RAG generation and analysis"
   caption="RAG generation and analysis" >}}
 {{< /tab >}}
 {{< /tabs >}}
@@ -326,6 +329,7 @@ More complex evaluation instructions (context recall, faithfulness) reduce align
 
 {{< figure
   src="images/baseline_answer_relevance_corr.png"
+  alt="models are aligned on answer relevance"
   caption="Models are closely aligned on baseline Answer Relevance evaluations" >}}
 
 {{< /tab >}}
@@ -336,11 +340,13 @@ More complex evaluation instructions (context recall, faithfulness) reduce align
   <td style="width:50%">
 {{< figure
   src="images/retrieval_context_precision_corr.png"
+  alt="models agree on context precision"
   caption="Models show fairly strong agreement on Context Precision" >}}
   </td>
   <td style="width:50%">
 {{< figure
   src="images/retrieval_context_recall_corr.png"
+  alt="alignment is lower on context recall"
   caption="Context Recall is a 'harder' evaluation based on increased missingness, which reduces model alignment" >}}
   </td>
 </tr>
@@ -354,11 +360,13 @@ More complex evaluation instructions (context recall, faithfulness) reduce align
   <td style="width:50%">
 {{< figure
   src="images/rag_answer_relevance_corr.png"
+  alt="models are aligned on answer relevance"
   caption="Models are aligned on RAG Answer Relevance evaluations, though less so than in the baseline case" >}}
   </td>
   <td style="width:50%">
 {{< figure
   src="images/rag_faithfulness_corr.png"
+  alt="alignment is lower on faithfulness"
   caption="Faithfulness is a 'harder' evaluation based on increased missingness, which reduces model alignment" >}}
   </td>
 </tr>

@@ -51,6 +51,7 @@ completely opposite directions, 0 means they vectors are orthogonal (unrelated),
 
 {{< figure
   src="images/cosine-similarity.png"
+  alt="cosine similarity"
   caption="Simplified Example of Cosine Similarity, in 2-D"
   width="600">}}
 
@@ -70,6 +71,7 @@ The results confirm the hypothesis that increasing typo occurrence shifts a pass
 
 {{< figure
   src="images/sentence-similarity.png"
+  alt="typos reduce similarity"
   caption="Increasing typo occurrence increases distance from \"correct\" text in embedding space" >}}
 
 This effect holds true regardless of the model used to generate embeddings at the passage-level granularity. The sentence-transformer model shows the least reduction in embedding performance (i.e., the distance between "correct" and "typo"
@@ -110,10 +112,12 @@ similarity based on the top-performing Sentence-Transformers model from the expe
 <tr>
   <td style="width:50%">{{< figure
     src="images/healing-accuracy.png"
+    alt="llms accurately repair typos"
     caption="Accuracy indicates LLMs can successfully recover the majority of the original input.">}}
   </td>
     <td style="width:50%">{{< figure
     src="images/healing-similarity.png"
+    alt="llms recover meaning"
     caption="Cosine Similarity indicates LLMs successfully recover the meaning of text with typos when fixing them.">}}
   </td>
 </tr>

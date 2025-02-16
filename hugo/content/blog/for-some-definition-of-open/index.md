@@ -59,6 +59,7 @@ Unlike the above two definitions, this breakdown does not specify open access to
 
 {{< figure
     src="images/ai_licensing.png"
+    alt="ai licensing"
     link="https://opencoreventures.com/blog/2023-06-27-ai-weights-are-not-open-source/"
     caption="AI weights are not open 'source' | Open Core Ventures" >}}
 
@@ -76,6 +77,7 @@ In other words, 85% of surveyed models are not OSAI compliant!
 
 {{< figure
     src="images/model_openness.png"
+    alt="model openness"
     link="https://opening-up-chatgpt.github.io/"
     caption="Opening up ChatGPT: Tracking Openness, Transparency, and Accountability in Instruction-Tuned Text Generators.<br>Credit: Liesenfeld, Andreas, Alianda Lopez, and Mark Dingemanse" >}}
 
@@ -104,6 +106,7 @@ As a result, OpenAI created OpenAI LP, a "capped \[for\]-profit" company to mana
 
 {{< figure
     src="https://images.ctfassets.net/kftzwdyauwt9/cUJTjpOjmMlux9iCHBPsj/b4075ce1dc79037d40c5586ea90076d4/Structure_Map_Dark.jpg"
+    alt="openai structure"
     link="https://openai.com/our-structure/"
     caption="OpenAI Structure" >}}
 
@@ -253,22 +256,41 @@ However, license limitations would (theoretically) protect against IP theft from
 {{% /details %}}
 
 [^oss]: [The Open Source Definition – Open Source Initiative](https://opensource.org/osd)
+
 [^osai]: [The Open Source AI Definition – Open Source Initiative](https://opensource.org/ai/open-source-ai-definition)
+
 [^lf_osai]: [Embracing the Future of AI with Open Source and Open Science Models – LFAI & Data](https://lfaidata.foundation/blog/2024/10/25/embracing-the-future-of-ai-with-open-source-and-open-science-models/)
+
 [^osai_faq]: [Answers to frequently asked questions - HackMD](https://hackmd.io/@opensourceinitiative/osaid-faq)
+
 [^open_definitions]: [AI weights are not open "source" | Open Core Ventures](https://opencoreventures.com/blog/2023-06-27-ai-weights-are-not-open-source/)
+
 [^openness]: [Opening up ChatGPT: LLM openness leaderboard](https://opening-up-chatgpt.github.io/)
+
 [^openai_charter]: [OpenAI Charter | OpenAI](https://openai.com/charter/)
+
 [^openai_structure]: [Our structure | OpenAI](https://openai.com/our-structure/)
+
 [^openai_lp]: [OpenAI LP | OpenAI](https://openai.com/index/openai-lp/)
+
 [^o1]: [Learning to Reason with LLMs | OpenAI](https://openai.com/index/learning-to-reason-with-llms/)
+
 [^anthropic]: [Company \ Anthropic](https://www.anthropic.com/company)
+
 [^anthropic_trust]: [The Long-Term Benefit Trust \ Anthropic](https://www.anthropic.com/news/the-long-term-benefit-trust)
+
 [^ai2_open]: [More than open | Ai2](https://allenai.org/more-than-open)
+
 [^ai2_tax]: [The Allen Institute For Artificial Intelligence - Full Filing- Nonprofit Explorer - ProPublica](https://projects.propublica.org/nonprofits/organizations/824083177/202343159349301114/full)
+
 [^inside_ai2_incubator]: [Inside the AI2 Incubator: Microsoft co-founder's unfinished legacy fuels quest for new AI startups – GeekWire](https://www.geekwire.com/2022/inside-the-ai2-incubator-microsoft-co-founders-unfinished-legacy-fuels-quest-for-new-ai-startups/)
+
 [^llama2]: [[2307.09288] Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
+
 [^llama3]: [meta-llama/llama3: The official Meta Llama 3 GitHub site](https://github.com/meta-llama/llama3/tree/main)
+
 [^zuckerberg]: [Mark Zuckerberg - Llama 3, Open Sourcing $10b Models, & Caesar Augustus](https://www.dwarkeshpatel.com/p/mark-zuckerberg)
+
 [^source_available]: [Source-available software](https://en.wikipedia.org/wiki/Source-available_software)
+
 [^fair_source]: [About Fair Source | Fair.io](https://fair.io/about/)
