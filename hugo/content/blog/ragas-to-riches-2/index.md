@@ -189,8 +189,9 @@ In order to preemptively estimate token use (and therefore cost), I extracted th
 Then, given some assumptions, I estimated the _input_ token use over these use cases.
 Code is available [in this Jupyter notebook](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/cost_analysis.ipynb).
 
-{{< callout type="warning" >}} _NOTE:_ Token utilization estimates only analyze _input_ tokens using the `tiktoken` tokenizer;
-actual use (even if these estimates are perfect) will be higher because the analysis does not take _output_ tokens into account. {{< /callout >}}
+> [!WARNING]
+> Token utilization estimates only analyze _input_ tokens using the `tiktoken` tokenizer;
+> actual use (even if these estimates are perfect) will be higher because the analysis does not take _output_ tokens into account.
 
 ### Adding Single Doc to Knowledge Graph
 

@@ -153,14 +153,12 @@ The discussion ultimately suggests using Semantic Kernel's OpenTelemetry support
 
 ## Investigation and Manual Resolution
 
-{{< callout type="info" >}}
-Caveats:
-
-1. Semantic Kernel is still undergoing rapid development; this article is based on my experience developing with version 1.8.2 in early September, 2024.
-2. I'm approaching this as a Python-focused data scientist/ML engineer, not as an application developer. I'd be unsurprised to find out that I missed something in my investigation that would have let me solve this faster.
-3. Per (2) it's also possible I'm a shit dev... but I've also never seen inheritance spread so wide and deep such that it makes it nearly impossible to determine what parent class is providing the various methods.
-
-{{< /callout >}}
+> [!NOTE]
+> Caveats:
+>
+> 1. Semantic Kernel is still undergoing rapid development; this article is based on my experience developing with version 1.8.2 in early September, 2024.
+> 2. I'm approaching this as a Python-focused data scientist/ML engineer, not as an application developer. I'd be unsurprised to find out that I missed something in my investigation that would have let me solve this faster.
+> 3. Per (2) it's also possible I'm a shit dev... but I've also never seen inheritance spread so wide and deep such that it makes it nearly impossible to determine what parent class is providing the various methods.
 
 I ended up doing a lot of extra work trying to figure out what Semantic Kernel is doing to go from a template to the API call.
 The below image is from a call graph I made during the investigation.

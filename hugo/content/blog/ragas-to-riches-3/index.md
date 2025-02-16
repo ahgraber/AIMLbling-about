@@ -57,15 +57,13 @@ The retrievals were evaluated by analyzing `context recall` and `context precisi
 RAG responses took the retrievals from each RAG index, and provided both the retrievals as additional context and the test question to the LLM, which generated the answer in "open-book exam" fashion.
 RAG response quality was evaluated by analyzing `semantic similarity`, `answer relevance`, and `faithfulness`.
 
-{{< callout type="info" >}}
-
-- **SemanticSimilarity** - How similar is the _response_ to the ground truth reference?
-- **Answer/Response Relevance** - Is response relevant to the original input?<br>
-- **Context Precision** - Was the retrieved context "useful at arriving at the" in the ground truth _reference_?
-- **Context Recall** - Can sentences in ground truth _reference_ be attributed to the _retrieved context_?
-- **Faithfulness** - Can the claims made in the response can be inferred from the _retrieved context_?
-
-{{< /callout >}}
+> [!NOTE]
+>
+> - **SemanticSimilarity** - How similar is the _response_ to the ground truth reference?
+> - **Answer/Response Relevance** - Is response relevant to the original input?<br>
+> - **Context Precision** - Was the retrieved context "useful at arriving at the" in the ground truth _reference_?
+> - **Context Recall** - Can sentences in ground truth _reference_ be attributed to the _retrieved context_?
+> - **Faithfulness** - Can the claims made in the response can be inferred from the _retrieved context_?
 
 Each eval uses an LLM and/or embedding model to evaluate the retrieval/response.
 Given my hypothesis - that models will prefer their own responses, every evaluation described above was actually run 4x - once for each LLM/embedding model pair.
@@ -111,7 +109,8 @@ to the results that we see, both in terms of model performance in the RAG pipeli
 | TogetherAI | Llama-3.1-Instruct-70B [^llama31]     | 83.6% | 46.7% |     80.5% |  60% |
 | LMStudio   | Mistral-Nemo-Instruct-2407 [^mistral] | 68.0% | 33.0% |     68.0% |  40% |
 
-{{< callout type="info" >}}Table data from provider's model cards + Artificial Analysis; higher value if conflicts{{< /callout >}}
+> [!NOTE]
+> Table data from provider's model cards + Artificial Analysis; higher value if conflicts
 
 ### Baseline Responses Evaluation
 
@@ -130,10 +129,9 @@ models perform as we might expect given their benchmark scores: `GPT-4o-mini`, `
 | together    |               0.880 |
 | local       |               0.875 |
 
-{{< callout type="info" >}}
-Note that semantic similarity only examines how well each model performed as a generator/responder;
-since it does not use an LLM to evaluate, it has no influence on our analysis of LLM's as evaluators.
-{{< /callout >}}
+> [!NOTE]
+> Semantic similarity only examines how well each model performed as a generator/responder;
+> since it does not use an LLM to evaluate, it has no influence on our analysis of LLM's as evaluators.
 
 {{< /tab >}}
 {{< tab >}}
@@ -247,10 +245,9 @@ In all cases, models improved over their baseline similarity scores; however, To
 | together    |                     0.884 |                      0.880 |
 | local       |                     0.906 |                      0.875 |
 
-{{< callout type="info" >}}
-Note that semantic similarity only examines how well each model performed as a generator/responder;
-since it does not use an LLM to evaluate, it has no influence on our analysis of LLM's as evaluators.
-{{< /callout >}}
+> [!NOTE]
+> Note that semantic similarity only examines how well each model performed as a generator/responder;
+> since it does not use an LLM to evaluate, it has no influence on our analysis of LLM's as evaluators.
 
 {{< /tab >}}
 {{< tab >}}
@@ -282,9 +279,9 @@ Descriptive stats by Evaluator
 
 #### Faithfulness
 
-{{< callout type="error" >}} Parse failures were so frequent with `Claude-3-Haiku` and `Llama-3.1-Instruct-70B-Turbo` that I stopped using them to evaluate faithfulness
-because it was becoming incredibly expensive to retry with the "parse-fixer" agent.
-{{< /callout >}}
+> [!CAUTION]
+> Parse failures were so frequent with `Claude-3-Haiku` and `Llama-3.1-Instruct-70B-Turbo` that I stopped using them to evaluate faithfulness
+> because it was becoming incredibly expensive to retry with the "parse-fixer" agent.
 
 RAG Responder vs. Evaluator
 
@@ -320,8 +317,8 @@ I also ran correlations across models' evaluation scores to determine model agre
 Models show strong alignment, with simpler evaluations (i.e., baseline vs retrieval/RAG) having closer agreement.
 More complex evaluation instructions (context recall, faithfulness) reduce alignment as the particular models handle the complexity differently.
 
-{{< callout emoji="💡" >}}It would be best practice to have some human-labeled test sets and responses to run a similar analysis and ensure that the LLM-as-a-judge evaluators align with the human experts' judgements.
-{{< /callout >}}
+> [!TIP]
+> It would be best practice to have some human-labeled test sets and responses to run a similar analysis and ensure that the LLM-as-a-judge evaluators align with the human experts' judgements.
 
 {{< tabs items="Baseline Response, Context Retrieval,RAG Response" >}}
 
@@ -382,9 +379,9 @@ Evaluations indicate it performs as well as or better than Anthropic's `Claude-3
 A 3090 graphics card with 24GB VRAM is not necessary; with quantized models, you can run models on cards with as little as 8 GB VRAM, though more helps with longer contexts.
 Cursory testing indicated that `gemma-2-9b-it-function-calling` would also be a strong evaluator, with good instruction-following and response-formatting performance.
 
-{{< callout emoji="💡" >}}Small (8-14B parameter) language models are sophisticated enough to function in the LLM-as-a-judge role.
-It is worth considering whether you need full-fat state-of-the-art models to run evaluations or if smaller, cheaper models would suffice.
-{{< /callout >}}
+> [!TIP]
+> Small (8-14B parameter) language models are sophisticated enough to function in the LLM-as-a-judge role.
+> It is worth considering whether you need full-fat state-of-the-art models to run evaluations or if smaller, cheaper models would suffice.
 
 ### Costs
 
@@ -400,10 +397,12 @@ All told, running this experiment (including debugging, user errors like failure
 | Anthropic | Claude-3-Haiku               |   87,160,706 |     6,431,004 |  $ 29.81 |      $0.25 / $1.25 |
 | Together  | Llama-3.1-70B-Instruct-Turbo | 81,706,133\* |  40,487,049\* |  $107.53 |      $0.88 / $0.88 |
 
-{{< callout type="info" >}} I am not including embedding calls or costs here because they tend to be minimal {{< /callout >}}
+> [!NOTE]
+> I am not including embedding calls or costs here because they tend to be minimal
 
-{{< callout type="warning" >}} \* Estimated token utilization; TogetherAI has poor user-facing reporting and I'm not sure why or how I have 4-5x _output_ use with approximately the same input.
-As such, I cannot (currently) recommend TogetherAI; however, the customer service rep addressing my complaint to this effect has indicated they are aware of this problem and working toward improving reporting.{{< /callout >}}
+> [!WARNING]  
+> \* Estimated token utilization; TogetherAI has poor user-facing reporting and I'm not sure why or how I have 4-5x _output_ use with approximately the same input.
+> As such, I cannot (currently) recommend TogetherAI; however, the customer service rep addressing my complaint to this effect has indicated they are aware of this problem and working toward improving reporting.
 
 ### Limits
 
@@ -415,9 +414,9 @@ However, [Anthropic](https://docs.anthropic.com/en/api/rate-limits#setting-lower
 which can severely hamper the ability to use LLM-as-a-judge frameworks like Ragas, especially with state of the art models like `Claude-3.5-Sonnet`.
 For context, compare Anthropic's limits to [OpenAI's](https://platform.openai.com/docs/guides/rate-limits?context=tier-two).
 
-{{< callout emoji="💡" >}}Review your expected token throughput and make sure the various stages of the Ragas pipeline will complete within the limit.
-If, for instance, you get 80% through evaluating your test set and run out of tokens, there is not a good way to preserve work up to that point -- you lose that work, and have to split the test set to run in smaller batches in the future.
-{{< /callout >}}
+> [!TIP]
+> Review your expected token throughput and make sure the various stages of the Ragas pipeline will complete within the limit.
+> If, for instance, you get 80% through evaluating your test set and run out of tokens, there is not a good way to preserve work up to that point -- you lose that work, and have to split the test set to run in smaller batches in the future.
 
 ### Parse Failures and Eval Missingness
 
@@ -427,8 +426,9 @@ and the parse failure "agent" that Ragas uses to attempt to encourage the model 
 with the proper schema ends up acting as a API use multiplier, sending roughly the same prompt multiple times and increasing costs.
 I found that `Llama-3.1-Instruct-70B-Turbo` had significantly more parse failures than other models.
 
-{{< callout emoji="💡" >}}Test with your desired evaluator LLM at a small scale to determine whether it demonstrates a propensity to return invalid response structures.
-Ragas has provisions to provide custom prompts, so you can prompt engineer into more reliable performance.{{< /callout >}}
+> [!TIP]
+> Test with your desired evaluator LLM at a small scale to determine whether it demonstrates a propensity to return invalid response structures.
+> Ragas has provisions to provide custom prompts, so you can prompt engineer into more reliable performance.
 
 {{< tabs items="Baseline Missingess,Retrieval Missingness,RAG Missingness" >}}
 {{< tab >}}
@@ -483,9 +483,9 @@ Ragas has provisions to provide custom prompts, so you can prompt engineer into 
 
 ##### Faithfulness
 
-{{< callout type="error" >}} Parse failures were so frequent with `Claude-3-Haiku` and `Llama-3.1-Instruct-70B-Turbo` that I stopped using them to evaluate faithfulness
-because it was becoming incredibly expensive to retry with the "parse-fixer" agent.
-{{< /callout >}}
+> [!CAUTION]
+> Parse failures were so frequent with `Claude-3-Haiku` and `Llama-3.1-Instruct-70B-Turbo` that I stopped using them to evaluate faithfulness
+> because it was becoming incredibly expensive to retry with the "parse-fixer" agent.
 
 | response_by | ff_openai | ff_local |
 | :---------- | --------: | -------: |

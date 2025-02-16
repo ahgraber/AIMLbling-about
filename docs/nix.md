@@ -21,6 +21,10 @@ use flake
 [Getting started - devshell](https://numtide.github.io/devshell/getting_started.html)
 [Getting started with Nix Flakes and devshell](https://yuanwang.ca/blog/getting-started-with-flakes/)
 
+## Update
+
+Update the devshell with `nix flake update`
+
 ## Rendering hugo
 
 The static site can be generated with `hugo`, assuming the nix devshell is active

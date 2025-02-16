@@ -19,10 +19,11 @@ from these experiments is available [here](https://github.com/ahgraber/AIMLbling
 
 In this post, I induce typos in a standardized set of prompts with increasing frequency in the hopes of understanding how typos influence meaning as represented by **sentence embeddings**.
 
-{{< callout type="info">}} An embedding is the vector (i.e., list of numbers) that represents an object (token, word, passage, image, etc.) and differentiates that object from all other objects to the given model. In other words, an
-embedding is the model's internal representation of the object -- its _meaning_. Since embeddings are a model's internal representation, they are model-specific.
-
-In this experiment, I'm concerned with sentence-level embeddings, or finding the vector that represents the meaning of a given sentence. {{< /callout >}}
+> [!NOTE]
+> An embedding is the vector (i.e., list of numbers) that represents an object (token, word, passage, image, etc.) and differentiates that object from all other objects to the given model. In other words, an
+> embedding is the model's internal representation of the object -- its _meaning_. Since embeddings are a model's internal representation, they are model-specific.
+>
+> In this experiment, I'm concerned with sentence-level embeddings, or finding the vector that represents the meaning of a given sentence.
 
 If you recall, my hypothesis is that because typos change the tokens used to represent text, typos shift a sentence away from its "intended" location in embedding space. Thus, as the typo frequency increases, the typo-laden embedding will
 grow increasingly dissimilar to the correct embedding.
@@ -34,8 +35,9 @@ question with increasing typo occurrences.
 
 As in [part two]({{< ref "/blog/typos-part-2" >}}), I use Llama2 and Llama3 in the hopes of understanding the differences the tokenizer vocabulary makes.
 
-{{< callout type="warning">}} Of course, there's an architectural difference between Llama2-7B-Chat and Llama3-8B-Instruct as well as a dramatic difference in amount of training data seen, so influence of the the tokenizer vocabulary size
-is admittedly confounded by these factors. {{< /callout >}}
+> [!WARNING]
+> Of course, there's an architectural difference between Llama2-7B-Chat and Llama3-8B-Instruct as well as a dramatic difference in amount of training data seen, so influence of the the tokenizer vocabulary size
+> is admittedly confounded by these factors.
 
 Since Llama models (really, any GPT-style model) embed at the per-token granularity rather than the per-sentence or per-passage granularity, I have implemented a weighted mean-pooling operation to extract the passage-level representation,
 proposed in a [Stack Overflow post](https://stackoverflow.com/questions/76926025/sentence-embeddings-from-llama-2-huggingface-opensource):
@@ -55,8 +57,9 @@ completely opposite directions, 0 means they vectors are orthogonal (unrelated),
   caption="Simplified Example of Cosine Similarity, in 2-D"
   width="600">}}
 
-{{< callout type="question" emoji="🧩" >}} A fun way to understand semantic similarity is to play the word game [semantle](https://semantle.com/). The goal is to guess the secret word, and your clues are the cold/hot similarity scores of
-your guesses. {{< /callout >}}
+> [!TIP]
+> A fun way to understand semantic similarity is to play the word game [semantle](https://semantle.com/). The goal is to guess the secret word, and your clues are the cold/hot similarity scores of
+> your guesses.
 
 For each of these models:
 

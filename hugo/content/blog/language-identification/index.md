@@ -132,10 +132,9 @@ Constraining the experiment further, I examine performance on the 20 most freque
   src="images/f1score-web-heatmap.png"
   alt="f1 heatmap">}}
 
-{{< callout type="warning" >}}
-Chinese ('zh') appears to pull down fasttext's performance considerably.
-This may be erroneous, since fasttext actually classifies multiple subtypes of Chinese ('zh-Hans', 'zh-Hant') with script designations, while the datasets specify ['zh_cn', 'zh_tw', 'zh'] which regionalize the language.
-{{< /callout >}}
+> [!WARNING]
+> Chinese ('zh') appears to pull down fasttext's performance considerably.
+> This may be erroneous, since fasttext actually classifies multiple subtypes of Chinese ('zh-Hans', 'zh-Hant') with script designations, while the datasets specify ['zh_cn', 'zh_tw', 'zh'] which regionalize the language.
 
 ## References
 

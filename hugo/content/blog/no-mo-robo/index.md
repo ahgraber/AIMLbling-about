@@ -52,28 +52,41 @@ The New York Times has sued OpenAI and Microsoft for copyright infringement for 
 Times has worked with Common Crawl to remove its intellectual property [^10] from the Common Crawl Corpus, and has updated its robots.txt [^11][^12] to allow search engines but block dataset builders like `CCBot` and LLMs, including
 `anthropic-ai`, `ClaudeBot`, `cohere-ai`, `GPTBot`, and `PerplexityBot`.
 
-{{< callout type="info" >}} At its core, I think the underlying issue behind copyright concerns with LLMs is one of _attribution_.  
- I'm planning a separate post on this! {{< /callout >}}
+> [!NOTE]
+> At its core, I think the underlying issue behind copyright concerns with LLMs is one of _attribution_.  
+> I'm planning a separate post on this!
 
 I've followed the New York Times' lead on this (and their robots.txt). Search engines should feel welcome to index my blog (👋 Hi! Hello! Welcome!); however, my thoughts are my own and until the fundamental problem of attribution is
 solved, it is unfair to me to use my IP for commercial gain. So scraping spiders that build AI datasets and LLM agents are currently unwelcome.
 
-{{< callout type="info" >}} That's also why I've chosen the [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/) license for this blog's content.  
- Feel free to share or adapt/remix, just give me credit - and don't make money off of it. {{< /callout >}}
+> [!NOTE]
+> That's also why I've chosen the [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/) license for this blog's content.  
+> Feel free to share or adapt/remix, just give me credit - and don't make money off of it.
 
 If you're interested, [here's my robots.txt](https://aimlbling-about.ninerealmlabs.com/robots.txt)
 
 ## References
 
 [^1]: [robots.txt](https://en.wikipedia.org/wiki/Robots.txt)
+
 [^2]: [The Web Robots Pages](https://www.robotstxt.org/)
+
 [^3]: [Statistics of Common Crawl Monthly Archives by commoncrawl](https://commoncrawl.github.io/cc-crawl-statistics/plots/domains)
+
 [^4]: [[2001.08361] Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
+
 [^5]: [[2203.15556] Training Compute-Optimal Large Language Models](https://arxiv.org/abs/2203.15556)
+
 [^6]: [Introducing Whisper | OpenAI](https://openai.com/index/whisper)
+
 [^7]: [CLIP: Connecting text and images | OpenAI](https://openai.com/index/clip)
+
 [^8]: [DALL·E 3 | OpenAI](https://openai.com/index/dall-e-3)
+
 [^9]: [New York Times Sues OpenAI and Microsoft Over Use of Copyrighted Work](https://www.nytimes.com/2023/12/27/business/media/new-york-times-open-ai-microsoft-lawsuit.html)
+
 [^10]: [The New York Times Got Its Content Removed From a Huge AI Training Dataset](https://www.businessinsider.com/new-york-times-content-removed-common-crawl-ai-training-dataset-2023-11)
+
 [^11]: [The New York Times blocks OpenAI's web crawler - The Verge](https://www.theverge.com/2023/8/21/23840705/new-york-times-openai-web-crawler-ai-gpt)
+
 [^12]: [nytimes.com/robots.txt](https://www.nytimes.com/robots.txt)

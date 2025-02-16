@@ -38,8 +38,9 @@ For each of these models:
 
 ### Perplexity
 
-{{< callout type="info" >}} `Perplexity` is a representation of how _unlikely_ a given (new) sequence is, given all sequences seen during training. It can be used to understand how confident the model is in predicting the next token in a
-sequence. A lower perplexity indicates that the prediction is more likely (i.e., the model is more confident). {{< /callout >}}
+> [!NOTE]  
+> `Perplexity` is a representation of how _unlikely_ a given (new) sequence is, given all sequences seen during training. It can be used to understand how confident the model is in predicting the next token in a
+> sequence. A lower perplexity indicates that the prediction is more likely (i.e., the model is more confident).
 
 According to [Huggingface](https://huggingface.co/docs/transformers/en/perplexity):
 
@@ -188,7 +189,8 @@ While the perplexity results are fairly conclusive, the results from the _tinyBe
 performance remains quite flat regardless of typo rate, losing only 4 points from baseline to worst-case in the 0-shot setting, and falling < 6 points from baseline to worst-case in the in the 5-shot setting. Llama 3 _does_ exhibit a
 performance decrease, with a 17 point reduction from baseline to worst-case on the 0-shot benchmark, and a 7 point drop from baseline to worst-case with 5-shot examples.
 
-{{< callout type="warning">}} Recall that the baseline dataset is the _tinyBenchmarks_ MMLU dataset. This means that the results should not be directly compared to published MMLU scores. {{< /callout >}}
+> [!WARNING]
+> Recall that the baseline dataset is the _tinyBenchmarks_ MMLU dataset. This means that the results should not be directly compared to published MMLU scores.
 
 {{< figure
 src="images/mmlu-accuracy.png"

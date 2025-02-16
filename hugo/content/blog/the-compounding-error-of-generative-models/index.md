@@ -39,7 +39,8 @@ error rate of `1%`, the probability of encountering an error after 20 steps is 1
 
 If every step has an error rate of `5%`, you have a 64% chance of encountering an error after 20 steps!
 
-{{< callout type="info" >}} That last sentence contained 28 tokens (using ChatGPT 4's tokenizer)! {{< /callout >}}
+> [!NOTE]
+> That last sentence contained 28 tokens (using ChatGPT 4's tokenizer)!
 
 Does that mean we get lucky every time we use ChatGPT and receive a response that's longer than a few words?
 
@@ -83,7 +84,7 @@ print(len(tokens))
 
 ## Rebuttal
 
-{{< callout type="question" >}} I've used ChatGPT, and it doesn't seem like it makes a mistake in the majority of sentences... {{< /callout >}}
+{{< callout type="question" >}}_I've used ChatGPT, and it doesn't seem like it makes a mistake in the majority of sentences..._{{< /callout >}}
 
 Astute observation! There are a few things at play here...
 
@@ -128,16 +129,17 @@ So the concerns about autoregressive generation leading to compounding error may
 The linguistic flexibility that reduced our concerns regarding compounding error is the same property that gives us the astonishing capability of LLMs to sound "human" in their generation or be creative when answering is also a factor
 (when combined with autoregressive generation) in their propensity to hallucinate.
 
-{{< callout type="info" >}} Previously in this article, I said:
-
-> a GPT picks token that is most likely going to come next.
-
-This is an approach known as _greedy search_. If ChatGPT used greedy sampling, each generation would be deterministic - that is, guaranteed to be the same - based on the prior context. For example, given "An apple", the model might
-_always_ return "is a fruit".
-
-This is not to say that "is", "a", "fruit" are the correct next tokens (per our discussion of error), but that these are the tokens the model believes to be most likely (or maybe _least wrong_).
-
-Because language is flexible and we don't want our LLMs to sound like robots, we tend to select next tokens from the probability distribution of likely next tokens instead of picking the singular most-likely token. {{< /callout >}}
+> [!NOTE]
+> Previously in this article, I said:
+>
+> > a GPT picks token that is most likely going to come next.
+>
+> This is an approach known as _greedy search_. If ChatGPT used greedy sampling, each generation would be deterministic - that is, guaranteed to be the same - based on the prior context. For example, given "An apple", the model might
+> _always_ return "is a fruit".
+>
+> This is not to say that "is", "a", "fruit" are the correct next tokens (per our discussion of error), but that these are the tokens the model believes to be most likely (or maybe _least wrong_).
+>
+> Because language is flexible and we don't want our LLMs to sound like robots, we tend to select next tokens from the probability distribution of likely next tokens instead of picking the singular most-likely token.
 
 As one might expect, using a stochastic (random, nondeterministic sampling technique) [^3] to select the next token tends to decrease performance in all tasks except for open-ended generation. [^4] This makes sense - models are trained to
 predict the best next token, and adding random noise in support of flexibility acts in opposition to that goal. And while future tokens might be able to readjust an error in generation, the error is set once generated and influences all
@@ -181,7 +183,11 @@ Sholto Douglas (of Google Deepmind's Gemini team) said it best:[^5]
 ## References
 
 [^1]: [Transcript for Yann LeCun: Meta AI, Open Source, Limits of LLMs, AGI & the Future of AI | Lex Fridman Podcast #416 - Lex Fridman](https://lexfridman.com/yann-lecun-3-transcript)
+
 [^2]: [An opinionated review of the Yann LeCun interview with Lex Fridman](https://www.lokad.com/blog/2024/3/18/ai-interview-with-yann-lecun-and-lex-fridman/)
+
 [^3]: [How to generate text: using different decoding methods for language generation with Transformers](https://huggingface.co/blog/how-to-generate)
+
 [^4]: [[2402.06925v1] A Thorough Examination of Decoding Methods in the Era of LLMs](https://arxiv.org/abs/2402.06925v1)
+
 [^5]: [Sholto Douglas & Trenton Bricken - How to Build & Understand GPT-7's Mind](https://www.dwarkeshpatel.com/p/sholto-douglas-trenton-bricken#%C2%A7transcript)
