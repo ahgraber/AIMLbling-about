@@ -44,6 +44,11 @@
   </script>
 {{- end -}}
 
+{{/* Plotly */}}
+{{ if .Params.plotly }}
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{{ end }}
+
 {{/* KaTex */}}
 {{- if .Page.Params.math -}}
   {{- $katexCSS := resources.Get "lib/katex/katex.min.css" | fingerprint -}}
