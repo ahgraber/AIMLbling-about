@@ -17,6 +17,7 @@ The "open weights" or "open model" LLM ecosystem is thriving, with major new rel
 models, I thought it would be useful that aggregate all of the information of the 'Llama 3 cohort' in a single place. I've included Llama 2 as a point of comparison. Models are ordered by date of introduction.
 
 > [!NOTE]
+>
 > I've done my best to make these table not-terrible, but they're probably still trash on mobile or non-wide aspect ratios. Sorry.
 
 ## Architectures
@@ -24,6 +25,7 @@ models, I thought it would be useful that aggregate all of the information of th
 {{< table path="architectures.csv" header="true" caption="A comparison of model architectures" >}}
 
 > [!WARNING]
+>
 > I've not included ChatGPT 3.5 or 4, or Anthropic's Claude because they're completely closed models and I was unable to find any information worth comparing.
 
 ## Performance
@@ -59,6 +61,7 @@ found that model performance continues to improve even after the model is traine
 _Larger models can match the performance of these smaller models with less training compute, but smaller models are generally preferred because they are much more efficient during inference_"[^llama3] (emphasis mine).
 
 > [!NOTE]
+>
 > The Chinchilla "laws" describe the relationship between model size (parameters), dataset size (tokens), performance (loss), and cost of compute (FLOPs). Historically, the Chinchilla laws have been
 > used to understand the "compute optimal" point, or the point of diminishing returns (in terms of model performance improvement) associated with additional compute, given a static model size and dataset.
 
@@ -98,6 +101,7 @@ reported for Arctic adds weight to this theory). Perhaps the additional overpara
 ### Inference implications
 
 > [!NOTE]
+>
 > Most of what I'll mention here is a rehash of what I learned listening to [Dylan Patel (of SemiAnalysis) on the Latent Space podcast](https://www.latent.space/p/semianalysis). It is 100% worth the
 > listen (or reviewing the transcript).
 >

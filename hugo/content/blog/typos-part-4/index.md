@@ -38,7 +38,8 @@ For each of these models:
 
 ### Perplexity
 
-> [!NOTE]  
+> [!NOTE]
+>
 > `Perplexity` is a representation of how _unlikely_ a given (new) sequence is, given all sequences seen during training. It can be used to understand how confident the model is in predicting the next token in a
 > sequence. A lower perplexity indicates that the prediction is more likely (i.e., the model is more confident).
 
@@ -190,6 +191,7 @@ performance remains quite flat regardless of typo rate, losing only 4 points fro
 performance decrease, with a 17 point reduction from baseline to worst-case on the 0-shot benchmark, and a 7 point drop from baseline to worst-case with 5-shot examples.
 
 > [!WARNING]
+>
 > Recall that the baseline dataset is the _tinyBenchmarks_ MMLU dataset. This means that the results should not be directly compared to published MMLU scores.
 
 {{< figure

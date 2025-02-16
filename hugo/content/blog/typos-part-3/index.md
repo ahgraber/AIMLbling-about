@@ -20,6 +20,7 @@ from these experiments is available [here](https://github.com/ahgraber/AIMLbling
 In this post, I induce typos in a standardized set of prompts with increasing frequency in the hopes of understanding how typos influence meaning as represented by **sentence embeddings**.
 
 > [!NOTE]
+>
 > An embedding is the vector (i.e., list of numbers) that represents an object (token, word, passage, image, etc.) and differentiates that object from all other objects to the given model. In other words, an
 > embedding is the model's internal representation of the object -- its _meaning_. Since embeddings are a model's internal representation, they are model-specific.
 >
@@ -36,6 +37,7 @@ question with increasing typo occurrences.
 As in [part two]({{< ref "/blog/typos-part-2" >}}), I use Llama2 and Llama3 in the hopes of understanding the differences the tokenizer vocabulary makes.
 
 > [!WARNING]
+>
 > Of course, there's an architectural difference between Llama2-7B-Chat and Llama3-8B-Instruct as well as a dramatic difference in amount of training data seen, so influence of the the tokenizer vocabulary size
 > is admittedly confounded by these factors.
 
@@ -58,6 +60,7 @@ completely opposite directions, 0 means they vectors are orthogonal (unrelated),
   width="600">}}
 
 > [!TIP]
+>
 > A fun way to understand semantic similarity is to play the word game [semantle](https://semantle.com/). The goal is to guess the secret word, and your clues are the cold/hot similarity scores of
 > your guesses.
 
