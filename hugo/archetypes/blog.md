@@ -32,5 +32,6 @@ series: []
 layout: single
 toc: true
 math: false
+plotly: false
 draft: true
 ---

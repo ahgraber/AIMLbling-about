@@ -20,8 +20,8 @@ REPO_DIR = get_repo_path(__file__)
 
 # %%
 # Create grid of points with adjusted range
-_x = np.linspace(-1, 1, 100)  # autonomy
-_y = np.linspace(-1, 1, 100)  # performance
+_x = np.linspace(-1, 1, 100)  # specialization
+_y = np.linspace(-1, 1, 100)  # timeline
 X, Y = np.meshgrid(_x, _y)
 
 
@@ -38,13 +38,16 @@ def exponential_opacity(Z, decay_rate=5):  # noqa: N803
 
 # %%
 # Adjust model parameters for new scale
-models = {  # spec (z), auto (x), perf (y), xwidth, ywidth
-    "BloombergGPT": [1.2, -0.5, 0.0, 0.1, 0.1],  # Narrow spike
-    "GPT-3.5": [0.5, -0.7, -0.5, 1, 1],
-    "GPT-4": [0.7, 0.0, 0.3, 1.2, 1.2],
-    "o1-IOI": [1.3, 0.0, 0.5, 0.2, 0.2],
-    "o3": [1.0, 0.2, 0.8, 1.5, 1.5],
+# fmt: off
+#                   perf, time, spec, xwidth, ywidth
+models = {  #        (z),  (x),  (y), xwidth, ywidth
+    "GPT-3.5":      [0.5, -0.7, 0.0, 1.0, 1.0],
+    "BloombergGPT": [0.7, -0.5, 0.0, 0.1, 0.1],  # Narrow spike
+    "GPT-4":        [1.0,  0.0, 0.0, 1.2, 1.2],
+    "o1-IOI":       [1.2,  0.5, 0.0, 0.3, 0.3],
+    "o3":           [1.5,  0.7, 0.0, 1.5, 1.5],
 }
+# fmt: on
 
 colors = {
     "BloombergGPT": "#228B22",  # Forest Green
@@ -145,26 +148,34 @@ for model, params in models.items():
     )
 # Update layout with adjusted ranges and aspect ratio
 fig.update_layout(
-    title="AI Model Capability Distributions",
-    scene=dict(
-        xaxis=dict(title="Autonomy", range=[-1, 1], ticktext=["Low", "High"], tickvals=[-1, 1]),
-        yaxis=dict(title="Performance", range=[-1, 1], ticktext=["Low", "High"], tickvals=[-1, 1]),
-        zaxis=dict(title="Specificity", range=[0, 2], ticktext=["Low", "High"], tickvals=[0, 1]),
-        aspectmode="cube",  # Force cubic display
-        camera=dict(eye=dict(x=1.5, y=-1.5, z=1.5)),
+    title_automargin=True,
+    title=dict(
+        text="AI Model Capability Distributions",
+        pad=dict(l=20, r=20, b=10, t=25),
+        x=0.5,
+        xref="container",
+        yref="container",
+        xanchor="center",
+        yanchor="top",
     ),
-    width=800,
-    height=800,
+    scene=dict(
+        xaxis=dict(title="Timeline", range=[-1.1, 1.1], ticktext=["2022", "2025"], tickvals=[-1, 1]),
+        yaxis=dict(title="Specificity", range=[-1.1, 1.1], showticklabels=False),
+        zaxis=dict(title="Performance", range=[-0.1, 2.21], ticktext=["Low", "High"], tickvals=[0, 2]),
+        aspectmode="cube",  # Force cubic display
+        camera=dict(eye=dict(x=0.1, y=-2.5, z=0.1)),
+    ),
+    margin=dict(l=20, r=20, b=20, t=20),
+    width=600,
+    height=600,
     showlegend=True,
+    legend=dict(orientation="h", x=0.5, y=1, xanchor="center", yanchor="top"),
 )
 
 fig.show()
 
 # %%
-# Save as HTML file
-fig.write_html(Path(__file__).parent / "ai_model_distributions.html")
-
-# %%
 pio.write_json(fig, Path(__file__).parent / "ai_model_distributions.json")
+
 
 # %%
