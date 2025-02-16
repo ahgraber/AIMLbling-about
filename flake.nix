@@ -24,7 +24,8 @@
           packages = [
             pkgs.hugo
             pkgs.dart-sass
-            # pkgs.podman
+            pkgs.docker
+            pkgs.podman
             pkgs.colima
             pkgs.qemu
           ];
