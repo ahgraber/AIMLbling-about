@@ -135,6 +135,7 @@ As a for-profit organiation, Anthropic has never been "open" (i.e., none of its 
 Where OpenAI has `tiktoken`, Anthropic only recently released an API to return token counts.
 
 > [!NOTE]
+>
 > I actually appreciate that Anthropic hasn't handwaved their "openness" regarding their models,
 > and also want to call out that they do publish research, such as [Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html)
 > and [Introducing Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval), that are instructive and useful in practice.
@@ -156,6 +157,7 @@ Prior to spin-off, Ai2 typically received a 9% stake in incubator companies.
 [^inside_ai2_incubator]
 
 > [!NOTE]
+>
 > I'm unsure about the details of any financial relationship between Ai2 and the AI2 Incubator.
 > The Incubator, which leverages the Ai2 name, maintains a strategic relationship with the research institute,
 > and whose "careers" page points back to Ai2's careers page (as of Dec 2024) insists "we are two entirely different organizations" in their [FAQ](https://www.ai2incubator.com/faq).

@@ -55,6 +55,7 @@ Without deep mechanistic introspection with respect to the generative process, i
 [^memorization]
 
 > [!NOTE]
+>
 > Verbatim plagiarism is made less likely due to the variety of probabilistic decoding techniques (beam search, temperature, nucleus sampling, etc.) that are designed to allow models to avoid only picking the highest-probability token.
 > These techniques add user-selectable levels of randomness to the generative process.
 
@@ -100,6 +101,7 @@ The audience clicks through to the content, driving ad revenue / views / clout f
 [^creator]
 
 > [!NOTE]
+>
 > This representation of the internet / creator economy is simplistic, idealistic, and somewhat out-of-date.
 > The point is that AI-based answer engines fundamentally change the way people consume content on the internet,
 > and the storybook model of the internet economy based on early web 2.0 is illustrative.

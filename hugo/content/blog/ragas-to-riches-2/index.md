@@ -190,6 +190,7 @@ Then, given some assumptions, I estimated the _input_ token use over these use c
 Code is available [in this Jupyter notebook](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/cost_analysis.ipynb).
 
 > [!WARNING]
+>
 > Token utilization estimates only analyze _input_ tokens using the `tiktoken` tokenizer;
 > actual use (even if these estimates are perfect) will be higher because the analysis does not take _output_ tokens into account.
 

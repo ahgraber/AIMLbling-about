@@ -52,6 +52,7 @@ When a user request comes in, the system locates that request into the same vect
 Then we provide user query _and_ the most relevant chunks for the LLM to generate the response.
 
 > [!NOTE]
+>
 > The description of RAG procedure above assumes the use of an embedding model and vector database.
 > While this is the "typical" implementation, it is not the only one.
 > BM25 is a type of keyword search that does not require an embedding model or vectorization but provides fast, well-studied text search, and often serves as a "baseline".
@@ -87,6 +88,7 @@ As retrieval is essentially a recommendation system, AI/ML Engineers have repurp
 `context recall` calculates the proportion of the claims made in the ground truth answer that are supported by retrieved information. [^recall] [^precision-recall]
 
 > [!TIP]
+>
 > I find [Wikipedia's image-based explanation of precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall) super helpful when thinking these definitions through
 
 For response evaluation, faithfulness and response relevance are frequently used.

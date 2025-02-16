@@ -43,6 +43,7 @@ _Probability: 100%_
 demonstrate that existing models can be deployed/instructed to think deliberately about a problem to solve it iteratively.
 
 > [!NOTE]
+>
 > I'm avoiding describing the extended thinking as "reasoning".
 > I recognize that's the popular term; while to some degree it does represent the process of inference-time compute,
 > I think it will take at least until the next generation of models for them to exhibit full-fledged planning, reasoning, or metacognition.
@@ -61,6 +62,7 @@ or (b) gpt-5-generation models will alter what has become the standard model arc
 _Probability: 50/50_
 
 > [!NOTE]
+>
 > If I had to bet, Western/U.S. labs (Meta, Google, OpenAI) will fall prey to slowly improving the status quo, > while Chinese labs (DeepSeek, Qwen) will experiment with new architectures. Anthropic and Mistral are wildcards.
 
 ### Next-gen Architectural changes
@@ -76,6 +78,7 @@ or sampling[^top-n] [^coconut].
 _Probability: 75%_
 
 > [!NOTE]
+>
 > Bonus:<br>
 > Inspired by [ModernBert](https://arxiv.org/abs/2412.13663), other "deprecated" architectures will be given "modern" makeovers<br>  
 > _Probability: 60%_

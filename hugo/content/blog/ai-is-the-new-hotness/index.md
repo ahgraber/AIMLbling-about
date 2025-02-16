@@ -32,6 +32,7 @@ _V100_ accelerators (300-330W), Llama 2 trained on NVIDIA _A100_-80GB accelerato
 trained on NVIDIA _H100_-80GB accelerators (TDP of 700W).
 
 > [!NOTE]
+>
 > Sidebar: `TDP` stands for "Thermal Design Power", and represents the maximum power draw of
 > the component (a GPU, in this case) due to its ability to remain at a safe operating temperature.
 >
@@ -61,6 +62,7 @@ words/page and assuming (per OpenAI[^tokens]) 500 words ≈ 683 tokens, then 100
 equivalent uses 0.1 kWh to generate 10k tokens, GPT-3 generates only 17k tokens with the same power.
 
 > [!WARNING]
+>
 > Note: GPT-3 at 175B having greater efficiency than a 7B class model seems strange, but
 > these metrics are not truly comparable. The 7B estimate is based on 1000, 10-token generations (and therefore must also
 > process 1000 inputs of unknown length), while the GPT-3 estimate is derived from an assumption-laden calculation based
@@ -73,6 +75,7 @@ models can be quantized to run on consumer GPUs, there are many systems that mee
 modern PCs with a discrete graphics card).
 
 > [!NOTE]
+>
 > Luccioni et al. use the cost-per-generation estimates to calculate the breakeven point
 > where the cost of inference meets the cost of training.
 >
@@ -193,6 +196,7 @@ CO\\$_2\\$ output rate in 2021.[^epa] While not exactly as claimed by Meta, this
 | theoretical GPU max consumption<br>Training and/or Inference |                 53,000,000 |                            22,000,000 |        106,000,000 |                                44,000,000 |
 
 > [!NOTE]
+>
 > You may notice that I did not include the A/C power consumption in the CO\\$_2\\$
 > calculation above. I'll get to that in the next section.
 
@@ -215,6 +219,7 @@ The world's largest carbon capture facility can capture 36,000 tons of CO\\$_2\\
 carbon emitted by the electricity consumed by datacenters hosting GPU clusters would require 1,200 of them.
 
 > [!NOTE]
+>
 > Microsoft just published their [2024 Environmental Sustainability Report](https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lhhu). In it,
 > they note that while their direct CO\\$_2\\$ emissions from the datacenter have actually decreased from 2020, their
 > overall CO\\$_2\\$ emissions have _increased_, due to emissions related to constructing new data centers.

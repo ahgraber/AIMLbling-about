@@ -10,7 +10,7 @@ A comments system powered by GitHub Discussions
 
 Watch [changelog](https://github.com/giscus/giscus/blob/main/CHANGELOG.md) for pseudo-versioning
 
-- configure postgres (note *T* in POSTGRES*T*_...) -(POSTGREST_URL, POSTGREST_ROLE, POSTGREST_SECRET)
+- configure postgres (note _T_ in POSTGRES*T*\_...) -(POSTGREST_URL, POSTGREST_ROLE, POSTGREST_SECRET)
 
 Notes/References:
 

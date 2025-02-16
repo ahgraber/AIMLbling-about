@@ -154,6 +154,7 @@ The discussion ultimately suggests using Semantic Kernel's OpenTelemetry support
 ## Investigation and Manual Resolution
 
 > [!NOTE]
+>
 > Caveats:
 >
 > 1. Semantic Kernel is still undergoing rapid development; this article is based on my experience developing with version 1.8.2 in early September, 2024.

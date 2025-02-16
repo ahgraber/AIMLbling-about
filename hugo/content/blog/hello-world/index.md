@@ -34,4 +34,5 @@ If you happen to find a post useful, I'd appreciate _your_ thoughts... if/when I
 ## References
 
 [^1]: [Blogumentation - Writing Blog Posts as a Method of Documentation · Jamie Tanna | Software Engineer](https://www.jvt.me/posts/2017/06/25/blogumentation/)
+
 [^2]: [Position paper](https://en.wikipedia.org/wiki/Position_paper)

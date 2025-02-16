@@ -67,6 +67,7 @@ Command: `uv init [OPTIONS] [PATH]`
   - intended to be built and distributed as a Python package; implies `--package`
 
 > [!TIP]
+>
 > Don't forget to activate the environment!
 >
 > ```sh
@@ -195,6 +196,7 @@ uv run --package <workspace_name> <command>
 Dependencies specified in `[tool.uv.sources]` of the workspace root apply to all members (unless overridden on a per-member basis)
 
 > [!NOTE]
+>
 > Workspace switching takes advantage of the fact that direnv/vscode/etc. assume a single environment per repo.
 > Updating the workspace updates the single repo `.venv` directory (this is fast because `uv` caches dependencies).
 > This means that vscode, for instance, will always use the expected workspace dependencies when working in a repo because it uses the single `.venv` location;
