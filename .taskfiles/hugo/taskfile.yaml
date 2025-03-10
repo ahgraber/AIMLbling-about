@@ -2,20 +2,25 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
+env:
+  REPO_DIR:
+    sh: "git rev-parse --show-toplevel"
+
 vars:
-  HUGO_DIR: "./hugo"
-  CONTENT_DIR: "./hugo/content"
-  BLOG_DIR: "./hugo/content/blog"
+  HUGO_DIR: "{{ .REPO_DIR }}/hugo"
+  CONTENT_DIR: "{{ .REPO_DIR }}/hugo/content"
+  BLOG_DIR: "{{ .REPO_DIR }}/hugo/content/blog"
 
 tasks:
+
   new:
     desc: Create a new draft post from template
     cmds:
       - git checkout -b blog/{{ .name }} main
-      - hugo new content blog/{{ .name }}/index.md -s {{.HUGO_DIR}}
+      - hugo new content blog/{{ .name }}/index.md -s {{ .HUGO_DIR }}
       # NOTE: using gnu sed via nix; if using osx sed may have to use `sed -i ''`
       - |
-        sed -i "/title: \"\"/c\title: '\{\{ title \"{{ .title }}\" \}\}'" {{ .BLOG_DIR }}/{{ .name }}/index.md
+        sed -i "/title: \"\"/c\title: '\{\{ title \"{{ .title }}\" \}\}'" {{ .HUGO_DIR }}/content/blog/{{ .name }}/index.md
     requires:
       vars: ['title']
     vars:
@@ -73,9 +78,9 @@ tasks:
   clean:
     desc: Clean all rendered static site content
     cmds:
-      - "[[ ! -d {{.HUGO_DIR}}/public ]] || rm -r {{.HUGO_DIR}}/public"
-      - "[[ ! -d {{.HUGO_DIR}}/resources ]] || rm -r {{.HUGO_DIR}}/resources"
-      - hugo --gc -S {{.HUGO_DIR}}
+      - "[[ ! -d {{ .HUGO_DIR }}/public ]] || rm -r {{ .HUGO_DIR }}/public"
+      - "[[ ! -d {{ .HUGO_DIR }}/resources ]] || rm -r {{ .HUGO_DIR }}/resources"
+      - hugo --gc -S {{ .HUGO_DIR }}
     # cmd: nix build '.?submodules=1'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
@@ -96,7 +101,7 @@ tasks:
       - |
         docker build \
           -t ghcr.io/ahgraber/aimlbling-about:debug \
-          -f {{.HUGO_DIR}}/docker/Dockerfile \
+          -f {{ .HUGO_DIR }}/docker/Dockerfile \
           .
       - echo "Run 'colima stop' to clean up!"
     preconditions:
