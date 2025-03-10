@@ -1,6 +1,6 @@
 ---
 title: MAIM Is MADness
-date: 2025-03-08T09:34:36-05:00
+date: 2025-03-09
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -17,7 +17,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 _[Superintelligence Strategy](https://www.nationalsecurity.ai/)_ is a policy paper by Dan Hendrycks (Director, Center for AI Safety), Eric Schmidt (former CEO, Google), and Alexandr Wang (CEO, Scale AI), that proposes a three-part framework to manage the risk associated with Artificial SuperIntelligence (ASI).
