@@ -21,12 +21,7 @@ draft: false
 ---
 
 _[Superintelligence Strategy](https://www.nationalsecurity.ai/)_ is a policy paper by Dan Hendrycks (Director, Center for AI Safety), Eric Schmidt (former CEO, Google), and Alexandr Wang (CEO, Scale AI), that proposes a three-part framework to manage the risk associated with Artificial SuperIntelligence (ASI).
-Strategies include MAIM (Mutual Assured AI Malfunction), a _deterrence_ strategy akin to MAD (Mutually Assured Destruction), _nonproliferation_, and _competitiveness_.
-
-> [!NOTE]
->
-> Sidebar: Shouldn't "Mutual Assured AI Malfunction" be "MAAIM"?
-> They really struggled to make this catchy...
+Strategies include Mutual Assured AI Malfunction (**MAIM** -- shouldn't "Mutual Assured AI Malfunction" be "MAAIM"? They stretched to make it catchy...), a _deterrence_ strategy akin to Mutually Assured Destruction (MAD), _nonproliferation_, and _competitiveness_.
 
 At the risk of being reductive, the argument is as follows:
 
