@@ -7,13 +7,13 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "meta"
-  - "opinion"
+  - meta
+  - opinion
   # ai/ml
-  - "arxiv"
-  - "generative AI"
-  - "prompts"
-  - "LLMs"
+  - arxiv
+  - generative AI
+  - prompts
+  - LLMs
 series: []
 layout: single
 toc: true
@@ -85,9 +85,9 @@ thus the original data becomes a smaller and smaller proportion of the training 
 This is also improbable; models are constantly updated with new data.
 
 {{< figure
-  src="images/model-collapse3.png"
-  alt="model collapse static"
-  caption="Model Collapse assumes static data0 via [[2305.17493] The Curse of Recursion: Training on Generated Data Makes Models Forget](https://arxiv.org/abs/2305.17493)" >}}
+src="images/model-collapse3.png"
+alt="model collapse static"
+caption="Model Collapse assumes static data0 via [[2305.17493] The Curse of Recursion: Training on Generated Data Makes Models Forget](https://arxiv.org/abs/2305.17493)" >}}
 
 Other research makes the importance of data mixing more explicit --
 "If the generative model initially trained on real data is good enough, and the iterative retraining is made on a mixture of synthetic and real data, then the retraining procedure is stable."[^stability]
@@ -95,9 +95,9 @@ Other research makes the importance of data mixing more explicit --
 these results hold across a range of model sizes, architectures, and hyperparameters."[^inevitable]
 
 {{< figure
-  src="images/inevitable.png"
-  alt="inevitable"
-  caption="Accumulating data avoids model collapse via [[2404.01413] Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data](https://arxiv.org/abs/2404.01413)" >}}
+src="images/inevitable.png"
+alt="inevitable"
+caption="Accumulating data avoids model collapse via [[2404.01413] Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data](https://arxiv.org/abs/2404.01413)" >}}
 
 ### Data pipelines and training procedures for modern LLMs reduce risk of model collapse
 

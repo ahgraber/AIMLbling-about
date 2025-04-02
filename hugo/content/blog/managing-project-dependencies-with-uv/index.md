@@ -7,8 +7,8 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "blogumentation"
-  - "opinion"
+  - blogumentation
+  - opinion
 series: []
 layout: single
 toc: true
@@ -23,14 +23,18 @@ This process update is the result of workflow friction when using `conda` - it w
 ## Bill of Grievances
 
 1. Not all packages are available through `conda`
+
 2. `environment.yaml` allows installing with pip [_but does not support pip flags_](https://github.com/conda/conda/issues/6805)
+
 3. `conda` environments (and surrounding ecosystem) do not lend themselves to "workspace"-style repos
+
    - `conda` creates globally-available environments
    - `direnv` and `vscode` assume a single environment per project and automatically activate it
+
 4. `conda` ecosystem confusion - `conda`, `mamba`, `miniconda`, `micromamba` each attempt to provide the same functionality but do not reach 100% compatibility.
 
-   > "You can swap _almost all_ commands between conda & mamba" (emphasis mine)  
-   > "`micromamba` supports a subset of all `mamba` or `conda` commands"  
+   > "You can swap _almost all_ commands between conda & mamba" (emphasis mine)\
+   > "`micromamba` supports a subset of all `mamba` or `conda` commands"\
    > "While `micromamba` supports `conda-lock` "unified" lock files, Mamba currently does not."
    >
    > - [Mamba User Guide](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html)
@@ -67,12 +71,11 @@ Command: `uv init [OPTIONS] [PATH]`
   - intended to be built and distributed as a Python package; implies `--package`
 
 > [!TIP]
->
 > Don't forget to activate the environment!
 >
 > ```sh
 > source .venv/bin/activate # macOS, Linux
-> .venv\Scripts\activate # windows
+> .venv\Scripts\activate    # windows
 > ```
 
 ### [Environment management](https://docs.astral.sh/uv/concepts/projects/dependencies/#adding-dependencies)
@@ -106,7 +109,7 @@ default-groups = ["dev", "foo"]
 Optional dependencies can be added similarly:
 
 ```sh
-uv add --optional group package  # add 'package' to 'group' optional dependency group
+uv add --optional group package # add 'package' to 'group' optional dependency group
 ```
 
 To add an editable dependency (e.g., to install local pseudopackage into environment)
@@ -196,7 +199,6 @@ uv run --package <workspace_name> <command>
 Dependencies specified in `[tool.uv.sources]` of the workspace root apply to all members (unless overridden on a per-member basis)
 
 > [!NOTE]
->
 > Workspace switching takes advantage of the fact that direnv/vscode/etc. assume a single environment per repo.
 > Updating the workspace updates the single repo `.venv` directory (this is fast because `uv` caches dependencies).
 > This means that vscode, for instance, will always use the expected workspace dependencies when working in a repo because it uses the single `.venv` location;
@@ -327,7 +329,12 @@ test = ["aiml[test]"]
 
 [project.optional-dependencies]
 dev = ["hatchling>=1.26.3"]
-test = ["coverage>=4.2", "pytest>=8.3.4", "pytest-asyncio>=0.24.0", "pytest-cov>=6.0.0"]
+test = [
+  "coverage>=4.2",
+  "pytest>=8.3.4",
+  "pytest-asyncio>=0.24.0",
+  "pytest-cov>=6.0.0",
+]
 ds = [
   # ref: https://scientific-python.org/specs/spec-0000/
   "jinja2>=3.1",
@@ -345,9 +352,22 @@ ds = [
   "xlrd>=2.0",
 ]
 db = ["pyodbc>=5", "sqlalchemy>=2"]
-plot = ["cmcrameri>=1.9", "matplotlib>=3.8", "mizani>=0.13", "plotly>=5.24", "plotnine>=0.14", "seaborn>=0.13"]
+plot = [
+  "cmcrameri>=1.9",
+  "matplotlib>=3.8",
+  "mizani>=0.13",
+  "plotly>=5.24",
+  "plotnine>=0.14",
+  "seaborn>=0.13",
+]
 api = ["fastapi>=0.115.6", "uvicorn>=0.32.1"]
-nlp = ["langcodes>=3.5", "lingua-language-detector>=2.0", "nltk>=3.9", "rouge-score>=0.1.2", "spacy>=3.7,<4"]
+nlp = [
+  "langcodes>=3.5",
+  "lingua-language-detector>=2.0",
+  "nltk>=3.9",
+  "rouge-score>=0.1.2",
+  "spacy>=3.7,<4",
+]
 torch = [
   "tensorboard>=2.18",
   "torch>=2",

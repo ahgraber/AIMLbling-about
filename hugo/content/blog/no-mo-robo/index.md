@@ -6,10 +6,10 @@ authors:
     link: https://github.com/ahgraber
     image: https://github.com/ahgraber.png
 tags:
-  - "opinion"
-  - "generative AI"
-  - "LLMs"
-  - "copyright"
+  - opinion
+  - generative AI
+  - LLMs
+  - copyright
 series: []
 layout: single
 toc: true
@@ -53,16 +53,14 @@ Times has worked with Common Crawl to remove its intellectual property [^10] fro
 `anthropic-ai`, `ClaudeBot`, `cohere-ai`, `GPTBot`, and `PerplexityBot`.
 
 > [!NOTE]
->
-> At its core, I think the underlying issue behind copyright concerns with LLMs is one of _attribution_.  
+> At its core, I think the underlying issue behind copyright concerns with LLMs is one of _attribution_.\
 > I'm planning a separate post on this!
 
 I've followed the New York Times' lead on this (and their robots.txt). Search engines should feel welcome to index my blog (👋 Hi! Hello! Welcome!); however, my thoughts are my own and until the fundamental problem of attribution is
 solved, it is unfair to me to use my IP for commercial gain. So scraping spiders that build AI datasets and LLM agents are currently unwelcome.
 
 > [!NOTE]
->
-> That's also why I've chosen the [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/) license for this blog's content.  
+> That's also why I've chosen the [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/) license for this blog's content.\
 > Feel free to share or adapt/remix, just give me credit - and don't make money off of it.
 
 If you're interested, [here's my robots.txt](https://aimlbling-about.ninerealmlabs.com/robots.txt)

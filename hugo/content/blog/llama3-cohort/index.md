@@ -5,7 +5,7 @@ authors:
   - name: ahgraber
     link: https://github.com/ahgraber
     image: https://github.com/ahgraber.png
-tags: ["LLMs", "generative ai", "comparison"]
+tags: [LLMs, generative ai, comparison]
 series: []
 layout: wide
 toc: false
@@ -17,7 +17,6 @@ The "open weights" or "open model" LLM ecosystem is thriving, with major new rel
 models, I thought it would be useful that aggregate all of the information of the 'Llama 3 cohort' in a single place. I've included Llama 2 as a point of comparison. Models are ordered by date of introduction.
 
 > [!NOTE]
->
 > I've done my best to make these table not-terrible, but they're probably still trash on mobile or non-wide aspect ratios. Sorry.
 
 ## Architectures
@@ -25,13 +24,11 @@ models, I thought it would be useful that aggregate all of the information of th
 {{< table path="architectures.csv" header="true" caption="A comparison of model architectures" >}}
 
 > [!WARNING]
->
 > I've not included ChatGPT 3.5 or 4, or Anthropic's Claude because they're completely closed models and I was unable to find any information worth comparing.
 
 ## Performance
 
 > [!NOTE]
->
 > 1. I've transposed table rows/columns from here on (they fit better that way).
 > 2. I've included benchmarks from OpenAI's GPT4 paper and Anthropic's Claude 3 announcement as points of comparison.
 
@@ -61,7 +58,6 @@ found that model performance continues to improve even after the model is traine
 _Larger models can match the performance of these smaller models with less training compute, but smaller models are generally preferred because they are much more efficient during inference_"[^llama3] (emphasis mine).
 
 > [!NOTE]
->
 > The Chinchilla "laws" describe the relationship between model size (parameters), dataset size (tokens), performance (loss), and cost of compute (FLOPs). Historically, the Chinchilla laws have been
 > used to understand the "compute optimal" point, or the point of diminishing returns (in terms of model performance improvement) associated with additional compute, given a static model size and dataset.
 
@@ -95,13 +91,12 @@ be loaded into memory for inference.
 
 As an aside, I have to wonder about the use of Mixture-of-Experts as a way to increase model size while maintaining/improving inference speed. Recent research with pruning dense models indicates LLMs are already overparameterized.[^short]
 [^prune] These MoE models seem to be even further overparameterized vs their dense peers. Both DataBricks DBRX and Snowflake Arctic are MoE models with significantly more total _and_ active parameters than Llama 3 8B, and both trained on
-fewer tokens. DBRX is closer (12T DBRX vs 15T Llama3 8B). Snowflake Arctic only trained on <4T, thought this may be because Arctic is intended more for "enterprise" use cases than as a general language model (the lack of MMLU scores
+fewer tokens. DBRX is closer (12T DBRX vs 15T Llama3 8B). Snowflake Arctic only trained on \<4T, thought this may be because Arctic is intended more for "enterprise" use cases than as a general language model (the lack of MMLU scores
 reported for Arctic adds weight to this theory). Perhaps the additional overparameterization helps to explain their training speed and performance, while the sparsity associated with the expert routing is akin to pruning a dense network?
 
 ### Inference implications
 
 > [!NOTE]
->
 > Most of what I'll mention here is a rehash of what I learned listening to [Dylan Patel (of SemiAnalysis) on the Latent Space podcast](https://www.latent.space/p/semianalysis). It is 100% worth the
 > listen (or reviewing the transcript).
 >
@@ -131,10 +126,10 @@ any shenanigans on the _implementation_ of the benchmarks.[^openllm] [^benchmark
 might use 8-shot chain-of-thought, 5-shot chain-of-thought, 0-shot, or majority voting. Further, its often unclear whether the reported benchmarks are done on the model after pretraining, after fine-tuning, or after alignment (or some
 combination that provides the best results). So, take all benchmarks with a grain of salt... which, doesn't that kind of invalidate the raison d'être of a benchmark?
 
-Finally, I have to credit Meta for revealing training cost in terms of GPU hours _and_ energy implications (tons of CO\\$_2\\$ equivalent). It is frustrating to me that it is nonstandard to discuss energy grid and environmental
+Finally, I have to credit Meta for revealing training cost in terms of GPU hours _and_ energy implications (tons of CO\\$\_2\\$ equivalent). It is frustrating to me that it is nonstandard to discuss energy grid and environmental
 implications of their training costs. I would like to see all technical papers discuss the training costs/requirements for their models, even if they do not release the source code to replicate. GPU class, GPU time, FLOPs, and
-tCO\\$_2\\$eq are all important metrics to understand the energy requirements of training a model. Further, I would also like to see papers report the cost per 1M token inference in the same manner - GPUs required, GPU class, FLOPs, and
-tCO\\$_2\\$eq.
+tCO\\$\_2\\$eq are all important metrics to understand the energy requirements of training a model. Further, I would also like to see papers report the cost per 1M token inference in the same manner - GPUs required, GPU class, FLOPs, and
+tCO\\$\_2\\$eq.
 
 ## References
 
@@ -152,7 +147,7 @@ tCO\\$_2\\$eq.
 - [[2309.05463] Textbooks Are All You Need II: phi-1.5 technical report](https://arxiv.org/abs/2309.05463)
 - [[2306.11644] Textbooks Are All You Need](https://arxiv.org/abs/2306.11644)
 - [Command R: RAG at Production Scale](https://cohere.com/blog/command-r)
-- [Introducing the next generation of Claude \ Anthropic](https://www.anthropic.com/news/claude-3-family)
+- [Introducing the next generation of Claude \\ Anthropic](https://www.anthropic.com/news/claude-3-family)
 - [Model_Card_Claude_3.pdf](https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf)
 - [Zhen Wang on LinkedIn: #anthropic #claude #tokenizer #llm](https://www.linkedin.com/posts/zhenwang_anthropic-claude-tokenizer-activity-7067072872019619840-hZ-7)
 - [GPT-4 | OpenAI](https://openai.com/index/gpt-4-research/)

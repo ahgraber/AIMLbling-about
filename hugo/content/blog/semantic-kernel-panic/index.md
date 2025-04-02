@@ -1,5 +1,5 @@
 ---
-title: "Kernel Panic: Frustrations with Semantic Kernel"
+title: 'Kernel Panic: Frustrations with Semantic Kernel'
 date: 2024-09-21
 authors:
   - name: ahgraber
@@ -8,14 +8,14 @@ authors:
 tags:
   # meta
   # - "meta"
-  - "blogumentation"
-  - "experiment"
+  - blogumentation
+  - experiment
   # - "listicle"
-  - "opinion"
+  - opinion
   # ai/ml
-  - "generative AI"
+  - generative AI
   # - "prompts"
-  - "LLMs"
+  - LLMs
 series: []
 layout: wide
 toc: true
@@ -57,10 +57,10 @@ This helps ensure the response is grounded and reduces the likelihood of halluci
 {{% details title="RAG" closed="true" %}}
 
 {{< figure
-    src="images/RAG.png"
-    alt="retrieval augmented generation"
-    link="https://docs.llamaindex.ai/en/stable/"
-    caption="Retrieval Augmented Generation.  Credit: LlamaIndex" >}}
+src="images/RAG.png"
+alt="retrieval augmented generation"
+link="https://docs.llamaindex.ai/en/stable/"
+caption="Retrieval Augmented Generation. Credit: LlamaIndex" >}}
 {{% /details %}}
 
 ## Kernel Panic
@@ -113,7 +113,7 @@ answer = await kernel.invoke(
 print(answer)
 ```
 
-  </td>
+</td>
   <td style="width:50%">
 
 ```sh
@@ -144,7 +144,7 @@ curl https://api.openai.com/v1/chat/completions \
   }'
 ```
 
-  </td>
+</td>
 </tr>
 </table>
 
@@ -154,7 +154,6 @@ The discussion ultimately suggests using Semantic Kernel's OpenTelemetry support
 ## Investigation and Manual Resolution
 
 > [!NOTE]
->
 > Caveats:
 >
 > 1. Semantic Kernel is still undergoing rapid development; this article is based on my experience developing with version 1.8.2 in early September, 2024.
@@ -217,7 +216,7 @@ rendered = await chat_function.prompt_template.render(
 
 ```
 
-  </td>
+</td>
   <td style="width:50%">
 
 ```txt
@@ -229,7 +228,7 @@ You are a helpful AI assistant.
 Why is the default program called "hello world"?
 ```
 
-  </td>
+</td>
 </tr>
 <tr>
   <td>
@@ -241,7 +240,7 @@ history = ChatHistory.from_rendered_prompt(rendered)
 messages = [message.to_dict() for message in history.messages]
 ```
 
-  </td>
+</td>
   <td>
 
 ```json
@@ -265,7 +264,7 @@ messages = [message.to_dict() for message in history.messages]
 ]
 ```
 
-  </td>
+</td>
 </tr>
 </table>
 
@@ -306,7 +305,7 @@ This would be a user message.
 """
 ```
 
-  </td>
+</td>
   <td style="width:50%">
 
 ```json
@@ -323,7 +322,7 @@ This would be a user message.
 ]
 ```
 
-  </td>
+</td>
 </tr>
 <tr>
   <td>
@@ -335,7 +334,7 @@ This would be a user message.
 """
 ```
 
-  </td>
+</td>
   <td>
 
 ```json
@@ -348,7 +347,7 @@ This would be a user message.
 ]
 ```
 
-  </td>
+</td>
 </tr>
 </table>
 

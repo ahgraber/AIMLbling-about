@@ -7,16 +7,16 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "blogumentation"
-  - "experiment"
+  - blogumentation
+  - experiment
   # ai/ml
-  - "evals"
-  - "LLMs"
-  - "RAG"
+  - evals
+  - LLMs
+  - RAG
   # homelab
-  - "homelab"
+  - homelab
 series:
-  - "ragas"
+  - ragas
 layout: single
 toc: true
 math: false
@@ -108,7 +108,7 @@ Ragas conceptualizes user interactions with RAG systems into 2 dimensions and bu
 One dimension is how direct or abstract the question or request is.
 The [Ragas documentation describes](https://docs.ragas.io/en/v0.2.3/concepts/test_data_generation/rag/#specific-vs-abstract-queries-in-a-rag):
 
-> **Specific Query**: Focuses on clear, fact-based retrieval. The goal in RAG is to retrieve highly relevant information from one or more documents that directly address the specific question.  
+> **Specific Query**: Focuses on clear, fact-based retrieval. The goal in RAG is to retrieve highly relevant information from one or more documents that directly address the specific question.\
 > **Abstract Query**: Requires a broader, more interpretive response. In RAG, abstract queries challenge the retrieval system to pull from documents that contain higher-level reasoning, explanations, or opinions, rather than simple facts.
 
 The other dimension is single- vs multi-hop:
@@ -190,7 +190,6 @@ Then, given some assumptions, I estimated the _input_ token use over these use c
 Code is available [in this Jupyter notebook](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/cost_analysis.ipynb).
 
 > [!WARNING]
->
 > Token utilization estimates only analyze _input_ tokens using the `tiktoken` tokenizer;
 > actual use (even if these estimates are perfect) will be higher because the analysis does not take _output_ tokens into account.
 
@@ -213,7 +212,7 @@ Assuming kg nodes are ~256 tokens, and each cluster used for generation contains
 
 ### Evaluating RAG on Single Testset Question
 
-Assuming the test query is 64 tokens, the retrieved context is 256 \* 3 tokens, ground truth is ~100 tokens and generated response is ~256 tokens:
+Assuming the test query is 64 tokens, the retrieved context is 256 * 3 tokens, ground truth is ~100 tokens and generated response is ~256 tokens:
 
 - evaluating `context precision will` use 1,881 tokens
 - evaluating `context recall` will use 1,788 tokens
@@ -229,8 +228,8 @@ Assuming the test query is 64 tokens, the retrieved context is 256 \* 3 tokens, 
 | base case (no RAG) eval\*\* |      - |          100 |    81,500 |
 | RAG eval\*\*\*              |      - |          100 |   803,900 |
 
-> \* assumes test set uses 25% abstract, 25% comparative abstract, and 50% specific query scenarios  
-> \*\* base case (no retrieval) eval only analyzes `response relevance`  
+> \* assumes test set uses 25% abstract, 25% comparative abstract, and 50% specific query scenarios\
+> \*\* base case (no retrieval) eval only analyzes `response relevance`\
 > \*\*\* RAG eval analyzes `context precision`, `context recall`, `faithfulness`, and `response relevance`
 
 Given current (Q4 2024) prices (GPT-4o @ $2.50 / 1M tokens; Claude-3.5-Sonnet @ $3.00 / 1M tokens):
@@ -247,13 +246,13 @@ RAGAS uses few-shot prompting, which means the templated prompts with few-shot e
 Therefore, parameters like node/chunk size and numbers of nodes/chunks provided functionally have no impact on long-running token use/cost assuming that the retrieved context tokens remains < prompt tokens.
 
 {{< figure
-  src="images/testset_chunk_tokens.png"
-  alt="prompt length dominates influence of chunk size on token utilization"
-  caption="Prompt length dominates influence of chunk size on token utilization" >}}
+src="images/testset_chunk_tokens.png"
+alt="prompt length dominates influence of chunk size on token utilization"
+caption="Prompt length dominates influence of chunk size on token utilization" >}}
 {{< figure
-  src="images/eval_n_context_chunks.png"
-  alt="prompt length dominates influence of chunk count on token utilization"
-  caption="Prompt length dominates influence of chunk count on token utilization" >}}
+src="images/eval_n_context_chunks.png"
+alt="prompt length dominates influence of chunk count on token utilization"
+caption="Prompt length dominates influence of chunk count on token utilization" >}}
 
 > 'scaled' divides the total token use by the x axis variable
 > to understand whether the increase is proportional to parameter
@@ -262,13 +261,13 @@ Parameters that alter the number of overall iterations (i.e., increasing the num
 adding a new document to the knowledge graph, adding questions to the test set, or adding evals) act as multipliers, and have dramatic effects on total token use, though the token use per iteration remains constant.
 
 {{< figure
-  src="images/testset_n_questions.png"
-  alt="tokens per question remain constant"
-  caption="Testset size multiplies the total token use, but tokens per question remain constant" >}}
+src="images/testset_n_questions.png"
+alt="tokens per question remain constant"
+caption="Testset size multiplies the total token use, but tokens per question remain constant" >}}
 {{< figure
-  src="images/eval_n_questions.png"
-  alt="tokens per question remain constant"
-  caption="Testset size multiplies the total token use, but tokens per question remain constant" >}}
+src="images/eval_n_questions.png"
+alt="tokens per question remain constant"
+caption="Testset size multiplies the total token use, but tokens per question remain constant" >}}
 
 > Because the templated prompts dominate token use, leveraging API features such as token caching become an incredibly effective way to save money on API use.
 > API calls that use the same prompt/template should be made in near succession to maintain high cache-hit rates.

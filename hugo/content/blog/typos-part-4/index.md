@@ -3,13 +3,13 @@ title: How Susceptible Are LLMs to Typos? (part 4)
 date: 2024-07-08
 tags:
   # meta
-  - "experiment"
+  - experiment
   # ai/ml
-  - "generative AI"
-  - "prompts"
-  - "LLMs"
+  - generative AI
+  - prompts
+  - LLMs
 series:
-  - "typos"
+  - typos
 draft: false
 math: true
 ---
@@ -39,7 +39,6 @@ For each of these models:
 ### Perplexity
 
 > [!NOTE]
->
 > `Perplexity` is a representation of how _unlikely_ a given (new) sequence is, given all sequences seen during training. It can be used to understand how confident the model is in predicting the next token in a
 > sequence. A lower perplexity indicates that the prediction is more likely (i.e., the model is more confident).
 
@@ -191,7 +190,6 @@ performance remains quite flat regardless of typo rate, losing only 4 points fro
 performance decrease, with a 17 point reduction from baseline to worst-case on the 0-shot benchmark, and a 7 point drop from baseline to worst-case with 5-shot examples.
 
 > [!WARNING]
->
 > Recall that the baseline dataset is the _tinyBenchmarks_ MMLU dataset. This means that the results should not be directly compared to published MMLU scores.
 
 {{< figure
@@ -212,22 +210,22 @@ embedding representation, and generation tasks? Yes -- but not to the point that
 
 I mentioned previously that in my estimation, it would be very unusual for a passage to have more than 15% of the words contain typos. At that 15% typo rate:
 
-- There is a less than 10% increase in tokens required to represent the passage.  
+- There is a less than 10% increase in tokens required to represent the passage.\
   OpenAI's most expensive model (GPT-4) currently costs 1/1000th of $0.01 per token.
   A prompt would have to contain 10k+ tokens for it to cost a full $0.01 more than it would were all the words correct!
 - Typo and baseline passages have an average cosine similarity of 0.9, likely close enough to get reasonable results from any embedding-based classification or RAG architecture.
-- Llama 3 loses only 2 points in _tinyBenchmarks_ MMLU 5-shot benchmark.  
+- Llama 3 loses only 2 points in _tinyBenchmarks_ MMLU 5-shot benchmark.\
   For repeated tasks, using canned (known-good) examples before inserting the user prompt that may contain typos seems to mitigate the impact of typos, as the 0-shot benchmark loses 6 points.
 
 ### Caveats
 
 This has been a fun experiment, but it is by no means exhaustive or without confounding factors.
 
-1. The typo generation function did not create perfectly realistic typos.  
+1. The typo generation function did not create perfectly realistic typos.\
    The typo generation dataset did not always include typo incidence/frequency information, which influence the probability ruleset. Additionally, I did not make a distinction between code and prose in the typo generation function.
-2. These analyses hold true for English text.  
+2. These analyses hold true for English text.\
    I assume that the influence of typos on performance with other languages _increases_ proportionately to how well-represented the language is in the tokenizer and LLM training sets.
-3. My experimental design does not use apples-to-apples models for comparison -  
+3. My experimental design does not use apples-to-apples models for comparison -\
    in addition to the different tokenizers, Llama2-7B-Chat and Llama3-8B-Instruct a dramatic difference in amount of training data seen and modest architectural differences Ideally, the experiment would leverage two identical model
    architectures trained on the same dataset(s), with the only difference being the tokenizer vocabularies.
 4. My experiments were limited in scope and did not demonstrate implications in production environments or across a wide variety of tasks.
@@ -244,11 +242,11 @@ This has been a fun experiment, but it is by no means exhaustive or without conf
 
 [^tinybench]: [[2402.14992] tinyBenchmarks: evaluating LLMs with fewer examples](https://arxiv.org/abs/2402.14992)
 
-[^promptperplexity]: [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
-
 [^perplexity]: [Perplexity of fixed-length models](https://huggingface.co/docs/transformers/en/perplexity)
 
 [^perplexity.py]: [perplexity.py · evaluate-measurement/perplexity](https://huggingface.co/spaces/evaluate-measurement/perplexity/blob/main/perplexity.py)
+
+[^promptperplexity]: [[2212.04037] Demystifying Prompts in Language Models via Perplexity Estimation](https://arxiv.org/abs/2212.04037)
 
 [^mmlu]: [Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
 

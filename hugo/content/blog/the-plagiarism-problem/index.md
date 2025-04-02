@@ -2,13 +2,13 @@
 title: The plagiarism problem
 date: 2024-08-10
 tags:
-  - "opinion"
-  - "generative AI"
-  - "LLMs"
-  - "copyright"
-  - "creators"
-  - "content"
-  - "licensing"
+  - opinion
+  - generative AI
+  - LLMs
+  - copyright
+  - creators
+  - content
+  - licensing
 series: []
 draft: false
 ---
@@ -55,7 +55,6 @@ Without deep mechanistic introspection with respect to the generative process, i
 [^memorization]
 
 > [!NOTE]
->
 > Verbatim plagiarism is made less likely due to the variety of probabilistic decoding techniques (beam search, temperature, nucleus sampling, etc.) that are designed to allow models to avoid only picking the highest-probability token.
 > These techniques add user-selectable levels of randomness to the generative process.
 
@@ -94,14 +93,13 @@ that summarize web content to provide the answer to the user directly -- without
 This will force a paradigm shift in how we use the internet, because search-providing-the-answer breaks current patterns of content creation and consumption --
 especially the creator economy (i.e., influencers) and any content publication site that generates revenue from ads.
 
-At a high level, the current internet creation/consumption economy involves:  
-A creator produces content and publishes it to the public internet.  
-A search engine indexes that content so it knows what is available, and surfaces relevant content to an interested audience.  
+At a high level, the current internet creation/consumption economy involves:\
+A creator produces content and publishes it to the public internet.\
+A search engine indexes that content so it knows what is available, and surfaces relevant content to an interested audience.\
 The audience clicks through to the content, driving ad revenue / views / clout for the creator.
 [^creator]
 
 > [!NOTE]
->
 > This representation of the internet / creator economy is simplistic, idealistic, and somewhat out-of-date.
 > The point is that AI-based answer engines fundamentally change the way people consume content on the internet,
 > and the storybook model of the internet economy based on early web 2.0 is illustrative.
@@ -166,8 +164,6 @@ I've linked several papers below for further reading.
 
 ## References
 
-[^creator]: [Understanding the Creator Economy: A Complete Guide | GRIN](https://grin.co/blog/understanding-the-creator-economy/)
-
 [^knowledge]: [Knowledge Mechanisms in Large Language Models: A Survey and Perspective](https://arxiv.org/abs/2407.15017)
 
 [^memorization]: [Demystifying Verbatim Memorization in Large Language Models](https://arxiv.org/abs/2407.17817)
@@ -175,6 +171,8 @@ I've linked several papers below for further reading.
 [^gemma2]: [[2408.00118] Gemma 2: Improving Open Language Models at a Practical Size](https://arxiv.org/abs/2408.00118)
 
 [^profit-sharing]: [AI search engine accused of plagiarism announces publisher revenue-sharing plan | Ars Technica](https://arstechnica.com/information-technology/2024/07/ai-search-engine-accused-of-plagiarism-announces-publisher-revenue-sharing-plan/)
+
+[^creator]: [Understanding the Creator Economy: A Complete Guide | GRIN](https://grin.co/blog/understanding-the-creator-economy/)
 
 [^gemma-scope]: [Gemma Scope: helping the safety community shed light on the inner workings of language models - Google DeepMind](https://deepmind.google/discover/blog/gemma-scope-helping-the-safety-community-shed-light-on-the-inner-workings-of-language-models/)
 

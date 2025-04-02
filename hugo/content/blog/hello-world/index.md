@@ -6,9 +6,9 @@ authors:
     link: https://github.com/ahgraber
     image: https://github.com/ahgraber.png
 tags:
-  - "meta"
-  - "blogumentation"
-  - "homelab"
+  - meta
+  - blogumentation
+  - homelab
 layout: single
 toc: true
 math: false
