@@ -7,13 +7,13 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "meta"
-  - "listicle"
-  - "opinion"
+  - meta
+  - listicle
+  - opinion
   # ai/ml
-  - "agents"
-  - "generative AI"
-  - "LLMs"
+  - agents
+  - generative AI
+  - LLMs
 series: []
 layout: single
 toc: true
@@ -43,7 +43,6 @@ _Probability: 100%_
 demonstrate that existing models can be deployed/instructed to think deliberately about a problem to solve it iteratively.
 
 > [!NOTE]
->
 > I'm avoiding describing the extended thinking as "reasoning".
 > I recognize that's the popular term; while to some degree it does represent the process of inference-time compute,
 > I think it will take at least until the next generation of models for them to exhibit full-fledged planning, reasoning, or metacognition.
@@ -62,7 +61,6 @@ or (b) gpt-5-generation models will alter what has become the standard model arc
 _Probability: 50/50_
 
 > [!NOTE]
->
 > If I had to bet, Western/U.S. labs (Meta, Google, OpenAI) will fall prey to slowly improving the status quo, > while Chinese labs (DeepSeek, Qwen) will experiment with new architectures. Anthropic and Mistral are wildcards.
 
 ### Next-gen Architectural changes
@@ -78,9 +76,8 @@ or sampling[^top-n] [^coconut].
 _Probability: 75%_
 
 > [!NOTE]
->
-> Bonus:<br>
-> Inspired by [ModernBert](https://arxiv.org/abs/2412.13663), other "deprecated" architectures will be given "modern" makeovers<br>  
+> Bonus:\
+> Inspired by [ModernBert](https://arxiv.org/abs/2412.13663), other "deprecated" architectures will be given "modern" makeovers\
 > _Probability: 60%_
 
 ## Multimodal-first training
@@ -107,9 +104,9 @@ _Probability: 80%_
 
 [^structured_outputs]: [Introducing Structured Outputs in the API | OpenAI](https://openai.com/index/introducing-structured-outputs-in-the-api/)
 
-[^o3]: [OpenAI o3 Breakthrough High Score on ARC-AGI-Pub](https://arcprize.org/blog/oai-o3-pub-breakthrough)
-
 [^test-time-scaling]: [Scaling test-time compute - a Hugging Face Space by HuggingFaceH4](https://huggingface.co/spaces/HuggingFaceH4/blogpost-scaling-test-time-compute)
+
+[^o3]: [OpenAI o3 Breakthrough High Score on ARC-AGI-Pub](https://arcprize.org/blog/oai-o3-pub-breakthrough)
 
 [^gpt5]: [OpenAI's GPT-5 reportedly falling short of expectations | TechCrunch](https://techcrunch.com/2024/12/21/openais-gpt-5-reportedly-falling-short-of-expectations/)
 

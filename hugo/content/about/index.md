@@ -1,16 +1,16 @@
 ---
-title: "About"
+title: About
 date: 2024-04-22
-tags: ["about"]
+tags: [about]
 series: []
 toc: false
 draft: false
 ---
 
-Technologist.  
-Machine learning enthusiast.  
-Homelabber.  
-Hacker.  
+Technologist.\
+Machine learning enthusiast.\
+Homelabber.\
+Hacker.\
 Ever curious.
 
 <!-- markdownlint-disable MD034 -->

@@ -7,27 +7,27 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "meta"
-  - "blogumentation"
-  - "experiment"
-  - "listicle"
-  - "opinion"
+  - meta
+  - blogumentation
+  - experiment
+  - listicle
+  - opinion
   # ai/ml
-  - "agents"
-  - "arxiv"
-  - "evals"
-  - "generative AI"
-  - "LLMs"
-  - "prompts"
-  - "RAG"
+  - agents
+  - arxiv
+  - evals
+  - generative AI
+  - LLMs
+  - prompts
+  - RAG
   # homelab
-  - "homelab"
+  - homelab
   # other
-  - "copyright"
-  - "creators"
-  - "content"
-  - "licensing"
-  - "privacy"
+  - copyright
+  - creators
+  - content
+  - licensing
+  - privacy
 series: []
 layout: single
 toc: true

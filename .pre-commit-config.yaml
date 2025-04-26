@@ -84,6 +84,20 @@ repos:
             ^.*(\.rst)$
           )$
         stages: [pre-commit]
+  - repo: https://github.com/hukkin/mdformat
+    rev: 0.7.22
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat-frontmatter
+          - mdformat-footnote
+          - mdformat-gfm-alerts
+          - mdformat-tables
+          - mdformat-toc
+          - mdformat-config
+          - mdformat-ruff
+          - mdformat-shfmt
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: "v0.44.0"
     hooks:

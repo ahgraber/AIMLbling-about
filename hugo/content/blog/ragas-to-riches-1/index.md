@@ -7,16 +7,16 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "blogumentation"
-  - "experiment"
+  - blogumentation
+  - experiment
   # ai/ml
-  - "evals"
-  - "LLMs"
-  - "RAG"
+  - evals
+  - LLMs
+  - RAG
   # homelab
-  - "homelab"
+  - homelab
 series:
-  - "ragas"
+  - ragas
 layout: single
 toc: true
 math: false
@@ -42,9 +42,9 @@ Relevant pieces of information are retrieved and are passed to the LLM for in-co
 RAG systems require a corpus of knowledge to search over, a method for searching/ranking/retrieving the relevant content, and the LLM to synthesize the final answer.
 
 {{< figure
-  src="images/RAG.png"
-  alt="retrieval augmented generation"
-  caption="Retrieval Augmented Generation via [Best Practices in Retrieval Augmented Generation - Gradient Flow](https://gradientflow.com/best-practices-in-retrieval-augmented-generation/)" >}}
+src="images/RAG.png"
+alt="retrieval augmented generation"
+caption="Retrieval Augmented Generation via [Best Practices in Retrieval Augmented Generation - Gradient Flow](https://gradientflow.com/best-practices-in-retrieval-augmented-generation/)" >}}
 
 The above diagram from [GradientFlow](https://gradientflow.com/best-practices-in-retrieval-augmented-generation/) provides a fantastic overview of the RAG procedure.
 Pieces of content are split into chunks, converted into vector embeddings, and stored in a vector database.
@@ -52,7 +52,6 @@ When a user request comes in, the system locates that request into the same vect
 Then we provide user query _and_ the most relevant chunks for the LLM to generate the response.
 
 > [!NOTE]
->
 > The description of RAG procedure above assumes the use of an embedding model and vector database.
 > While this is the "typical" implementation, it is not the only one.
 > BM25 is a type of keyword search that does not require an embedding model or vectorization but provides fast, well-studied text search, and often serves as a "baseline".
@@ -88,7 +87,6 @@ As retrieval is essentially a recommendation system, AI/ML Engineers have repurp
 `context recall` calculates the proportion of the claims made in the ground truth answer that are supported by retrieved information. [^recall] [^precision-recall]
 
 > [!TIP]
->
 > I find [Wikipedia's image-based explanation of precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall) super helpful when thinking these definitions through
 
 For response evaluation, faithfulness and response relevance are frequently used.
@@ -101,9 +99,9 @@ This means that (a) we need a baseline to compare against - likely LLM performan
 "a standardized basis for comparing different approaches," a dataset with known-good question-context-answer triples and a set of metrics used to evaluate performance.[^methodology]
 
 {{< figure
-  src="images/RAG experimentation.png"
-  alt="empirical evaluations of RAG"
-  caption="Key considerations for sound empirical evaluations of RAG systems via [[2410.08801] A Methodology for Evaluating RAG Systems: A Case Study On Configuration Dependency Validation](https://arxiv.org/abs/2410.08801)" >}}
+src="images/RAG experimentation.png"
+alt="empirical evaluations of RAG"
+caption="Key considerations for sound empirical evaluations of RAG systems via [[2410.08801] A Methodology for Evaluating RAG Systems: A Case Study On Configuration Dependency Validation](https://arxiv.org/abs/2410.08801)" >}}
 
 Finally, in the case where the benchmark is artificially generated, it is important that the process of defining the benchmark dataset is independent of the decisions and architectures upon which the RAG system we are evaluating are based.
 
@@ -122,18 +120,18 @@ Conversely, recent research indicates that smaller, semantically-defined chunks 
 
 [^methodology]: [[2410.08801] A Methodology for Evaluating RAG Systems: A Case Study On Configuration Dependency Validation](https://arxiv.org/abs/2410.08801)
 
-[^precision-recall]: [Precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall)
-
 [^precision]: [context precision](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/context_precision/)
 
 [^recall]: [context recall](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/context_recall/)
+
+[^precision-recall]: [Precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall)
 
 [^faithfulness]: [faithfulness](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/faithfulness/)
 
 [^response_relevance]: [response relevancy](https://docs.ragas.io/en/v0.2.3/concepts/metrics/available_metrics/answer_relevance/)
 
-[^ragas]: [explodinggradients/ragas: Supercharge Your LLM Application Evaluations 🚀](https://github.com/explodinggradients/ragas/tree/main)
-
 [^ragas_arxiv]: [[2309.15217] RAGAS: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
+
+[^ragas]: [explodinggradients/ragas: Supercharge Your LLM Application Evaluations 🚀](https://github.com/explodinggradients/ragas/tree/main)
 
 [^chunking]: [Evaluating Chunking Strategies for Retrieval | Chroma Research](https://research.trychroma.com/evaluating-chunking)

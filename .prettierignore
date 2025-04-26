@@ -1,7 +1,7 @@
 # in addition to files in .gitignore, prettier should ignore
 .**/
 .*
-# *.md
+*.md
 # *.y*ml
 assets/css/custom.css
 node_modules

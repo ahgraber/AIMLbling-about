@@ -7,11 +7,11 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "meta"
-  - "opinion"
+  - meta
+  - opinion
   # ai/ml
-  - "generative AI"
-  - "LLMs"
+  - generative AI
+  - LLMs
 series: []
 layout: single
 toc: true
@@ -28,8 +28,11 @@ At the risk of being reductive, the argument is as follows:
 1. Artificial SuperIntelligence (ASI) is risky - _"Superintelligent AI surpassing humans in nearly every domain would amount to the most precarious technological development since the nuclear bomb... AI holds the potential to reshape the balance of power. In the hands of state actors, it can lead to disruptive military capabilities and transform economic competition. At the same time, terrorists may exploit its dual-use nature to orchestrate attacks once within the exclusive domain of great powers. It could also slip free of human oversight."_
 
 2. Therefore, managing ASI is critical for national security.
+
 3. Therefore, nations should have an interest in managing AI before we get to ASI.
+
 4. Therefore, nations with the greatest leverage will have strategic policy advantages.
+
 5. Therefore, the nations with AI leadership (read US, China) should employ strategies for deterrence, nonproliferation, and competition.
 
 ## Is MAIM the new MAD?
@@ -37,23 +40,22 @@ At the risk of being reductive, the argument is as follows:
 Because of these risks, the authors assert that policymakers should anticipate a deterrence strategy for ASI (MAIM, Mutual Assured AI Malfunction) inspired by that of nuclear weapons (MAD, Mutual Assured Destruction) as it is the only stable regime.
 
 {{< figure
-  src="images/MAIM.png"
-  alt="Mutual Assured AI Malfunction"
-  caption="The strategic stability of MAIM can be paralleled with Mutual Assured Destruction (MAD). (_Superintelligence Strategy_)" >}}
+src="images/MAIM.png"
+alt="Mutual Assured AI Malfunction"
+caption="The strategic stability of MAIM can be paralleled with Mutual Assured Destruction (MAD). (_Superintelligence Strategy_)" >}}
 
 ### Mutual Assured Destruction
 
 Before going further, I think it's worth examining [Mutual Assured Destruction](https://en.wikipedia.org/wiki/Mutual_assured_destruction).
 
 > [!NOTE]
->
 > I think the game theory framework is useful here, but it's been a minute since I've done any game theory, so I'll probably gloss over (quite a lot) with some handwaving.
 > I'm also not going to spend a ton of time covering game theory terminology; if you'd like an intro or a refresher, [Ashley Hodgson has a great series of videos](https://www.youtube.com/playlist?list=PLL6RiAl2WHXEkYMhQVensZMF5LyoJoOk0).
 
 {{< figure
-  src="images/MAD game.png"
-  alt="Mutual Assured Destruction"
-  caption="The uneasy truce" >}}
+src="images/MAD game.png"
+alt="Mutual Assured Destruction"
+caption="The uneasy truce" >}}
 
 Mutual Assured Destruction is a game where the stable state (Nash Equilibrium) is an uneasy truce. Both A and B would prefer to strike first, annihilate the other and survive themselves. However, the non-cooperation strategies are untenable (annihilation) and therefore "hold" is the dominant strategy. For MAD to enforce the uneasy truce, both players must:
 
@@ -66,9 +68,9 @@ It is also why there was (relatively speaking) global cooperation on nuclear non
 Interestingly, MAD is the inverse of nonproliferation (which can be modeled as the Prisoner's Dilemma).
 
 {{< figure
-  src="images/PD game.png"
-  alt="Prisoner's Dilemma"
-  caption="Individual self-interest plays out over cooperation, undermining the best case as stable strategy." >}}
+src="images/PD game.png"
+alt="Prisoner's Dilemma"
+caption="Individual self-interest plays out over cooperation, undermining the best case as stable strategy." >}}
 
 ### MAIM ≠ MAD
 
@@ -84,9 +86,9 @@ Thus, MAIM (ostensibly) is a stable game for nations afraid of being dominated b
 The authors seem to be conflating several distinct games in the guise of MAIM and declaring all to be equivalent to MAD. In one, all players must race toward AI dominance. In another, players must sabotage competitors. Finally (implied), players must determine whether to employ ASI offensively.
 
 {{< figure
-  src="images/MAIM outcomes.png"
-  alt="Possible outcomes of a U.S. Superintelligence Manhattan Project"
-  caption="Possible outcomes of a U.S. Superintelligence Manhattan Project. An example pathway to Escalation: the U.S. Project outpaces China without being maimed, and maintains control of a recursion but doesn't achieve superintelligence or a superweapon. Though global power shifts little, Beijing condemns Washington's bid for strategic monopoly as a severe escalation. The typical outcome of a Superintelligence Manhattan Project is extreme escalation, and omnicide is the worst foreseeable outcome. (_Superintelligence Strategy_)" >}}
+src="images/MAIM outcomes.png"
+alt="Possible outcomes of a U.S. Superintelligence Manhattan Project"
+caption="Possible outcomes of a U.S. Superintelligence Manhattan Project. An example pathway to Escalation: the U.S. Project outpaces China without being maimed, and maintains control of a recursion but doesn't achieve superintelligence or a superweapon. Though global power shifts little, Beijing condemns Washington's bid for strategic monopoly as a severe escalation. The typical outcome of a Superintelligence Manhattan Project is extreme escalation, and omnicide is the worst foreseeable outcome. (_Superintelligence Strategy_)" >}}
 
 Recall from the above, MAD requires three things: Non-cooperation strategies must be untenable due to real extreme consequence, the threat (and follow-through) from both players must be equivalent, and there can be no first-strike win.
 

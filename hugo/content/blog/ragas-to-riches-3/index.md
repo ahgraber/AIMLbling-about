@@ -7,16 +7,16 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "blogumentation"
-  - "experiment"
+  - blogumentation
+  - experiment
   # ai/ml
-  - "evals"
-  - "LLMs"
-  - "RAG"
+  - evals
+  - LLMs
+  - RAG
   # homelab
-  - "homelab"
+  - homelab
 series:
-  - "ragas"
+  - ragas
 layout: single
 toc: true
 math: false
@@ -50,10 +50,10 @@ I created a different RAG index per model/embedding pair. Documents from the kno
 Note that this chunking and embedding process is different from the one that build the knowledge graph used for testset generation; this ensures that the testset is independent of the RAG architecture we might be evaluating!
 
 I generated baseline responses, retrievals, and RAG responses for each of the 448 questions with each model/retriever.
-The baseline response is simply what the model responded to the test question _without_ providing it any retrieved context, meaning the answer came from internal knowledge - a "closed-book exam".  
-Baseline response quality was evaluated by analyzing `semantic similarity` and `answer relevance`.  
+The baseline response is simply what the model responded to the test question _without_ providing it any retrieved context, meaning the answer came from internal knowledge - a "closed-book exam".\
+Baseline response quality was evaluated by analyzing `semantic similarity` and `answer relevance`.\
 Retrieved context is the result of querying each RAG index (OpenAI, Anthropic/Voyager, Together, local) for each question in the test set.
-The retrievals were evaluated by analyzing `context recall` and `context precision`.  
+The retrievals were evaluated by analyzing `context recall` and `context precision`.\
 RAG responses took the retrievals from each RAG index, and provided both the retrievals as additional context and the test question to the LLM, which generated the answer in "open-book exam" fashion.
 RAG response quality was evaluated by analyzing `semantic similarity`, `answer relevance`, and `faithfulness`.
 
@@ -79,21 +79,21 @@ The diagrams below visually describe the evaluation process _(click the tabs lab
 
 {{< tab >}}
 {{< figure
-  src="images/baseline.png"
-  alt="ragas baseline"
-  caption="Baseline response and analysis" >}}
+src="images/baseline.png"
+alt="ragas baseline"
+caption="Baseline response and analysis" >}}
 {{< /tab >}}
 {{< tab >}}
 {{< figure
-  src="images/retrieval.png"
-  alt="context retrieval"
-  caption="Context retrieval and analysis" >}}
+src="images/retrieval.png"
+alt="context retrieval"
+caption="Context retrieval and analysis" >}}
 {{< /tab >}}
 {{< tab >}}
 {{< figure
-  src="images/rag.png"
-  alt="RAG generation and analysis"
-  caption="RAG generation and analysis" >}}
+src="images/rag.png"
+alt="RAG generation and analysis"
+caption="RAG generation and analysis" >}}
 {{< /tab >}}
 {{< /tabs >}}
 
@@ -110,7 +110,6 @@ to the results that we see, both in terms of model performance in the RAG pipeli
 | LMStudio   | Mistral-Nemo-Instruct-2407 [^mistral] | 68.0% | 33.0% |     68.0% |  40% |
 
 > [!NOTE]
->
 > Table data from provider's model cards + Artificial Analysis; higher value if conflicts
 
 ### Baseline Responses Evaluation
@@ -131,7 +130,6 @@ models perform as we might expect given their benchmark scores: `GPT-4o-mini`, `
 | local       |               0.875 |
 
 > [!NOTE]
->
 > Semantic similarity only examines how well each model performed as a generator/responder;
 > since it does not use an LLM to evaluate, it has no influence on our analysis of LLM's as evaluators.
 
@@ -248,7 +246,6 @@ In all cases, models improved over their baseline similarity scores; however, To
 | local       |                     0.906 |                      0.875 |
 
 > [!NOTE]
->
 > Note that semantic similarity only examines how well each model performed as a generator/responder;
 > since it does not use an LLM to evaluate, it has no influence on our analysis of LLM's as evaluators.
 
@@ -283,7 +280,6 @@ Descriptive stats by Evaluator
 #### Faithfulness
 
 > [!CAUTION]
->
 > Parse failures were so frequent with `Claude-3-Haiku` and `Llama-3.1-Instruct-70B-Turbo` that I stopped using them to evaluate faithfulness
 > because it was becoming incredibly expensive to retry with the "parse-fixer" agent.
 
@@ -322,7 +318,6 @@ Models show strong alignment, with simpler evaluations (i.e., baseline vs retrie
 More complex evaluation instructions (context recall, faithfulness) reduce alignment as the particular models handle the complexity differently.
 
 > [!TIP]
->
 > It would be best practice to have some human-labeled test sets and responses to run a similar analysis and ensure that the LLM-as-a-judge evaluators align with the human experts' judgements.
 
 {{< tabs items="Baseline Response, Context Retrieval,RAG Response" >}}
@@ -330,9 +325,9 @@ More complex evaluation instructions (context recall, faithfulness) reduce align
 {{< tab >}}
 
 {{< figure
-  src="images/baseline_answer_relevance_corr.png"
-  alt="models are aligned on answer relevance"
-  caption="Models are closely aligned on baseline Answer Relevance evaluations" >}}
+src="images/baseline_answer_relevance_corr.png"
+alt="models are aligned on answer relevance"
+caption="Models are closely aligned on baseline Answer Relevance evaluations" >}}
 
 {{< /tab >}}
 {{< tab >}}
@@ -385,7 +380,6 @@ A 3090 graphics card with 24GB VRAM is not necessary; with quantized models, you
 Cursory testing indicated that `gemma-2-9b-it-function-calling` would also be a strong evaluator, with good instruction-following and response-formatting performance.
 
 > [!TIP]
->
 > Small (8-14B parameter) language models are sophisticated enough to function in the LLM-as-a-judge role.
 > It is worth considering whether you need full-fat state-of-the-art models to run evaluations or if smaller, cheaper models would suffice.
 
@@ -404,11 +398,9 @@ All told, running this experiment (including debugging, user errors like failure
 | Together  | Llama-3.1-70B-Instruct-Turbo | 81,706,133\* |  40,487,049\* |  $107.53 |      $0.88 / $0.88 |
 
 > [!NOTE]
->
 > I am not including embedding calls or costs here because they tend to be minimal
 
 > [!WARNING]
->
 > \* Estimated token utilization; TogetherAI has poor user-facing reporting and I'm not sure why or how I have 4-5x _output_ use with approximately the same input.
 > As such, I cannot (currently) recommend TogetherAI; however, the customer service rep addressing my complaint to this effect has indicated they are aware of this problem and working toward improving reporting.
 
@@ -423,7 +415,6 @@ which can severely hamper the ability to use LLM-as-a-judge frameworks like Raga
 For context, compare Anthropic's limits to [OpenAI's](https://platform.openai.com/docs/guides/rate-limits?context=tier-two).
 
 > [!TIP]
->
 > Review your expected token throughput and make sure the various stages of the Ragas pipeline will complete within the limit.
 > If, for instance, you get 80% through evaluating your test set and run out of tokens, there is not a good way to preserve work up to that point -- you lose that work, and have to split the test set to run in smaller batches in the future.
 
@@ -436,7 +427,6 @@ with the proper schema ends up acting as a API use multiplier, sending roughly t
 I found that `Llama-3.1-Instruct-70B-Turbo` had significantly more parse failures than other models.
 
 > [!TIP]
->
 > Test with your desired evaluator LLM at a small scale to determine whether it demonstrates a propensity to return invalid response structures.
 > Ragas has provisions to provide custom prompts, so you can prompt engineer into more reliable performance.
 
@@ -494,7 +484,6 @@ I found that `Llama-3.1-Instruct-70B-Turbo` had significantly more parse failure
 ##### Faithfulness
 
 > [!CAUTION]
->
 > Parse failures were so frequent with `Claude-3-Haiku` and `Llama-3.1-Instruct-70B-Turbo` that I stopped using them to evaluate faithfulness
 > because it was becoming incredibly expensive to retry with the "parse-fixer" agent.
 

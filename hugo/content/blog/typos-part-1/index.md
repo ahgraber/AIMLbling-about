@@ -3,13 +3,13 @@ title: How Susceptible Are LLMs to Typos? (part 1)
 date: 2024-06-14
 tags:
   # meta
-  - "experiment"
+  - experiment
   # ai/ml
-  - "generative AI"
-  - "prompts"
-  - "LLMs"
+  - generative AI
+  - prompts
+  - LLMs
 series:
-  - "typos"
+  - typos
 draft: false
 math: true
 ---
@@ -20,14 +20,10 @@ But before I go off on _that_ tangent, having this repeated discussion got me th
 It seems intuitive that typos _should_ affect response quality. Recent whitepapers do back up this instinct[^promptbench] [^noisy]; however, it also appears as though the sheer scope of data provided during pre-training affords at least
 some resilience to erroneous inputs[^resilience].
 
-<!-- markdownlint-disable MD013 -->
-
 {{< figure
-  src="images/promptbench%20-%20fig_1%20-%20prompt_perturbation.png"
-  alt="prompt perturbation"
-  caption="Zhu, K., Wang, J., Zhou, J., Wang, Z., Chen, H., Wang, Y., Yang, L., Ye, W., Gong, N.Z., Zhang, Y., & Xie, X. (2023). PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts. ArXiv, abs/2306.04528." >}}
-
-<!-- markdownlint-enable -->
+src="images/promptbench%20-%20fig_1%20-%20prompt_perturbation.png"
+alt="prompt perturbation"
+caption="Zhu, K., Wang, J., Zhou, J., Wang, Z., Chen, H., Wang, Y., Yang, L., Ye, W., Gong, N.Z., Zhang, Y., & Xie, X. (2023). PromptBench: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts. ArXiv, abs/2306.04528." >}}
 
 This is part one of a four-part series ([two]({{< ref "/blog/typos-part-2" >}}), [three]({{< ref "/blog/typos-part-3" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine these questions. Code from these experiments is available
 [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos-experiment).
@@ -46,7 +42,6 @@ Increasing the typo frequency is equivalent to introducing data drift, moving th
    than correct text, and questions with typos will have lower response accuracy than correct questions.
 
 > [!WARNING]
->
 > **Caveat:** The forthcoming analyses hold true for English. I assume that the influence of typos on performance with other languages _increases_ proportionately to how well-represented the language is in the
 > tokenizer and LLM training sets.
 
@@ -71,7 +66,6 @@ Given this intuition, I've gathered the following datasets that contain both "in
 After parsing the data, the final collection contains 753,569 character-level edits/corrections for statistical summarization and data mining.
 
 > [!WARNING]
->
 > Some of these datasets provide frequency information (Holbrook, Microsoft), while others are a (deduplicated) collection of common errors. This means the aggregate collection is **not** a representative
 > sample of error frequencies; however, for the purpose of this exercise, _I will be acting as though it is_, and inferring probabilities of occurrence from these data.
 
@@ -82,21 +76,21 @@ In order to define the mapping from erroneous to correct, I followed the general
 I identified the type of typo using the four Damerau-Levenshtein edit operations (deletion, insertion, substitution, and transposition), and the typo's relative location (i.e., `character_index` / `word_length`).
 
 {{< figure
-  src="images/editprob.png"
-  alt="Edit probabilities"
-  caption="Overall probability an edit operation is used to fix a typo." >}}
+src="images/editprob.png"
+alt="Edit probabilities"
+caption="Overall probability an edit operation is used to fix a typo." >}}
 
 {{< figure
-  src="images/locations.png"
-  alt="Edit locations"
-  caption="Likelihood that an error occurred at a given (relative) location in a word." >}}
+src="images/locations.png"
+alt="Edit locations"
+caption="Likelihood that an error occurred at a given (relative) location in a word." >}}
 
 Then, for a given location and edit operation, I mined the likelihoods for character corrections.
 
 {{< figure
-  src="images/correction-letters.png"
-  alt="Correction matrix"
-  caption="Overall correction matrix.  The generation function uses a similar matrix per location and edit operation." >}}
+src="images/correction-letters.png"
+alt="Correction matrix"
+caption="Overall correction matrix. The generation function uses a similar matrix per location and edit operation." >}}
 
 ### Generation
 
@@ -116,6 +110,7 @@ or multiple typos could be induced in an individual word.
 ### Results
 
 <!-- markdownlint-disable MD033 -->
+
 <table>
 <tr>
   <th>Correct</th>
@@ -130,7 +125,7 @@ During the battle, Rebel spies managed to steal secret plans to the Empire's ult
 
 Pursued by the Empire's sinister agents, Princess Leia races home aboard her starship, custodian of the stolen plans that can save her people and restore freedom to the galaxy....
 
-  </td>
+</td>
   <td>
 
 Tt igs a petriod of civil war. Rebel spaceships, striking from a hidden base, have won lheir first victory againsd th evl Galactic Empire.
@@ -157,7 +152,7 @@ def fizzbuzz(n):
           print(x)
 ```
 
-  </td>
+</td>
   <td>
 
 ```py
@@ -173,10 +168,10 @@ ef fizzbuzz(n):
             print(x)
 ```
 
-   </td>
+</td>
 </tr>
 </table>
-<!-- markdownlint-enable -->
+<!-- markdownlint-enable MD033 -->
 
 As you can see, the probabilistic introduction of typos is similar to those an individual might make while typing, but it doesn't feel _quite_ right. I notice that my personal errors seem have a different distribution of edit operations --
 I tend to type missing characters (I skip a keypress) or transpose characters (I type "hte" instead of "the") more frequently than these errors appear in the generator. A possible cause of the inaccuracy of this procedure is primarily due

@@ -6,10 +6,10 @@ authors:
     link: https://github.com/ahgraber
     image: https://github.com/ahgraber.png
 tags:
-  - "agents"
-  - "generative AI"
-  - "prompts"
-  - "LLMs"
+  - agents
+  - generative AI
+  - prompts
+  - LLMs
 series: []
 layout: single
 toc: true
@@ -40,7 +40,6 @@ error rate of `1%`, the probability of encountering an error after 20 steps is 1
 If every step has an error rate of `5%`, you have a 64% chance of encountering an error after 20 steps!
 
 > [!NOTE]
->
 > That last sentence contained 28 tokens (using ChatGPT 4's tokenizer)!
 
 Does that mean we get lucky every time we use ChatGPT and receive a response that's longer than a few words?
@@ -131,7 +130,6 @@ The linguistic flexibility that reduced our concerns regarding compounding error
 (when combined with autoregressive generation) in their propensity to hallucinate.
 
 > [!NOTE]
->
 > Previously in this article, I said:
 >
 > > a GPT picks token that is most likely going to come next.

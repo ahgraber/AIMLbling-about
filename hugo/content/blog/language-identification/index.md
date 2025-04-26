@@ -1,5 +1,5 @@
 ---
-title: "When the Babel Fish Dies: Replacing Legacy Language Detection"
+title: 'When the Babel Fish Dies: Replacing Legacy Language Detection'
 date: 2025-02-01
 authors:
   - name: ahgraber
@@ -7,10 +7,10 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "blogumentation"
-  - "experiment"
+  - blogumentation
+  - experiment
   # ai/ml
-  - "evals"
+  - evals
 series: []
 layout: single
 toc: true
@@ -53,14 +53,14 @@ The benchmark dataset is composed of samples from 4 different datasets:
 - [CohereForAI/Global-MMLU | Hugging Face](https://huggingface.co/datasets/CohereForAI/Global-MMLU)
 
 {{< figure
-  src="images/language_samples.png"
-  alt="language samples"
-  caption="The final dataset contains 80 languages, most with 5000+ samples" >}}
+src="images/language_samples.png"
+alt="language samples"
+caption="The final dataset contains 80 languages, most with 5000+ samples" >}}
 
 ### Evaluation
 
 The experiment is run multiple times (20) to generate confidence intervals.
-For each run, a set of 100 records per language is sampled from the overall dataset (100 records \* 80 languages = 8,000 predictions).
+For each run, a set of 100 records per language is sampled from the overall dataset (100 records * 80 languages = 8,000 predictions).
 Each model predicts over the same dataset, and predictions and runtime are captured.
 Classification performance is evaluated for each run for each model using multi-class F1 score and Accuracy (not shown).
 
@@ -71,9 +71,9 @@ Classification performance is evaluated for each run for each model using multi-
 `fasttext` is the fastest model, followed closely by `Lingua`; `LangId` and `Stanza` lag behind.
 
 {{< figure
-  src="images/runtime.png"
-  alt="experiment runtime"
-  caption="Runtime for 100 samples (lower is better). fasttext and Lingua are >10x faster than LangId and Stanza" >}}
+src="images/runtime.png"
+alt="experiment runtime"
+caption="Runtime for 100 samples (lower is better). fasttext and Lingua are >10x faster than LangId and Stanza" >}}
 
 | model    | Mean Runtime |
 | :------- | -----------: |
@@ -103,17 +103,17 @@ Take the following with a grain of salt.
 Therefore the performance ceiling for other models is lower.
 
 {{< figure
-  src="images/f1score.png"
-  alt="f1 performance">}}
+src="images/f1score.png"
+alt="f1 performance">}}
 
 #### Supported Languages
 
-When considering the subset of languages supported by each model, `Lingua` outperforms `fasttext` once language support is taken into consideration; while 97 languages (`Lingua`) << 209 (`fasttext`),
+When considering the subset of languages supported by each model, `Lingua` outperforms `fasttext` once language support is taken into consideration; while 97 languages (`Lingua`) \<< 209 (`fasttext`),
 we're still covering the majority of languages found on the web.
 
 {{< figure
-  src="images/f1score-supported.png"
-  alt="f1 on supported languages">}}
+src="images/f1score-supported.png"
+alt="f1 on supported languages">}}
 
 | F1 Score | fasttext | langid | lingua | stanza |
 | :------- | -------: | -----: | -----: | -----: |
@@ -125,15 +125,14 @@ we're still covering the majority of languages found on the web.
 Constraining the experiment further, I examine performance on the 20 most frequent languages found on the web ([according to wikipedia](https://en.wikipedia.org/wiki/Languages_used_on_the_Internet))
 
 {{< figure
-  src="images/f1score-web.png"
-  alt="f1 on web languages">}}
+src="images/f1score-web.png"
+alt="f1 on web languages">}}
 
 {{< figure
-  src="images/f1score-web-heatmap.png"
-  alt="f1 heatmap">}}
+src="images/f1score-web-heatmap.png"
+alt="f1 heatmap">}}
 
 > [!WARNING]
->
 > Chinese ('zh') appears to pull down fasttext's performance considerably.
 > This may be erroneous, since fasttext actually classifies multiple subtypes of Chinese ('zh-Hans', 'zh-Hant') with script designations, while the datasets specify ['zh_cn', 'zh_tw', 'zh'] which regionalize the language.
 

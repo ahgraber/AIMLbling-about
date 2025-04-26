@@ -7,16 +7,16 @@ authors:
     image: https://github.com/ahgraber.png
 tags:
   # meta
-  - "listicle"
-  - "opinion"
+  - listicle
+  - opinion
   # ai/ml
-  - "agents"
-  - "arxiv"
-  - "evals"
-  - "generative AI"
-  - "LLMs"
-  - "prompts"
-  - "RAG"
+  - agents
+  - arxiv
+  - evals
+  - generative AI
+  - LLMs
+  - prompts
+  - RAG
 series: []
 layout: single
 toc: true

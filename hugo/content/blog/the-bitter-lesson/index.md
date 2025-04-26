@@ -6,11 +6,11 @@ authors:
     link: https://github.com/ahgraber
     image: https://github.com/ahgraber.png
 tags:
-  - "meta"
-  - "opinion"
-  - "generative AI"
-  - "LLMs"
-  - "creators"
+  - meta
+  - opinion
+  - generative AI
+  - LLMs
+  - creators
 series: []
 layout: single
 toc: true
@@ -66,7 +66,6 @@ They might do this by fine-tuning a model to do better at a particular task, by 
 or by building "agentic" software systems around the model that allow it to act on the user's behalf.
 
 > [!NOTE]
->
 > The AI industry expects 2025 to be [the year of Agentic AI](https://finance.yahoo.com/news/nvidia-jensen-huang-says-ai-044815659.html).
 > Exact definitions for what an AI "Agent" is are still debated.
 > My opinion (aligned with [Anthropic's definition](https://www.anthropic.com/research/building-effective-agents)) is that `agentic AI` is where the system acts on behalf of the user.
@@ -98,7 +97,7 @@ quadrantChart
 
 ```
 
-  </span>
+</span>
   <figcaption>
     AGI: Artificial General Intelligence <br>
     OCR: Optical Character Recognition <br>
@@ -116,7 +115,6 @@ After a market analysis with Hamilton Helmer's 7 Powers, Petersson concludes tha
 "The resource has to be truly exclusive—that is, it should not be available for sale at any price. It also has to be truly required to operate in that vertical, meaning without it, your product cannot succeed regardless of other factors"[^bl_ch2]
 
 > [!NOTE]
->
 > [Hamilton Helmer's 7 Powers](https://7powers.com/) is a framework for analyzing competitive advantage.[^7_powers] [^moat] The powers are:
 >
 > 1. **Scale economies** - unit costs are amortized over volume
