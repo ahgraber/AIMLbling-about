@@ -12,6 +12,7 @@ Prior work includes Data Science and ML positions where I focused on business an
 
 {{< cards >}}
 {{< card link="blog/" title="Blog" icon="book-open" >}}
+{{< card link="treadmill/" title="AI Treadmill" icon="newspaper" >}}
 {{< card link="blog/hello-world" title="About" icon="user" >}}
 {{< /cards >}}
 
