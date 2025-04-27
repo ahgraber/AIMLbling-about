@@ -14,13 +14,13 @@ Build the container image:
 
 ```sh
 # build image
-docker build -t ghcr.io/ahgraber/aimlbling-about:debug -f ./docker/Dockerfile .
+docker build -t ghcr.io/ahgraber/aimlbling-about:debug -f ./hugo/docker/Dockerfile .
 ```
 
 Run image:
 
 ```sh
-docker run --rm -p 80:8080 ghcr.io/ahgraber/aimlbling-about:debug
+docker run --rm -p 80:80 ghcr.io/ahgraber/aimlbling-about:debug
 echo "Navigate to http://127.0.0.1"
 ```
 
@@ -53,7 +53,7 @@ docker buildx build \
   --push \
   --platform linux/amd64,linux/arm64 \
   -t ghcr.io/ahgraber/aimlbling-about:debug \
-  -f ./docker/Dockerfile \
+  -f ./hugo/docker/Dockerfile \
   .
 ```
 
