@@ -4,18 +4,10 @@ main:
     name: Blog
     pageRef: /blog
     weight: 1
-  # - identifier: documentation
-  #   name: Documentation
-  #   pageRef: /docs
-  #   weight: 10
-  # - identifier: projects
-  #   name: Projects
-  #   pageRef: /projects
-  #   weight: 20
-  # - identifier: About
-  #   name: About
-  #   pageRef: /about
-  #   weight: 30
+  - identifier: treadmill
+    name: AI Treadmill
+    pageRef: /treadmill
+    weight: 5
   - name: Search
     weight: 40
     params:
