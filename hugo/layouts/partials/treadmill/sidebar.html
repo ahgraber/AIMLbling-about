@@ -1,4 +1,5 @@
 {{- $context := .context -}}
+{{- $currentPage := .page -}}
 
 {{- $disableSidebar := .disableSidebar | default false -}}
 {{- $displayPlaceholder := .displayPlaceholder | default false -}}
@@ -6,7 +7,7 @@
 {{- $sidebarClass := cond $disableSidebar (cond $displayPlaceholder "md:hx-hidden xl:hx-block" "md:hx-hidden") "md:hx-sticky" -}}
 
 {{- $navRoot := cond (eq site.Home.Type "docs") site.Home $context.FirstSection -}}
-{{- $pageURL := $context.RelPermalink -}}
+{{- $pageURL := .pageURL -}}
 
 {{/* EXPERIMENTAL */}}
 {{- if .context.Params.sidebar.hide -}}
@@ -27,7 +28,7 @@
     class="hextra-scrollbar hx-overflow-y-auto hx-overflow-x-hidden hx-p-4 hx-grow md:hx-h-[calc(100vh-var(--navbar-height)-var(--menu-height))]">
     <ul class="hx-flex hx-flex-col hx-gap-1 md:hx-hidden">
       <!-- Nav -->
-      {{ template "sidebar-main" (dict "context" site.Home "pageURL" $pageURL "page" $context "toc" true) -}}
+      {{ template "sidebar-main" (dict "context" site.Home "pageURL" $pageURL "page" $currentPage "toc" true) -}}
       {{ template "sidebar-footer" }}
     </ul>
 
@@ -37,7 +38,7 @@
       {{ .context.Scratch.Set "enableFooterSwitches" true }}
     {{- else -}}
       <ul class="hx-flex hx-flex-col hx-gap-1 max-md:hx-hidden">
-        {{ template "sidebar-main" (dict "context" $navRoot "page" $context  "pageURL" $pageURL) }}
+        {{ template "sidebar-main" (dict "context" $navRoot "pageURL" $pageURL "page" $currentPage) }}
         {{ template "sidebar-footer" }}
       </ul>
     {{ end -}}
@@ -74,8 +75,9 @@
   {{- end -}}
 
   {{- $context := .context -}}
-  {{- $page := .page }}
-  {{- $pageURL := .page.RelPermalink -}}
+  {{- $page := .page -}}
+  {{- $pageURL := .pageURL -}}
+  {{- $currentPath := strings.TrimSuffix (urls.Parse $pageURL).Path "/" -}}
   {{- $level := .level -}}
   {{- $toc := .toc | default false -}}
 
@@ -89,7 +91,8 @@
             <span class="hx-cursor-default">{{ partial "treadmill/title" . }}</span>
           </li>
         {{- else -}}
-          {{- $active := eq (urls.Parse $pageURL).Path (urls.Parse .RelPermalink).Path -}}
+          {{- $itemPath := strings.TrimSuffix (urls.Parse .RelPermalink).Path "/" -}}
+          {{- $active := eq $currentPath $itemPath -}}
           {{- $shouldOpen := or (.Params.sidebar.open) (.IsAncestor $page) $active | default true }}
           <li class="{{ if $shouldOpen }}open{{ end }}">
             {{- $linkTitle := partial "treadmill/title" . -}}
@@ -106,7 +109,8 @@
         <ul
           class='hx-relative hx-flex hx-flex-col hx-gap-1 before:hx-absolute before:hx-inset-y-1 before:hx-w-px before:hx-bg-gray-200 before:hx-content-[""] ltr:hx-ml-3 ltr:hx-pl-3 ltr:before:hx-left-0 rtl:hx-mr-3 rtl:hx-pr-3 rtl:before:hx-right-0 dark:before:hx-bg-neutral-800'>
           {{- range $items.ByWeight }}
-            {{- $active := eq (urls.Parse $pageURL).Path (urls.Parse .RelPermalink).Path -}}
+            {{- $itemPath := strings.TrimSuffix (urls.Parse .RelPermalink).Path "/" -}}
+            {{- $active := eq $currentPath $itemPath -}}
             {{- $shouldOpen := or (.Params.sidebar.open) (.IsAncestor $page) $active | default true }}
             {{- $linkTitle := partial "treadmill/title" . -}}
             <li class="hx-flex hx-flex-col {{ if $shouldOpen }}open{{ end }}">
