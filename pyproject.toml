@@ -4,7 +4,7 @@ name = "aimlbling-about"
 version = "v0.beta"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
   "aiml[ds,db,plot]", # default venv
 ]
