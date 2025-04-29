@@ -1,0 +1,64 @@
+name: Update Hugo Module from ai-treadmill
+
+on:
+  schedule:
+    - cron: '0 22 * * 2,5' # Tuesdays and Fridays at 6pm Eastern (22:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  update-module:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.TREADMILL_PAT }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Hugo with Homebrew
+        run: brew install hugo
+
+      - name: Configure git for private modules
+        run: |
+          git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Hugo module
+        run: hugo mod get -u github.com/ahgraber/ai-treadmill
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git status --porcelain
+          if [[ -n "$(git status --porcelain go.mod go.sum)" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          BRANCH="update/ai-treadmill-module-$DATE"
+          git checkout -b "$BRANCH"
+          git add go.mod go.sum
+          git commit -m "chore: update ai-treadmill Hugo module ($DATE)"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore: update ai-treadmill Hugo module ($DATE)" \
+            --body "Automated update of the ai-treadmill Hugo module." \
+            --label dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
