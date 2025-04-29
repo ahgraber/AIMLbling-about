@@ -46,9 +46,13 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Configure git for GITHUB_TOKEN
+      - name: (Re)Configure git for PR
         run: |
-          git config --global url."https://${{ secrets.HUGO_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
         if: steps.changes.outputs.changed == 'true'
@@ -66,4 +70,4 @@ jobs:
             --body "Automated update of the ai-treadmill Hugo module." \
             --label dependencies
         env:
-          GITHUB_TOKEN: ${{ secrets.HUGO_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
