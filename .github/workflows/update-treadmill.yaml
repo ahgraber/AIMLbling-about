@@ -67,37 +67,3 @@ jobs:
           title: "chore: update ai-treadmill Hugo module"
           body: "Automated update of the ai-treadmill Hugo module."
           commit-message: "chore: update ai-treadmill ($(date +%Y-%m-%d))"
-
-      # - name: Create update branch
-      #   if: steps.changes.outputs.changed == 'true'
-      #   id: create_branch
-      #   run: |
-      #     DATE=$(date +%Y-%m-%d)
-      #     BRANCH="update/ai-treadmill-module-${DATE}"
-      #     git checkout -b "$BRANCH"
-      #     echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-
-      # - name: Commit changes
-      #   if: steps.changes.outputs.changed == 'true'
-      #   run: |
-      #     git add hugo/go.mod hugo/go.sum
-      #     git commit -m "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))"
-
-      # - name: Push branch
-      #   if: steps.changes.outputs.changed == 'true'
-      #   run: |
-      #     git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-      #     git push --set-upstream origin "$BRANCH"
-
-      # - name: Create Pull Request
-      #   if: steps.changes.outputs.changed == 'true'
-      #   run: |
-      #     gh pr create \
-      #       --base main \
-      #       --head "$BRANCH" \
-      #       --title "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))" \
-      #       --body "Automated update of the ai-treadmill Hugo module." \
-      #       --label dependencies
-      #   env:
-      #     # the GitHub CLI specifically looks for GH_TOKEN as its authentication token
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
