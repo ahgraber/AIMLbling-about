@@ -71,7 +71,9 @@ tasks:
 
   demo:
     desc: Serve the site (with drafts enabled)
-    cmd: hugo server -D --disableFastRender -s {{ .HUGO_DIR }}
+    cmds:
+      - task: treadmill
+      - cmd: hugo server -D --disableFastRender -s {{ .HUGO_DIR }}
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
@@ -94,12 +96,14 @@ tasks:
 
   build:
     desc: Build site with colima/docker
+    dotenv: [".env"]
     deps:
       - task: _start
         # silent: true
     cmds:
       - |
         docker build \
+          --build-arg TREADMILL_PAT=$TREADMILL_PAT \
           -t ghcr.io/ahgraber/aimlbling-about:debug \
           -f {{ .HUGO_DIR }}/docker/Dockerfile \
           .
