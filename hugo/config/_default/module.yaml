@@ -1,8 +1,0 @@
-imports:
-  - path: github.com/ahgraber/ai-treadmill
-    mounts:
-      - source: data/treadmill
-        target: content/treadmill
-        # Include all markdown files with their directory structure
-        includeFiles: ["**/*.md"]
-  # - path: github.com/imfing/hextra

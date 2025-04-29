@@ -1,13 +1,3 @@
-github.com/ahgraber/ai-treadmill v0.0.0-20250426204656-ecf3eb6b8e40 h1:NLpX3kHxMhUx6kQveMxh9+NGpCujz7lmrJO92LEQ834=
-github.com/ahgraber/ai-treadmill v0.0.0-20250426204656-ecf3eb6b8e40/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427003311-5a1d1df7216c h1:NiGyTCn9Bem+cB5a8pXxoCZIpgreafNOzaAXfeQGDy4=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427003311-5a1d1df7216c/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427125007-d2314d9ead85 h1:/uFmeByhPC7moWqdLlVqNft127jE6Y2E6Ir9Vgf5zVE=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427125007-d2314d9ead85/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427134626-a11285073d6d h1:DX+DDd1hvUuwprVXgEILLhF4p9YDVbWqZZXeegpdpGo=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427134626-a11285073d6d/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427202503-b90c883be559 h1:6uBxoXMLm2d9xNFXd5egGWE5131e85lyKQQrZ7EL/To=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427202503-b90c883be559/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
 github.com/ahgraber/ai-treadmill v0.0.0-20250427214808-64e9bc255426 h1:ePygTAWqp6qfOCRZ4Z8Kz+wVeKl8uMDVa6+hs7yiFVE=
 github.com/ahgraber/ai-treadmill v0.0.0-20250427214808-64e9bc255426/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
 github.com/imfing/hextra v0.9.7 h1:Zg5n24us36Bn/S/5mEUPkRW6uwE6vHHEqWSgN0bPXaM=
