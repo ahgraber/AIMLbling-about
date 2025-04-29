@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
+          cache-dependency-path: |
+            hugo/go.sum
 
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -56,11 +58,12 @@ jobs:
 
       - name: Create update branch
         if: steps.changes.outputs.changed == 'true'
+        id: create_branch
         run: |
           DATE=$(date +%Y-%m-%d)
-          BRANCH="update/ai-treadmill-module-$DATE"
+          BRANCH="update/ai-treadmill-module-${DATE}"
           git checkout -b "$BRANCH"
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -75,7 +78,7 @@ jobs:
       - name: Push branch
         if: steps.changes.outputs.changed == 'true'
         run: |
-          git push --set-upstream origin "${{ steps.create_branch.outputs.branch }}"
+          git push --set-upstream origin "$BRANCH"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -84,7 +87,7 @@ jobs:
         run: |
           gh pr create \
             --base main \
-            --head "${{ steps.create_branch.outputs.branch }}" \
+            --head "$BRANCH" \
             --title "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))" \
             --body "Automated update of the ai-treadmill Hugo module." \
             --label dependencies
