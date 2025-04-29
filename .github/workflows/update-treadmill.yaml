@@ -75,9 +75,8 @@ jobs:
       - name: Push branch
         if: steps.changes.outputs.changed == 'true'
         run: |
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git push --set-upstream origin "$BRANCH"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Create Pull Request
       #   if: steps.changes.outputs.changed == 'true'
@@ -100,4 +99,5 @@ jobs:
             --body "Automated update of the ai-treadmill Hugo module." \
             --label dependencies
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # the GitHub CLI specifically looks for GH_TOKEN as its authentication token
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
