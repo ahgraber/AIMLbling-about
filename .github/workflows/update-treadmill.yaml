@@ -54,19 +54,38 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Pull Request
+      - name: Create update branch
         if: steps.changes.outputs.changed == 'true'
         run: |
           DATE=$(date +%Y-%m-%d)
           BRANCH="update/ai-treadmill-module-$DATE"
           git checkout -b "$BRANCH"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
           git add hugo/go.mod hugo/go.sum
-          git commit -m "chore: update ai-treadmill Hugo module ($DATE)"
-          git push --set-upstream origin "$BRANCH"
+          git commit -m "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push branch
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git push --set-upstream origin "${{ steps.create_branch.outputs.branch }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        run: |
           gh pr create \
             --base main \
-            --head "$BRANCH" \
-            --title "chore: update ai-treadmill Hugo module ($DATE)" \
+            --head "${{ steps.create_branch.outputs.branch }}" \
+            --title "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))" \
             --body "Automated update of the ai-treadmill Hugo module." \
             --label dependencies
         env:
