@@ -23,8 +23,9 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Install Hugo with Homebrew
-        run: brew install hugo
+      - name: Update Hugo module
+        working-directory: hugo
+        run: hugo mod get github.com/ahgraber/ai-treadmill@latest
 
       - name: Configure git for private modules
         run: |
