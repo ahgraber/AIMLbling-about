@@ -33,15 +33,25 @@ jobs:
       - name: Install Hugo with Homebrew
         run: brew install hugo
 
-      - name: Configure git for private modules
+      # - name: Configure git for private modules
+      #   run: |
+      #     git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Configure git for private modules (local)
+        working-directory: hugo
         run: |
-          git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
       - name: Update Hugo module
         working-directory: hugo
-        run: hugo mod get github.com/ahgraber/ai-treadmill@latest
+        run: hugo mod get -u github.com/ahgraber/ai-treadmill@latest
+
+      - name: Remove private module git config (local)
+        working-directory: hugo
+        run: |
+          git config --unset-all url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf || true
 
       - name: Check for changes
         id: changes
@@ -53,13 +63,13 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: (Re)Configure git for PR
-        run: |
-          git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: (Re)Configure git for PR
+      #   run: |
+      #     git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create update branch
         if: steps.changes.outputs.changed == 'true'

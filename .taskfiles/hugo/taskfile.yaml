@@ -71,7 +71,9 @@ tasks:
 
   demo:
     desc: Serve the site (with drafts enabled)
-    cmd: hugo server -D --disableFastRender -s {{ .HUGO_DIR }}
+    cmds:
+      - task: treadmill
+      - cmd: hugo server -D --disableFastRender -s {{ .HUGO_DIR }}
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}
 
