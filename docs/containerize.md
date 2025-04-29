@@ -14,7 +14,11 @@ Build the container image:
 
 ```sh
 # build image
-docker build -t ghcr.io/ahgraber/aimlbling-about:debug -f ./hugo/docker/Dockerfile .
+docker build \
+  --build-arg TREADMILL_PAT=$TREADMILL_PAT \
+  -t ghcr.io/ahgraber/aimlbling-about:debug \
+  -f ./docker/Dockerfile \
+  .
 ```
 
 Run image:
@@ -52,6 +56,7 @@ docker buildx create --use
 docker buildx build \
   --push \
   --platform linux/amd64,linux/arm64 \
+  --build-arg TREADMILL_PAT=$TREADMILL_PAT \
   -t ghcr.io/ahgraber/aimlbling-about:debug \
   -f ./hugo/docker/Dockerfile \
   .
