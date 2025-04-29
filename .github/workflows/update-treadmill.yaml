@@ -33,16 +33,11 @@ jobs:
       - name: Install Hugo with Homebrew
         run: brew install hugo
 
-      # - name: Configure git for private modules
-      #   run: |
-      #     git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-      #     git config --global user.name "github-actions[bot]"
-      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Configure git for private modules (local)
-        working-directory: hugo
+      - name: Configure git for private modules
         run: |
           git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Update Hugo module
         working-directory: hugo
