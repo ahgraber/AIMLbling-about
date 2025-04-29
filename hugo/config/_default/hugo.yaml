@@ -11,7 +11,7 @@ enableRobotsTXT: false # use /static/robots.txt
 languageCode: en-US
 defaultContentLanguage: "en"
 timeZone: America/New_York
-theme: hextra
+# theme: hextra # not needed with hugo modules
 
 outputs:
   home: [HTML]
@@ -22,6 +22,15 @@ module:
   hugoVersion:
     extended: true
     min: "0.112.0"
+  imports:
+    - path: github.com/ahgraber/ai-treadmill
+      mounts:
+        - source: data/treadmill
+          target: content/treadmill
+          # Include all markdown files with their directory structure
+          includeFiles: ["**/*.md"]
+    - path: github.com/imfing/hextra
+      version: v0.9.7
 #
 # services:
 #   googleAnalytics:

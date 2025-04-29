@@ -118,3 +118,9 @@ tasks:
       - echo "Run 'colima stop' to clean up!"
     preconditions:
       - {msg: "Docker not found", sh: "type docker"}
+
+  treadmill:
+    desc: Update treadmill data
+    dir: "{{ .HUGO_DIR }}"
+    cmds:
+      - hugo mod get -u github.com/ahgraber/ai-treadmill
