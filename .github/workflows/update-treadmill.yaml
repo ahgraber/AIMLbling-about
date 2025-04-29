@@ -23,9 +23,8 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Update Hugo module
-        working-directory: hugo
-        run: hugo mod get github.com/ahgraber/ai-treadmill@latest
+      - name: Install Hugo with Homebrew
+        run: brew install hugo
 
       - name: Configure git for private modules
         run: |
@@ -34,7 +33,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Update Hugo module
-        run: hugo mod get -u github.com/ahgraber/ai-treadmill
+        working-directory: hugo
+        run: hugo mod get github.com/ahgraber/ai-treadmill@latest
 
       - name: Check for changes
         id: changes
