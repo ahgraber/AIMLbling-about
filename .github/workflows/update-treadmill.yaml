@@ -52,7 +52,7 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           BRANCH="update/ai-treadmill-module-$DATE"
           git checkout -b "$BRANCH"
-          git add go.mod go.sum
+          git add hugo/go.mod hugo/go.sum
           git commit -m "chore: update ai-treadmill Hugo module ($DATE)"
           git push --set-upstream origin "$BRANCH"
           gh pr create \
