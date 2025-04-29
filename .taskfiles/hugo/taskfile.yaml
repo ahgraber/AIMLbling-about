@@ -94,12 +94,14 @@ tasks:
 
   build:
     desc: Build site with colima/docker
+    dotenv: [".env"]
     deps:
       - task: _start
         # silent: true
     cmds:
       - |
         docker build \
+          --build-arg TREADMILL_PAT=$TREADMILL_PAT \
           -t ghcr.io/ahgraber/aimlbling-about:debug \
           -f {{ .HUGO_DIR }}/docker/Dockerfile \
           .

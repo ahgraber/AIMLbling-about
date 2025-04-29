@@ -84,6 +84,8 @@ jobs:
           platforms: ${{ env.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            TREADMILL_PAT=${{ secrets.TREADMILL_PAT }}
           context: .  # explicitly include checked-out context with .git/ dir
           file: ./hugo/docker/Dockerfile
           push: true

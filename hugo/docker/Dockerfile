@@ -2,11 +2,25 @@
 FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.21@sha256:a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c as build
 RUN  apk add --no-cache \
       git \
+      go \
       hugo \
       tzdata \
-  && apk add --no-cache dart-sass --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/
+      curl \
+      unzip
+
+# Set Dart Sass version
+ENV DART_SASS_VERSION=1.86.3
+
+# Download and install Dart Sass binary
+RUN curl -sSL https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64-musl.tar.gz \
+    | tar -xz -C /usr/local/bin --strip-components=1
+
+ARG TREADMILL_PAT
+RUN git config --global url."https://${TREADMILL_PAT}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
 WORKDIR /src
 COPY . .
+
 RUN --mount=type=cache,target=/tmp/hugo_cache \
     hugo --minify -s ./hugo
 
