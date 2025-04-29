@@ -40,7 +40,7 @@ jobs:
         id: changes
         run: |
           git status --porcelain
-          if [[ -n "$(git status --porcelain go.mod go.sum)" ]]; then
+          if [[ -n "$(git status --porcelain hugo/go.mod hugo/go.sum)" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
