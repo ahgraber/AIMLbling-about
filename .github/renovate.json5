@@ -39,5 +39,11 @@
       automergeType: "branch",
       matchUpdateTypes: ["minor", "patch"],
     },
+    // disable python
+    {
+      description: ["Ignore all Python dependencies"],
+      matchManagers: ["pep621", "pip_requirements", "pip_setup", "pyenv", "setup-cfg"],
+      enabled: false,
+    },
   ],
 }
