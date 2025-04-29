@@ -36,16 +36,16 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/ahgraber/ai-treadmill".insteadOf "https://github.com/ahgraber/ai-treadmill"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Update Hugo module
         working-directory: hugo
-        run: hugo mod get -u github.com/ahgraber/ai-treadmill@latest
-
-      - name: Remove private module git config
         run: |
+          git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/ahgraber/ai-treadmill".insteadOf "https://github.com/ahgraber/ai-treadmill"
+
+          hugo mod get -u github.com/ahgraber/ai-treadmill@latest
+
           git config --global --unset url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/ahgraber/ai-treadmill".insteadOf || true
 
       - name: Check for changes
@@ -57,47 +57,47 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create update branch
+      - name: Create Pull Request
         if: steps.changes.outputs.changed == 'true'
-        id: create_branch
-        run: |
-          DATE=$(date +%Y-%m-%d)
-          BRANCH="update/ai-treadmill-module-${DATE}"
-          git checkout -b "$BRANCH"
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: "updates/ai-treadmill-module"
+          title: "chore: update ai-treadmill Hugo module"
+          body: "Automated update of the ai-treadmill Hugo module."
+          commit-message: "chore: update ai-treadmill ($(date +%Y-%m-%d))"
 
-      - name: Commit changes
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git add hugo/go.mod hugo/go.sum
-          git commit -m "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))"
+      # - name: Create update branch
+      #   if: steps.changes.outputs.changed == 'true'
+      #   id: create_branch
+      #   run: |
+      #     DATE=$(date +%Y-%m-%d)
+      #     BRANCH="update/ai-treadmill-module-${DATE}"
+      #     git checkout -b "$BRANCH"
+      #     echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
-      - name: Push branch
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git push --set-upstream origin "$BRANCH"
+      # - name: Commit changes
+      #   if: steps.changes.outputs.changed == 'true'
+      #   run: |
+      #     git add hugo/go.mod hugo/go.sum
+      #     git commit -m "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))"
+
+      # - name: Push branch
+      #   if: steps.changes.outputs.changed == 'true'
+      #   run: |
+      #     git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+      #     git push --set-upstream origin "$BRANCH"
 
       # - name: Create Pull Request
       #   if: steps.changes.outputs.changed == 'true'
-      #   uses: peter-evans/create-pull-request@v5
-      #   with:
-      #     token: ${{ secrets.TREADMILL_PAT }}
-      #     base: main
-      #     branch: ${{ env.BRANCH }}
-      #     title: "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))"
-      #     body: "Automated update of the ai-treadmill Hugo module."
-      #     labels: dependencies
-
-      - name: Create Pull Request
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))" \
-            --body "Automated update of the ai-treadmill Hugo module." \
-            --label dependencies
-        env:
-          # the GitHub CLI specifically looks for GH_TOKEN as its authentication token
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     gh pr create \
+      #       --base main \
+      #       --head "$BRANCH" \
+      #       --title "chore: update ai-treadmill Hugo module ($(date +%Y-%m-%d))" \
+      #       --body "Automated update of the ai-treadmill Hugo module." \
+      #       --label dependencies
+      #   env:
+      #     # the GitHub CLI specifically looks for GH_TOKEN as its authentication token
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
