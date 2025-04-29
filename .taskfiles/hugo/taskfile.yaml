@@ -115,7 +115,8 @@ tasks:
       - task: _start
         # silent: true
     cmds:
-      - docker run --rm -p 8080:8080 ghcr.io/ahgraber/aimlbling-about:debug
+      - docker run --rm -p 80:8080 ghcr.io/ahgraber/aimlbling-about:debug
+      - echo "Access site at http://127.0.0.1"
       - echo "Run 'colima stop' to clean up!"
     preconditions:
       - {msg: "Docker not found", sh: "type docker"}

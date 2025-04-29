@@ -25,6 +25,7 @@ Run image:
 
 ```sh
 docker run --rm -p 80:80 ghcr.io/ahgraber/aimlbling-about:debug
+echo "Navigate to http://127.0.0.1"
 ```
 
 Stop colima:
@@ -57,7 +58,7 @@ docker buildx build \
   --platform linux/amd64,linux/arm64 \
   --build-arg TREADMILL_PAT=$TREADMILL_PAT \
   -t ghcr.io/ahgraber/aimlbling-about:debug \
-  -f ./docker/Dockerfile \
+  -f ./hugo/docker/Dockerfile \
   .
 ```
 
