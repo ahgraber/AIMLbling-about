@@ -42,7 +42,7 @@ jobs:
       - name: Configure git for private modules (local)
         working-directory: hugo
         run: |
-          git config url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
       - name: Update Hugo module
         working-directory: hugo
@@ -51,7 +51,7 @@ jobs:
       - name: Remove private module git config (local)
         working-directory: hugo
         run: |
-          git config --unset-all url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf || true
+          git config --global --unset-all url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/".insteadOf || true
 
       - name: Check for changes
         id: changes
