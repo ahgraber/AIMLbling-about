@@ -1,8 +1,10 @@
 name: Update Hugo Module from ai-treadmill
 
 on:
-  schedule:
-    - cron: '0 22 * * 2,5' # Tuesdays and Fridays at 6pm Eastern (22:00 UTC)
+  repository_dispatch:
+    types: [external-updated]
+  # schedule:
+  #   - cron: '0 22 * * 2,5' # Tuesdays and Fridays at 6pm Eastern (22:00 UTC)
   workflow_dispatch:
 
 jobs:
