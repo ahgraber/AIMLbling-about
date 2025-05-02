@@ -1,6 +1,4 @@
-github.com/ahgraber/ai-treadmill v0.0.0-20250427214808-64e9bc255426 h1:ePygTAWqp6qfOCRZ4Z8Kz+wVeKl8uMDVa6+hs7yiFVE=
-github.com/ahgraber/ai-treadmill v0.0.0-20250427214808-64e9bc255426/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
-github.com/ahgraber/ai-treadmill v0.0.0-20250429142710-66c4b729eb1d h1:Dd0Q4gG9J92+DrWwIAiASdpX4zxKYHFqcvniwIsLprg=
-github.com/ahgraber/ai-treadmill v0.0.0-20250429142710-66c4b729eb1d/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
+github.com/ahgraber/ai-treadmill v0.0.0-20250502200405-8a23771be7f6 h1:NSmLM5cmfBJ4m92EPHgp1SBPvyKaSjrA0w/jiDzI8hM=
+github.com/ahgraber/ai-treadmill v0.0.0-20250502200405-8a23771be7f6/go.mod h1:KY+TodIg2PrTyKSWgvwrxTGZjFZrVMLClKG6sDlH7pA=
 github.com/imfing/hextra v0.9.7 h1:Zg5n24us36Bn/S/5mEUPkRW6uwE6vHHEqWSgN0bPXaM=
 github.com/imfing/hextra v0.9.7/go.mod h1:cEfel3lU/bSx7lTE/+uuR4GJaphyOyiwNR3PTqFTXpI=
