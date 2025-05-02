@@ -60,6 +60,10 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+
       - name: Create Pull Request
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
@@ -69,4 +73,4 @@ jobs:
           branch: "updates/ai-treadmill-module"
           title: "chore: update ai-treadmill Hugo module"
           body: "Automated update of the ai-treadmill Hugo module."
-          commit-message: "chore: update ai-treadmill ($(date +%Y-%m-%d))"
+          commit-message: "chore: update ai-treadmill (${{ steps.date.outputs.date }})"
