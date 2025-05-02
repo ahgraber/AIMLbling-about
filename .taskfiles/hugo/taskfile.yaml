@@ -128,3 +128,4 @@ tasks:
     dir: "{{ .HUGO_DIR }}"
     cmds:
       - hugo mod get -u github.com/ahgraber/ai-treadmill
+      - hugo mod tidy

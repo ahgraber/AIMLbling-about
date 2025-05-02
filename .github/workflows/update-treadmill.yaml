@@ -2,7 +2,7 @@ name: Update Hugo Module from ai-treadmill
 
 on:
   repository_dispatch:
-    types: [external-updated]
+    types: [treadmill-updated]
   # schedule:
   #   - cron: '0 22 * * 2,5' # Tuesdays and Fridays at 6pm Eastern (22:00 UTC)
   workflow_dispatch:
@@ -47,6 +47,7 @@ jobs:
           git config --global url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/ahgraber/ai-treadmill".insteadOf "https://github.com/ahgraber/ai-treadmill"
 
           hugo mod get -u github.com/ahgraber/ai-treadmill@latest
+          hugo mod tidy
 
           git config --global --unset url."https://${{ secrets.TREADMILL_PAT }}:x-oauth-basic@github.com/ahgraber/ai-treadmill".insteadOf || true
 
