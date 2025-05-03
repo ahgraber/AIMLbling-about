@@ -24,15 +24,13 @@ math: false
 draft: false
 ---
 
-At the end of 2023, I was transferred to the team working on [PMI Infinity](https://www.pmi.org/infinity), an AI-powered tool and product for Project Managers,
-to act as an AI/ML Engineer and provide expertise on the AI/ML aspects of developing a product based on LLM systems.
-One of the first initiatives I took on was to set up an newsletter with the goal of sharing interesting and applicable research, demos, packages, and conversations with the team.
-I called it the _AI Treadmill_, because trying to keep up with everything felt like running on a treadmill cranked all the way up (and still kind of does).
-By the end of Q1, I'd reached a pretty good cadence, sending newsletters on Tuesdays and Fridays broken into to general segments -
-"News", which could be updates from social media (X/Twitter, LinkedIn, HackerNews, etc.), links to project/package homepages, blogs, news articles, etc.,
-and "Papers", which were more academic whitepapers, generally through [arxiv.org](https://arxiv.org/list/cs.AI/recent).
-I tried to curate the list to a reasonable number of links, highlight particularly relevant/recommended reads,
-and sometimes provide high-level summaries to help my team decide whether they also wanted to spend the time clicking through the link.
+At the end of 2023, I was transferred to the team working on [PMI Infinity](https://www.pmi.org/infinity), a (then-nascent) AI-powered tool and product for Project Managers, to act as an AI/ML Engineer and provide expertise on the AI/ML aspects of developing a product based on generative models. Coming from more standard data science and machine learning, my impostor syndrome flared and I felt behind the 8-ball. I'd been cursorily following LLMs, but had thus far been generally unimpressed by ChatGPT (though I did find Phind to be quite good for coding-related questions).
+
+Since I felt like a fake expert, I threw myself into research. I spent a few hours a week trying to backfill my technical knowledge ([Attention Is All You Need](https://arxiv.org/abs/1706.03762), [BERT](https://arxiv.org/abs/1810.04805), [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), [GPT-3](https://arxiv.org/abs/2005.14165), the [AI Canon | Andreessen Horowitz](https://a16z.com/ai-canon/), etc.); I also tried to keep up with use cases and emerging best practices.
+
+Ultimately, this lead to me collecting interesting and applicable research, demos, packages, and conversations, and sharing it in as an informal newsletter. I called it the _AI Treadmill_, because trying to keep up with everything felt like running on a treadmill cranked all the way up (and still kind of does).
+
+By the end of Q1 2024, I'd reached a pretty good cadence, sending newsletters on Tuesdays and Fridays broken into to general segments - "News", which could be updates from social media (X/Twitter, LinkedIn, HackerNews, etc.), links to project/package homepages, blogs, news articles, etc., and "Papers", which were more academic whitepapers, generally through [arxiv.org](https://arxiv.org/list/cs.AI/recent). I tried to curate the list to a reasonable number of links and highlight particularly relevant/recommended reads.
 
 ## AI Treadmill, 2024
 
