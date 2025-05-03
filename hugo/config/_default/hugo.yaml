@@ -28,7 +28,7 @@ module:
         - source: data/treadmill
           target: content/treadmill
           # Include all markdown files with their directory structure
-          includeFiles: ["**/*.md"]
+          includeFiles: ["**/*.md", "**/*.jpeg", "**/*.png"]
     - path: github.com/imfing/hextra
       version: v0.9.7
 #

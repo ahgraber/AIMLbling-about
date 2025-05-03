@@ -14,7 +14,7 @@ vars:
 tasks:
 
   new:
-    desc: Create a new draft post from template
+    desc: 'Create a new draft post from template (req: title="...")'
     cmds:
       - git checkout -b blog/{{ .name }} main
       - hugo new content blog/{{ .name }}/index.md -s {{ .HUGO_DIR }}
