@@ -55,6 +55,9 @@ Disallow: /
 User-agent: PerplexityBot
 Disallow: /
 
+User-agent: SemrushBot
+Disallow: /
+
 # Default allow all others
 User-agent: *
 Allow: /
