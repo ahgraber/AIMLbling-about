@@ -24,7 +24,7 @@ COPY . .
 RUN --mount=type=cache,target=/tmp/hugo_cache \
     hugo --minify -s ./hugo
 
-FROM docker.io/nginxinc/nginx-unprivileged:1.28@sha256:aa538e1dc81068827c28ad5855bbd721f0f17a3d303f4b5d6737ddc219d1c8c6
+FROM docker.io/nginxinc/nginx-unprivileged:1.28@sha256:f78874a7cd6c4dd8a5d33a287c7a09a2a4ae8717fc843500246d5b69b9dcb239
 
 COPY --chown=nginx:nginx --from=build /src/hugo/public /site
 COPY --chown=nginx:nginx ./hugo/docker/default.conf /etc/nginx/conf.d/
