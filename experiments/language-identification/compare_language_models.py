@@ -24,18 +24,19 @@ import seaborn as sns
 from aiml.utils import basic_log_config, get_repo_path
 
 # %%
-sys.path.insert(0, str(Path(__file__).parent))
-from models import FastText, LangID, Lingua, StanzaNLP  # NOQA: E402
-
-# %%
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-REPO_DIR = get_repo_path(__file__)
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "language-identification"
 
 # %%
-DATA_DIR = Path(__file__).parent / "data"
+sys.path.insert(0, str(LOCAL_DIR))
+from models import FastText, LangID, Lingua, StanzaNLP  # NOQA: E402
+
+# %%
+DATA_DIR = LOCAL_DIR / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # %% [markdown]
@@ -49,7 +50,6 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 # - [pemistahl/lingua-rs: The most accurate natural language detection library for Rust, suitable for short text and mixed-language text](https://github.com/pemistahl/lingua-rs)
 # - [facebook/nllb-200-distilled-600M · Hugging Face](https://huggingface.co/facebook/nllb-200-distilled-600M) via [facebookresearch/fairseq at nllb](https://github.com/facebookresearch/fairseq/tree/nllb)
 # - [Language Identification - Stanza](https://stanfordnlp.github.io/stanza/langid.html)
-
 
 # %%
 # Load Dataset(s)
