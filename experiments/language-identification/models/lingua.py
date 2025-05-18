@@ -18,7 +18,7 @@ class Lingua(LanguageIDModel):
     Ref: https://github.com/pemistahl/lingua-rs/tree/main
     """
 
-    name = "lingua"
+    name: str = "lingua"
 
     def __init__(self, use_small: bool = False):
         p = psutil.Process(os.getpid())

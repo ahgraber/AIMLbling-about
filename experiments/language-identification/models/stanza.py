@@ -16,7 +16,7 @@ class StanzaNLP(LanguageIDModel):
     Ref: https://stanfordnlp.github.io/stanza/langid.html
     """
 
-    name = "stanza"
+    name: str = "stanza"
 
     def __init__(self):
         p = psutil.Process(os.getpid())
@@ -44,7 +44,76 @@ class StanzaNLP(LanguageIDModel):
     def _get_labels(self) -> FrozenSet[str]:
         # Ref: https://stanfordnlp.github.io/stanza/langid.html
         # typos:off
-        supported_languages = "af ar be bg bxr ca cop cs cu da de el en es et eu fa fi fr fro ga gd gl got grc he hi hr hsb hu hy id it ja kk kmr ko la lt lv lzh mr mt nl nn no olo orv pl pt ro ru sk sl sme sr sv swl ta te tr ug uk ur vi wo zh-hans zh-hant".split()
+        supported_languages = [
+            "af",
+            "ar",
+            "be",
+            "bg",
+            "bxr",
+            "ca",
+            "cop",
+            "cs",
+            "cu",
+            "da",
+            "de",
+            "el",
+            "en",
+            "es",
+            "et",
+            "eu",
+            "fa",
+            "fi",
+            "fr",
+            "fro",
+            "ga",
+            "gd",
+            "gl",
+            "got",
+            "grc",
+            "he",
+            "hi",
+            "hr",
+            "hsb",
+            "hu",
+            "hy",
+            "id",
+            "it",
+            "ja",
+            "kk",
+            "kmr",
+            "ko",
+            "la",
+            "lt",
+            "lv",
+            "lzh",
+            "mr",
+            "mt",
+            "nl",
+            "nn",
+            "no",
+            "olo",
+            "orv",
+            "pl",
+            "pt",
+            "ro",
+            "ru",
+            "sk",
+            "sl",
+            "sme",
+            "sr",
+            "sv",
+            "swl",
+            "ta",
+            "te",
+            "tr",
+            "ug",
+            "uk",
+            "ur",
+            "vi",
+            "wo",
+            "zh-hans",
+            "zh-hant",
+        ]
         # typos:on
         return frozenset(sorted(self.label_to_lang(label) for label in supported_languages))
 

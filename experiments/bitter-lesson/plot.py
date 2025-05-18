@@ -16,7 +16,8 @@ basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-REPO_DIR = get_repo_path(__file__)
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "bitter_lesson"
 
 # %%
 # Create grid of points with adjusted range
@@ -175,7 +176,7 @@ fig.update_layout(
 fig.show()
 
 # %%
-pio.write_json(fig, Path(__file__).parent / "ai_model_distributions.json")
+pio.write_json(fig, LOCAL_DIR / "ai_model_distributions.json")
 
 
 # %%

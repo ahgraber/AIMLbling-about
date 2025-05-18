@@ -26,6 +26,11 @@ package = false
 default-groups = ["dev", "test"]
 python-preference = "managed"
 
+# NOTE: Do not use workspaces b/c of conflicts between workspace dependencies
+#[tool.uv.workspace]
+#members = ["./experiments/*"]
+#exclude = ["./docs", "./hugo", "./experiments/aiml", "./experiments/language-detection"]
+
 [tool.uv.sources]
 #aiml = { workspace = true }
 aiml = { path = "./experiments/aiml" }
@@ -34,14 +39,12 @@ aiml = { path = "./experiments/aiml" }
 # sk-rant = { path = "./experiments/sk-rant" }
 # typos-experiment = { path = "./experiments/typos-experiment" }
 
+python-type-stubs = { git = "https://github.com/microsoft/python-type-stubs" }
+
 torch = [
   { index = "pytorch-cpu", marker = "platform_system != 'Darwin'" },
   # { index = "pytorch-gpu", extra="gpu", marker = "platform_system != 'Darwin'" },
 ]
-
-#[tool.uv.workspace]
-#members = ["./experiments/*"]
-#exclude = ["./docs", "./hugo", "./experiments/aiml", "./experiments/language-detection"]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
@@ -52,3 +55,25 @@ explicit = true
 name = "pytorch-gpu"
 url = "https://download.pytorch.org/whl/cu124"
 explicit = true
+
+# --- basedpyright -----------------------------------------------------------
+
+[tool.basedpyright]
+include = ["experiments"]                                                                                          # ["src"]
+exclude = ["**/node_modules", "**/__pycache__", "**/*_cache", "docs", "hugo", "src/experimental", "src/typestubs"]
+# ignore = ["src/oldstuff"]
+# defineConstant = { DEBUG = true }
+# stubPath = "src/stubs"
+
+reportMissingImports = "error"
+reportMissingTypeStubs = false
+
+# pythonVersion = "3.6"
+# pythonPlatform = "Linux"
+
+# executionEnvironments = [
+#   { root = "src/web", pythonVersion = "3.5", pythonPlatform = "Windows", extraPaths = [ "src/service_libs" ], reportMissingImports = "warning" },
+#   { root = "src/sdk", pythonVersion = "3.0", extraPaths = [ "src/backend" ] },
+#   { root = "src/tests", reportPrivateUsage = false, extraPaths = ["src/tests/e2e", "src/sdk" ]},
+#   { root = "src" }
+# ]

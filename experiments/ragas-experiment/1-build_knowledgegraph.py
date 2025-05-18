@@ -42,6 +42,15 @@ import pandas as pd
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
+# %%
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
+
+DATA_DIR = LOCAL_DIR / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+# %%
+sys.path.insert(0, str(LOCAL_DIR))
 from src.ragas.extractors import (  # NOQA: E402
     MarkdownHeadlinesExtractor,
     MarkdownTitleExtractor,
@@ -49,14 +58,6 @@ from src.ragas.extractors import (  # NOQA: E402
     SpacyNERExtractor,
 )
 from src.utils import check_torch_device, hugo_title_to_h1  # NOQA: E402
-
-# %%
-repo = get_repo_path(this_file())
-
-datadir = Path(this_file()).parent / "data"
-
-# %%
-# sys.path.insert(0, str(Path(this_file()).parent))
 
 # %%
 basic_log_config()
@@ -84,7 +85,7 @@ device = check_torch_device()
 # Source corpus will be blog posts and markdown files from my homelab/gitops repo
 
 # %%
-blog_files = list((repo / "content" / "blog").rglob("*.md"))
+blog_files = list((REPO_DIR / "content" / "blog").rglob("*.md"))
 blog_docs = [
     LCDoc(
         page_content=hugo_title_to_h1(f.read_text()),
@@ -265,10 +266,10 @@ stage1 = [
 apply_transforms(kg, stage1)
 print("Knowledge Graph stage 1 complete.  Saving...")
 
-kg.save(datadir / "ragas_knowledgegraph.json")
+kg.save(DATA_DIR / "ragas_knowledgegraph.json")
 
 # %%
-kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph.json")
+kg = KnowledgeGraph().load(DATA_DIR / "ragas_knowledgegraph.json")
 
 # at this stage the knowledge graph should only be at the document level
 # so remove/overwrite any other nodes
@@ -323,7 +324,7 @@ need_summary = [node for node in kg.nodes if missing_summary(node)]
 print(f"{len(need_summary)=}")
 
 if len(need_summary) == 0:
-    kg.save(datadir / "ragas_knowledgegraph.json")
+    kg.save(DATA_DIR / "ragas_knowledgegraph.json")
 
 # %% [markdown]
 # Now that we have document-level information, we can split the documents into
@@ -349,12 +350,12 @@ stage2 = [
 ]
 
 # %%
-kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph.json")
+kg = KnowledgeGraph().load(DATA_DIR / "ragas_knowledgegraph.json")
 
 apply_transforms(kg, stage2)
 print("Knowledge Graph stage 2 complete.  Saving...")
 
-kg.save(datadir / "ragas_knowledgegraph.json")
+kg.save(DATA_DIR / "ragas_knowledgegraph.json")
 
 
 # %% [markdown]
@@ -403,7 +404,7 @@ print(f"{len(need_title)=}")
 ...
 
 # NOTE: don't forget to save!
-# kg.save(datadir / "ragas_knowledgegraph.json")
+# kg.save(DATA_DIR / "ragas_knowledgegraph.json")
 
 # %% [markdown]
 # Finally, we can add relationships defined by embeddign similarities
@@ -420,7 +421,7 @@ stage3 = [
 ]
 
 # %%
-kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph.json")
+kg = KnowledgeGraph().load(DATA_DIR / "ragas_knowledgegraph.json")
 
 # remove prior clustering
 kg.relationships = [r for r in kg.relationships if r.type not in ["cosine_similarity", "summary_cosine_similarity"]]
@@ -428,7 +429,7 @@ kg.relationships = [r for r in kg.relationships if r.type not in ["cosine_simila
 apply_transforms(kg, stage3)
 print("Knowledge Graph stage 3 complete.  Saving...")
 
-kg.save(datadir / "ragas_knowledgegraph.json")
+kg.save(DATA_DIR / "ragas_knowledgegraph.json")
 
 # %% [markdown]
 # What can we find out about our dataset?

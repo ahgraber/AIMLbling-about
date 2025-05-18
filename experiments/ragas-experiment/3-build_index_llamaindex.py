@@ -30,12 +30,13 @@ import pandas as pd
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
 # %%
-repo = get_repo_path(this_file())
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
 
-datadir = Path(this_file()).parent / "data"
+DATA_DIR = LOCAL_DIR / "data"
 
 # %%
-sys.path.insert(0, str(Path(this_file()).parent))
+sys.path.insert(0, str(LOCAL_DIR))
 from src.utils import check_torch_device, hugo_title_to_h1  # NOQA: E402
 
 # %%
@@ -104,7 +105,7 @@ providers = {
 
 
 # %%
-blog_files = list((repo / "content" / "blog").rglob("*.md"))
+blog_files = list((REPO_DIR / "content" / "blog").rglob("*.md"))
 blog_docs = [
     LlamaDoc(
         text=hugo_title_to_h1(f.read_text()),
@@ -203,7 +204,7 @@ for experiment in tqdm(experiments):
     experiment_name = "_".join(experiment)
     logger.info(f"Processing pipeline for {experiment_name} experiment...")
 
-    vector_store = DuckDBVectorStore(f"{experiment_name}.duckdb", persist_dir=str(datadir / "vectordb"))
+    vector_store = DuckDBVectorStore(f"{experiment_name}.duckdb", persist_dir=str(DATA_DIR / "vectordb"))
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # Ingest docs directly into a vector db via chunking + embedding pipeline
@@ -217,7 +218,7 @@ for experiment in tqdm(experiments):
         vector_store=vector_store,
     )
     pipeline.run(documents=documents, show_progress=True)
-    pipeline.persist(datadir / "llamaindex" / f"{experiment_name}_pipeline")
+    pipeline.persist(DATA_DIR / "llamaindex" / f"{experiment_name}_pipeline")
 
 
 # %% [markdown]
@@ -225,7 +226,7 @@ for experiment in tqdm(experiments):
 
 # %%
 # load from disk
-vector_store = DuckDBVectorStore.from_local(str(datadir / "vectordb" / f"{experiment_name}.duckdb"))
+vector_store = DuckDBVectorStore.from_local(str(DATA_DIR / "vectordb" / f"{experiment_name}.duckdb"))
 index = VectorStoreIndex.from_vector_store(
     vector_store,
     embed_model=providers[provider],

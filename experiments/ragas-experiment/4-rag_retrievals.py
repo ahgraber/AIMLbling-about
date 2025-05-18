@@ -37,12 +37,13 @@ import pandas as pd
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
 # %%
-repo = get_repo_path(this_file())
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
 
-datadir = Path(this_file()).parent / "data"
+DATA_DIR = LOCAL_DIR / "data"
 
 # %%
-sys.path.insert(0, str(Path(this_file()).parent))
+sys.path.insert(0, str(LOCAL_DIR))
 from src.utils import check_torch_device  # NOQA: E402
 
 # %%
@@ -182,7 +183,7 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 
 # %%
 dfs = []
-for file in sorted(datadir.glob("ragas_dataset_*.jsonl")):
+for file in sorted(DATA_DIR.glob("ragas_dataset_*.jsonl")):
     df = pd.read_json(file, orient="records", lines=True)
     df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
@@ -198,7 +199,7 @@ del dfs
 
 # %%
 fname = "rag_retrievals.jsonl"
-if (datadir / fname).exists():
+if (DATA_DIR / fname).exists():
     logger.info(f"Prior {fname} exists, skipping evaluation...")
     del fname
 else:
@@ -215,7 +216,7 @@ else:
         chunker, provider = experiment
 
         # load vector store from disk
-        vector_store = DuckDBVectorStore.from_local(str(datadir / "vectordb" / f"{experiment_name}.duckdb"))
+        vector_store = DuckDBVectorStore.from_local(str(DATA_DIR / "vectordb" / f"{experiment_name}.duckdb"))
         index = VectorStoreIndex.from_vector_store(
             vector_store,
             embed_model=providers[provider]["em"],
@@ -229,7 +230,7 @@ else:
         retrievals[experiment_name] = [retriever.retrieve(query) for query in tqdm(queries, leave=False)]
 
     retrieval_df = pd.DataFrame.from_dict(retrievals)
-    retrieval_df.to_json(datadir / fname, orient="records", lines=True)
+    retrieval_df.to_json(DATA_DIR / fname, orient="records", lines=True)
     display(retrieval_df.head())
     del retrievals, fname
 

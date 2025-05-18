@@ -28,7 +28,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # %%
-repo = get_repo_path(this_file())
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "typo-experiment"
 
 
 # %%

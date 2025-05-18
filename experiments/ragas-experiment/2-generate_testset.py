@@ -37,15 +37,16 @@ import pandas as pd
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
-from src.ragas.hacks import llama_finished_parser  # NOQA: E402
-from src.utils import check_torch_device  # NOQA: E402
+# %%
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
+
+DATA_DIR = LOCAL_DIR / "data"
 
 # %%
-repo = get_repo_path(this_file())
-
-
-datadir = Path(this_file()).parent / "data"
-
+sys.path.insert(0, str(LOCAL_DIR))
+from src.ragas.hacks import llama_finished_parser  # NOQA: E402
+from src.utils import check_torch_device  # NOQA: E402
 
 # %%
 basic_log_config()
@@ -208,7 +209,7 @@ for provider in tqdm(providers):
     #     logger.info("No cost callback handler assigned.")
 
     # reload kg each time
-    kg = KnowledgeGraph().load(datadir / "ragas_knowledgegraph.json")
+    kg = KnowledgeGraph().load(DATA_DIR / "ragas_knowledgegraph.json")
     generator = TestsetGenerator(
         llm=llm,
         knowledge_graph=kg,
@@ -233,7 +234,7 @@ for provider in tqdm(providers):
         # run_config=...,
     )
 
-    dataset.to_jsonl(datadir / f"ragas_dataset_{provider}.jsonl")
+    dataset.to_jsonl(DATA_DIR / f"ragas_dataset_{provider}.jsonl")
 
     df = dataset.to_pandas()
     display(df)
