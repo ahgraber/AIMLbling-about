@@ -16,7 +16,7 @@ class Papluca(LanguageIDModel):
     Ref: https://huggingface.co/papluca/xlm-roberta-base-language-detection
     """
 
-    name = "papluca/roberta"
+    name: str = "papluca/roberta"
 
     def __init__(self):
         p = psutil.Process(os.getpid())

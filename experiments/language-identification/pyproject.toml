@@ -24,7 +24,6 @@ test = ["aiml[test]"]
 aiml = { path = "../aiml", editable = true }
 
 # --- basedpyright -----------------------------------------------------------
-
 [tool.basedpyright]
 # include = ["experiments"]                                     # ["src"]
 exclude = ["**/node_modules", "**/__pycache__", "**/*_cache"]

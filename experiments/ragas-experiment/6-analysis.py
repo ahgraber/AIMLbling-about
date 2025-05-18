@@ -26,13 +26,16 @@ import seaborn as sns
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
-from src.ragas.helpers import TopKRougeScorer  # NOQA: E402
-from src.utils import filter_dict_by_keys  # NOQA:E402
+# %%
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
+
+DATA_DIR = LOCAL_DIR / "data"
 
 # %%
-repo = get_repo_path(this_file())
-
-datadir = Path(this_file()).parent / "data"
+sys.path.insert(0, str(LOCAL_DIR))
+from src.ragas.helpers import TopKRougeScorer  # NOQA: E402
+from src.utils import filter_dict_by_keys  # NOQA:E402
 
 # %%
 basic_log_config()
@@ -74,7 +77,7 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 # reduce memory footprint by removing unnecessary info from retrieved nodes during load
 filter_node_metadata = partial(filter_dict_by_keys, keys=("node_id", "metadata", "text", "score"))
 
-with (datadir / "rag_retrievals.jsonl").open("r") as f:
+with (DATA_DIR / "rag_retrievals.jsonl").open("r") as f:
     data = [
         {
             k: [filter_node_metadata(node) for node in v] if k in experiment_names else v
@@ -89,7 +92,7 @@ display(retrieval_df)
 
 # %%
 fname = "rouge_retrieval_similarity.csv"
-if (datadir / fname).exists():
+if (DATA_DIR / fname).exists():
     logger.info(f"Prior '{fname}' exists, will not rerun.")
     del fname
 else:
@@ -123,7 +126,7 @@ else:
         retrieval_similarity_df.loc[col, row] = v
 
     # display(retrieval_similarity_df)
-    # retrieval_similarity_df.to_csv(datadir / fname, index=False)
+    # retrieval_similarity_df.to_csv(DATA_DIR / fname, index=False)
     md = [e for e in experiment_names if e.startswith("markdown")]
     print(retrieval_similarity_df.loc[md, md].to_markdown())
     s = [e for e in experiment_names if e.startswith("sentence")]
@@ -178,7 +181,7 @@ logger.info("ROUGE comparison complete.")
 # Do models prefer their own responses? [Answer Relevance]
 
 # %%
-baseline_df = pd.read_json(datadir / "eval_baseline_response.jsonl", orient="records", lines=True)
+baseline_df = pd.read_json(DATA_DIR / "eval_baseline_response.jsonl", orient="records", lines=True)
 
 # %%
 # What is "objective" relevance of responses [Semantic Similarity]
@@ -219,7 +222,7 @@ response_relevance.columns.name = "evaluation_by"
 
 print(response_relevance.to_markdown())
 
-# response_relevance.to_csv(datadir / "baseline_response_relevance.csv")
+# response_relevance.to_csv(DATA_DIR / "baseline_response_relevance.csv")
 
 # %% [markdown]
 # Interestingly, claude-3-haiku is scored as having the worst performance,
@@ -359,7 +362,7 @@ plt.title("Baseline Answer Relevance")
 
 # %%
 dfs = []
-for file in datadir.glob("eval_rag_retrieval_*.jsonl"):
+for file in DATA_DIR.glob("eval_rag_retrieval_*.jsonl"):
     dfs.append(pd.read_json(file, orient="records", lines=True))
 
 retrieval_metrics_df = pd.concat(dfs, ignore_index=True)
@@ -538,7 +541,7 @@ plt.title("Retrieval Context Recall")
 
 # %%
 dfs = []
-for file in datadir.glob("eval_rag_response_*.jsonl"):
+for file in DATA_DIR.glob("eval_rag_response_*.jsonl"):
     dfs.append(pd.read_json(file, orient="records", lines=True))
 
 response_metrics_df = pd.concat(dfs, ignore_index=True)

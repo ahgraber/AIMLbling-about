@@ -44,14 +44,6 @@ import matplotlib.pyplot as plt
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
-from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
-from src.utils import check_torch_device, filter_dict_by_keys  # NOQA: E402
-
-# %%
-repo = get_repo_path(this_file())
-
-datadir = Path(this_file()).parent / "data"
-
 # %%
 basic_log_config()
 logger = logging.getLogger(__name__)
@@ -60,6 +52,16 @@ logging.getLogger("src").setLevel(logging.DEBUG)
 logging.getLogger("transformers_modules").setLevel(logging.ERROR)
 logging.getLogger("ragas.llms").setLevel(logging.ERROR)
 
+# %%
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
+
+DATA_DIR = LOCAL_DIR / "data"
+
+# %%
+sys.path.insert(0, str(LOCAL_DIR))
+from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
+from src.utils import check_torch_device, filter_dict_by_keys  # NOQA: E402
 
 # %%
 _ = load_dotenv()
@@ -187,7 +189,7 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 # %%
 # Load synthetic testset
 dfs = []
-for file in sorted(datadir.glob("ragas_dataset_*.jsonl")):
+for file in sorted(DATA_DIR.glob("ragas_dataset_*.jsonl")):
     df = pd.read_json(file, orient="records", lines=True)
     df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
@@ -205,7 +207,7 @@ del dfs
 # reduce memory footprint by removing unnecessary info from retrieved nodes during load
 filter_node_metadata = partial(filter_dict_by_keys, keys=("node_id", "metadata", "text", "score"))
 
-with (datadir / "rag_retrievals.jsonl").open("r") as f:
+with (DATA_DIR / "rag_retrievals.jsonl").open("r") as f:
     data = [
         {
             k: [filter_node_metadata(node) for node in v] if k in experiment_names else v
@@ -242,7 +244,7 @@ display(retrieval_df)
 # %%
 # Retriever self-reported relevance
 fname = "retriever_relevance.csv"
-if (datadir / "retriever_relevance.csv").exists():
+if (DATA_DIR / "retriever_relevance.csv").exists():
     logger.info(f"Prior '{fname}' exists, will not rerun.")
     del fname
 else:
@@ -254,7 +256,7 @@ else:
     relevance_df["mean_retrieved_relevance"] = relevance_df["scores"].apply(np.mean)
     relevance_df[["experiment", "mean_retrieved_relevance"]].groupby("experiment").mean()
 
-    relevance_df.groupby("experiment")["mean_retrieved_relevance"].describe().to_csv(datadir / fname)
+    relevance_df.groupby("experiment")["mean_retrieved_relevance"].describe().to_csv(DATA_DIR / fname)
     display(relevance_df[["experiment", "mean_retrieved_relevance"]].groupby("experiment").mean())
     # MarkdownNodeParser outperforms SentenceSplitter@512
 
@@ -337,7 +339,7 @@ for experiment in tqdm(experiment_names):
     run_ragas_evals(
         source_df=source_df,
         metrics=retrieval_metrics,
-        outfile=datadir / f"eval_rag_retrieval_{experiment}.jsonl",
+        outfile=DATA_DIR / f"eval_rag_retrieval_{experiment}.jsonl",
     )
 
     gc.collect()

@@ -63,7 +63,7 @@ include = ["experiments"]                                                       
 exclude = ["**/node_modules", "**/__pycache__", "**/*_cache", "docs", "hugo", "src/experimental", "src/typestubs"]
 # ignore = ["src/oldstuff"]
 # defineConstant = { DEBUG = true }
-stubPath = "src/stubs"
+# stubPath = "src/stubs"
 
 reportMissingImports = "error"
 reportMissingTypeStubs = false

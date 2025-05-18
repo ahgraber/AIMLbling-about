@@ -19,7 +19,7 @@ class FastText(LanguageIDModel):
     Ref: https://github.com/facebookresearch/fastText/tree/main
     """
 
-    name = "FastText"
+    name: str = "FastText"
 
     def __init__(self):
         p = psutil.Process(os.getpid())

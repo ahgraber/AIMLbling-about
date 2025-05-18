@@ -44,9 +44,10 @@ import matplotlib.pyplot as plt
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
 # %%
-repo = get_repo_path(this_file())
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
 
-datadir = Path(this_file()).parent / "data"
+DATA_DIR = LOCAL_DIR / "data"
 
 # %%
 sys.path.insert(0, str(Path(this_file()).parent))
@@ -466,7 +467,7 @@ for provider, models in llm_ppm.items():
             f"  Generating the knowledge graph over {N_DOCS=} will cost approx ${kg_generation_tokens * costs['input'] / 1_000_000:,.2f}"
         )
         print(
-            f"  Generating the test set for {TESTSET_SIZE=} samples will use approx ${testset_generation_tokens * costs['input']  / 1_000_000:,.2f}"
+            f"  Generating the test set for {TESTSET_SIZE=} samples will use approx ${testset_generation_tokens * costs['input'] / 1_000_000:,.2f}"
         )
         print(
             f"  Evaluating the base case (no retrieval) will use approx ${baseline_eval_tokens * costs['input'] / 1_000_000:,.2f}"

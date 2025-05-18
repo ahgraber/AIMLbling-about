@@ -19,10 +19,11 @@ basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-REPO_DIR = get_repo_path(__file__)
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "language-identification"
 
 # %%
-DATA_DIR = Path(__file__).parent / "data"
+DATA_DIR = LOCAL_DIR / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # %%

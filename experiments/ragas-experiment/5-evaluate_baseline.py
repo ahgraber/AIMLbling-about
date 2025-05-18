@@ -43,13 +43,16 @@ import matplotlib.pyplot as plt
 
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
-from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
-from src.utils import check_torch_device  # NOQA: E402
+# %%
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
+
+DATA_DIR = LOCAL_DIR / "data"
 
 # %%
-repo = get_repo_path(this_file())
-
-datadir = Path(this_file()).parent / "data"
+sys.path.insert(0, str(LOCAL_DIR))
+from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
+from src.utils import check_torch_device  # NOQA: E402
 
 # %%
 basic_log_config()
@@ -58,7 +61,6 @@ logger.setLevel(logging.DEBUG)
 logging.getLogger("src").setLevel(logging.DEBUG)
 logging.getLogger("transformers_modules").setLevel(logging.ERROR)
 logging.getLogger("ragas.llms").setLevel(logging.ERROR)
-
 
 # %%
 _ = load_dotenv()
@@ -186,7 +188,7 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 # %%
 # Load synthetic testset
 dfs = []
-for file in sorted(datadir.glob("ragas_dataset_*.jsonl")):
+for file in sorted(DATA_DIR.glob("ragas_dataset_*.jsonl")):
     df = pd.read_json(file, orient="records", lines=True)
     df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
@@ -201,7 +203,7 @@ del dfs
 # %%
 # Load baseline response
 dfs = []
-for file in sorted(datadir.glob("qa_response_baseline_*.jsonl")):
+for file in sorted(DATA_DIR.glob("qa_response_baseline_*.jsonl")):
     df = pd.read_json(file, orient="records", lines=True)
     df["response_by"] = file.stem.split("_")[-1]
     if not all(testset_df["user_input"] == df["user_input"]):
@@ -253,7 +255,7 @@ logger.info(f"API calls: {len(baseline_response_df)=} * {len(baseline_metrics)=}
 run_ragas_evals(
     source_df=baseline_response_df,
     metrics=baseline_metrics,
-    outfile=datadir / "eval_baseline_response.jsonl",
+    outfile=DATA_DIR / "eval_baseline_response.jsonl",
 )
 
 gc.collect()

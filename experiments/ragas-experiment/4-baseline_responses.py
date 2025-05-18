@@ -34,12 +34,13 @@ import pandas as pd
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
 # %%
-repo = get_repo_path(this_file())
+REPO_DIR = get_repo_path(Path.cwd())
+LOCAL_DIR = REPO_DIR / "experiments" / "ragas-experiment"
 
-datadir = Path(this_file()).parent / "data"
+DATA_DIR = LOCAL_DIR / "data"
 
 # %%
-sys.path.insert(0, str(Path(this_file()).parent))
+sys.path.insert(0, str(LOCAL_DIR))
 from src.llamaindex.prompt_templates import BASELINE_QA_PROMPT, DEFAULT_TEXT_QA_PROMPT  # NOQA: E402
 from src.utils import check_torch_device  # NOQA: E402
 
@@ -180,7 +181,7 @@ experiment_names = ["_".join(experiment) for experiment in experiments]
 
 # %%
 dfs = []
-for file in sorted(datadir.glob("ragas_dataset_*.jsonl")):
+for file in sorted(DATA_DIR.glob("ragas_dataset_*.jsonl")):
     df = pd.read_json(file, orient="records", lines=True)
     df["generated_by"] = file.stem.split("_")[-1]
     dfs.append(df)
@@ -197,7 +198,7 @@ del dfs
 
 # %%
 for provider in tqdm(providers):
-    if (datadir / f"qa_response_baseline_{provider}.jsonl").exists():
+    if (DATA_DIR / f"qa_response_baseline_{provider}.jsonl").exists():
         logger.info(f"'qa_response_baseline_{provider}.jsonl' exists, skipping generation...")
         continue
 
@@ -217,7 +218,7 @@ for provider in tqdm(providers):
     )
 
     df["response"] = [response.message.content for response in responses]
-    df.to_json(datadir / f"qa_response_baseline_{provider}.jsonl", orient="records", lines=True)
+    df.to_json(DATA_DIR / f"qa_response_baseline_{provider}.jsonl", orient="records", lines=True)
 
 logger.info("Baseline answer generation complete.")
 

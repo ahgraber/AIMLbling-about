@@ -106,13 +106,13 @@ def get_repo_path(location: Path | str) -> Path:
 
     Parameters
     ----------
-    filepath : pathlike
-        `__file__` from the calling script
+    location : pathlike
+        `Path.cwd()` from the calling script
 
     Examples
     --------
     >>> if (__name__ == '__main__') and (__package__ is None):
-    >>>     REPO_ROOT = get_repo_root(__file__)
+    >>>     REPO_ROOT = get_repo_path(Path.cwd())
     >>>     sys.path.insert(0, str(REPO_ROOT / 'src'))
     # >>>     sys.path.append(str(REPO_ROOT / 'src'))
     """
