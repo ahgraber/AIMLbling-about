@@ -1,6 +1,6 @@
 ---
-title: Gpu Testing
-date: 2025-05-17T10:19:59-04:00
+title: New GPU!
+date: 2025-05-25
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -20,388 +20,171 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
-## Huh. Progress.
+I've been saving up for a year and change for a GPU upgrade, and my local Microcenter finally had 5090s in stock. So I bought one. It is a CHONK -- I'm getting full "you vs. the guy she tells you not to worry about" vibes:
 
+<table>
+<tr>
+  <td style="width:50%">
+{{< figure
+  src="images/top.png"
+  alt="5090 is a larger GPU"
+  caption="Top view comparing 3090 and 5090 (5090 is larger)" >}}
+  </td>
+  <td style="width:50%">
+{{< figure
+  src="images/side.png"
+  alt="5090 is a thicker GPU"
+  caption="Side view comparing 3090 and 5090 (5090 is larger)" >}}
+  </td>
+</tr>
+</table>
 
+Specifically, I've upgraded from a PNY RTX 3090 XLR8 Gaming EPIC-X RGB (what a mouthful) to a PNY RTX 5090 OC. Some of the size difference is due to "reference" vs "custom" PCB and cooler design; the 3090 is a reference design while the 5090 is a custom board and cooler. And it needs the cooler -- the card now pulls up to 1.7x more electricity at up to 600W (no wonder Nvidia has problems with cables melting)! Regardless, I watercool the GPU in my system, so the size of the cooler _shouldn't_ matter (that assumption will come back to bite me in the ass).
 
-## Setup
+| Feature              | [PNY GeForce RTX 3090 XLR8 Gaming EPIC-X RGB](https://www.techpowerup.com/gpu-specs/pny-xlr8-rtx-3090-revel-epic-x-triple-fan.b8014) | [PNY GeForce RTX 5090 OC](https://www.techpowerup.com/gpu-specs/pny-rtx-5090-overclocked-triple-fan.b12122) |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **GPU Architecture** | NVIDIA Ampere                                                                                                                        | NVIDIA Blackwell                                                                                            |
+| **CUDA Cores**       | 10,496                                                                                                                               | 21,760                                                                                                      |
+| **Base/Boost Clock** | 1395 / 1695 MHz                                                                                                                      | 2017 / 2527 MHz                                                                                             |
+| **Memory Size**      | 24 GB GDDR6X                                                                                                                         | 32 GB GDDR7                                                                                                 |
+| **Memory Speed**     | 1219 MHz                                                                                                                             | 1750 MHz                                                                                                    |
+| **Memory Interface** | 384-bit                                                                                                                              | 512-bit                                                                                                     |
+| **Memory Bandwidth** | 936 GB/s                                                                                                                             | 1792 GB/s                                                                                                   |
+| **Transistors**      | 28.3 million                                                                                                                         | 92.2 million                                                                                                |
+| **TDP**              | 350 W                                                                                                                                | 575 W                                                                                                       |
+| **Power Connectors** | 2 x 8-pin                                                                                                                            | 16-pin (adapter to 4x 8-pin)                                                                                |
+| **PCIe Interface**   | PCIe 4.0 x16                                                                                                                         | PCIe 5.0 x16                                                                                                |
+| **Outputs**          | 3 x DisplayPort 1.4, 1 x HDMI 2.1                                                                                                    | 3 x DisplayPort 2.1b, 1 x HDMI 2.1b                                                                         |
+| **Dimensions**       | 11.57" x 4.41" x 2.2" (3-slot)                                                                                                       | 12.95" x 5.43" x 2.8" (3.5-slot)                                                                            |
 
-1. [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
+The neat thing about these graphics cards with 24GB+ VRAM is that they can run super-capable LLMs _locally_. Models like Qwen 3 30B A3B, Qwen 3 32B, and Gemma 3 27B match or outperform proprietary models via paid API; the 5090's token evaluation rate (which impacts experienced user latency) is also roughly equivalent to that experience via paid API. So I now have a local, private LLM instance that is functionally equivalent to GPT-4o or Claude 3.7 Sonnet! Granted, I'd have to have send on the ballpark of a quarter-million prompts to my self-hosted model to recoup the cost of the GPU instead of just using a paid API... but the upgrade was not intended to be a "cost saving" measure.
 
-   - install wsl, reboot
-   - install distro
-   - configure distro
-     - create user
-     - `apt install curl wget git software-properties-common build-essential`
+{{< figure
+src="images/local_vs.png"
+alt="Qwen 3 30B A3B, Qwen 3 32B, and Gemma 3 27B match or beat proprietary models"
+caption="Qwen 3 30B A3B, Qwen 3 32B, and Gemma 3 27B match or beat proprietary models"
+link="https://artificialanalysis.ai/?models=claude-4-sonnet%2Cclaude-4-sonnet-thinking%2Co4-mini%2Cgpt-4-1-mini%2Cgpt-4-1%2Cgemma-3-27b%2Cgemini-2-5-flash-reasoning%2Cgemini-2-5-pro%2Cgemini-2-0-flash-lite-001%2Cclaude-3-5-haiku%2Cclaude-3-7-sonnet%2Cclaude-3-7-sonnet-thinking%2Cqwen3-30b-a3b-instruct-reasoning%2Cqwen3-32b-instruct-reasoning%2Cqwen3-32b-instruct%2Cqwen3-30b-a3b-instruct%2Cgpt-4o-chatgpt-03-25#artificial-analysis-intelligence-index" >}}
 
+## 60% Performance Improvement
 
-2. Install dependencies
-   - cuda for wsl
-     - nvidia cuda-toolkit (https://developer.nvidia.com/cuda-downloads) **DO NOT INSTALL THE DRIVER ON WSL; ONLY INSTALL THE CUDA-TOOLKIT**
-     - nvidia post-install (https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#post-installation-actions)
-      - https://github.com/nvidia/cuda-samples
-        ```sh
-        apt install cmake
-        mkdir build && cd build
-        cmake ..
-        make -j
-        ./deviceQuery
-        ```
-      - ./deviceQuery > ~/<gpu>\_report.txt
-   - [ollama](https://ollama.com/download/linux) `curl -fsSL https://ollama.com/install.sh | sh`
-   - [pipx](https://pipx.pypa.io/latest/installation/) `apt install pipx`
-   - [uv](https://docs.astral.sh/uv/getting-started/installation/#upgrading-uv) `curl -LsSf https://astral.sh/uv/install.sh | sh`
+After testing, I can confirm that the 5090 is faster. 🚫💩🕵️‍♂️ -- it's 2 architecture generations (Ampere -> Ada -> Blackwell) and 5 years (2020 -> 2025) / card generations (30xx -> 30xx Ti -> 40xx -> 40xx Ti -> 40xx Super -> 50xx) newer.
 
-   - [Docker Desktop](https://docs.docker.com/desktop/features/wsl/#download)
-   - [nvidia container toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)???
+I tested with [aidatools/ollama-benchmark](https://github.com/aidatatools/ollama-benchmark), a very convenient command line benchmark based on Ollama that tests throughput over a variety of LLM and VLM architectures and sizes.
+
+### LLM Benchmark Results: RTX 3090 vs RTX 5090
+
+| Model           | Avg Eval Rate (RTX 3090) | Avg Eval Rate (RTX 5090) | Speedup (%) |
+| --------------- | -----------------------: | -----------------------: | ----------: |
+| mistral:7b      |                   133.51 |                   210.89 |      +58.0% |
+| phi4:14b        |                    70.43 |                   117.65 |      +67.0% |
+| gemma2:9b       |                    90.74 |                   137.50 |      +51.5% |
+| llava:7b        |                   140.09 |                   220.81 |      +57.6% |
+| llava:13b       |                    86.10 |                   141.24 |      +64.0% |
+| deepseek-r1:8b  |                   111.83 |                   181.26 |      +62.1% |
+| deepseek-r1:14b |                    64.88 |                   105.83 |      +63.1% |
+
+The benchmark indicates the 5090 has roughly 60% performance improvement over the 3090; the increases are larger as model size (parameters) increase. As the models used get even larger, I anticipate an even greater performance lift for the 5090, as a result of more tensor cores, more _efficient_ tensor cores, and higher memory bandwidth; as the total utilization of the available compute/memory bandwidth approach 100%, the 5090 should increase its lead over the 3090.
+
+### System Specs
+
+My PC is in an Alphacool 4u server chassis that supports water cooling; this lets me keep noise down, have quite good cooling performance, and I can stack my computer in a server rack with the rest of my homelab gear. For the non-nerds, this means that my computer is functionally "on its side" whereas a normal PC stands tall.
+
+{{< figure
+src="images/server.png"
+alt="A water-cooled PC"
+caption="Gratuitous water cooling" >}}
+
+You may notice the graphics card (top right, with "CORE" in shiny silver) is horizontal. This is because the 5090 is _too big_ for the chassis, especially with the protrusion on the water block for connecting the water lines. So I had to hack the case with a "vertical GPU mount"; since the chassis is "on its side" relative to a normal computer, this means that the "vertical" mount lets me hold the card horizontally.
+
+{{% details title="System Specs" closed="true" %}}
+
+| Component   | Specification                                              |
+| ----------- | ---------------------------------------------------------- |
+| Motherboard | Asus ProArt X870E-Creator Wifi                             |
+| CPU         | AMD Ryzen 7 9800X3D                                        |
+| RAM         | 64GB GSkill F5 DDR5-6000 (2x32GB)                          |
+| Storage     | 1TB Sabrent Rocket 5                                       |
+| GPU         | PNY RTX 3090 XLR8 REVEL EPIX-X -> PNY RTX 5090 Overclocked |
+| PSU         | Seasonic PRIME PX-1300                                     |
+
+> Watercooling components all Alphacool (not sponsored, I just find their stuff to be no-nonsense and effective):
+>
+> - 60mm thick 360mm radiator
+> - 25mm thick 360mm radiator
+> - Alphacool TPV tubes, fittings, and quick-disconnects
+> - 3x Arctic S12038-4K fans (120 x 38mm)
+> - 3x Noctua NF-A12x25 Chromax fans (120 x 25mm)
+
+{{% /details %}}
+
+## Blogumentation
+
+Here are my notes on configuring my system for the experiment:
+
+1. [Install WSL (Windows Subsystem for Linux)](https://learn.microsoft.com/en-us/windows/wsl/install)
+
+   - Install WSL, reboot
+   - Install distro (I use Debian)
+   - Configure distro (Create user account, etc.)
+
+2. Install dependencies (in WSL)
+
+   - ```sh
+     apt install curl wget git software-properties-common build-essential
+     ```
+
+   - CUDA for WSL
+
+     - Install [nvidia cuda-toolkit](https://developer.nvidia.com/cuda-downloads)\
+       **DO NOT INSTALL THE DRIVER ON WSL; ONLY INSTALL THE CUDA-TOOLKIT**
+
+     - [Check GPU device post-installation](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#post-installation-actions) using the compiled [deviceQuery](https://github.com/nvidia/cuda-samples) binary
+
+       ```sh
+       apt install cmake
+       mkdir build && cd build
+       cmake ..
+       make -j
+       ./deviceQuery
+       ```
+
+   - Install [ollama](https://ollama.com/download/linux)
+
+     ```sh
+     curl -fsSL https://ollama.com/install.sh | sh
+     ```
+
+   - Install [pipx](https://pipx.pypa.io/latest/installation/)
+
+     ```sh
+     apt install pipx
+     ```
+
+   - Install [uv](https://docs.astral.sh/uv/getting-started/installation/#upgrading-uv)
+
+     ```sh
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+
+   - Install [Docker Desktop](https://docs.docker.com/desktop/features/wsl/#download)
+
+   - Install [nvidia container toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) - I did this, but I'm not sure whether it is necessary for this particular experiment
 
 3. Install [aidatools/ollama-benchmark](https://github.com/aidatatools/ollama-benchmark)
 
-   `pipx install llm-benchmark`
+   ```sh
+   pipx install llm-benchmark
+   ```
 
 4. Run tests
 
-   - close all apps (except for hwinfo)
-   - disable internet
-   - `llm_benchmark run`
+   - Close all apps
 
-5. swap gpu
+   - Disable internet
 
-6. un/re install drivers (DDU)
-
-## Specs
-
-Asus ProArt X870E-Creator Wifi
-AMD Ryzen 7 9800X3D
-64GB GSkill F5 DDR5-6000 (2x32GB)
-1TB Sabrent Rocket 5
-PNY RTX 3090 XLR8 REVEL EPIX-X / PNY RTX 5090 Overclocked
-Seasonic Vertex PX-1200
-
-## Tools
-
-- [gpu-z](https://www.guru3d.com/download/gpu-z-download-techpowerup/)
-- [Display Driver Uninstaller](https://www.guru3d.com/download/display-driver-uninstaller-download/) and [Display Driver Uninstaller Thread](https://www.guru3d.com/download/gpu-z-download-techpowerup/`)
-- [MSI Afterburner](https://www.guru3d.com/download/msi-afterburner-beta-download/)
-
-
-## 3090 Results
-
-```txt
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 3090', 'driver': '572.42', 'gpu_memory_total': '24576.0 MB', 'gpu_memory_free': '23718.0 MB', 'gpu_memory_used': '609.0 MB', 'gpu_load': '3.0%', 'gpu_temperature': '25.0°C'}
-Only one GPU card
-Total memory size : 30.19 GB
-cpu_info: AMD Ryzen 7 9800X3D 8-Core Processor
-gpu_info: NVIDIA GeForce RTX 3090
-os_version: Debian GNU/Linux 12 (bookworm)
-ollama_version: 0.7.0
-----------
-LLM models file path：/home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/benchmark_models_16gb_ram.yml
-Checking and pulling the following LLM models
-gemma2:9b
-mistral:7b
-phi4:14b
-deepseek-r1:8b
-deepseek-r1:14b
-llava:7b
-llava:13b
-----------
-model_name =    mistral:7b
-prompt = Write a step-by-step guide on how to bake a chocolate cake from scratch.
-eval rate:            131.28 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game
-eval rate:            133.57 tokens/s
-prompt = Create a dialogue between two characters that discusses economic crisis
-eval rate:            133.85 tokens/s
-prompt = In a forest, there are brave lions living there. Please continue the story.
-eval rate:            132.82 tokens/s
-prompt = I'd like to book a flight for 4 to Seattle in U.S.
-eval rate:            136.01 tokens/s
---------------------
-Average of eval rate:  133.506  tokens/s
-----------------------------------------
-model_name =    phi4:14b
-prompt = Write a step-by-step guide on how to bake a chocolate cake from scratch.
-eval rate:            69.81 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game
-eval rate:            70.27 tokens/s
-prompt = Create a dialogue between two characters that discusses economic crisis
-eval rate:            70.32 tokens/s
-prompt = In a forest, there are brave lions living there. Please continue the story.
-eval rate:            70.46 tokens/s
-prompt = I'd like to book a flight for 4 to Seattle in U.S.
-eval rate:            71.30 tokens/s
---------------------
-Average of eval rate:  70.432  tokens/s
-----------------------------------------
-model_name =    gemma2:9b
-prompt = Explain Artificial Intelligence and give its applications.
-eval rate:            89.72 tokens/s
-prompt = How are machine learning and AI related?
-eval rate:            89.69 tokens/s
-prompt = What is Deep Learning based on?
-eval rate:            89.39 tokens/s
-prompt = What is the full form of LSTM?
-eval rate:            94.56 tokens/s
-prompt = What are different components of GAN?
-eval rate:            90.36 tokens/s
---------------------
-Average of eval rate:  90.744  tokens/s
-----------------------------------------
-model_name =    llava:7b
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample1.jpg
-eval rate:            139.32 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample2.jpg
-eval rate:            139.57 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample3.jpg
-eval rate:            141.51 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample4.jpg
-eval rate:            141.57 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample5.jpg
-eval rate:            138.50 tokens/s
---------------------
-Average of eval rate:  140.094  tokens/s
-----------------------------------------
-model_name =    llava:13b
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample1.jpg
-eval rate:            86.47 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample2.jpg
-eval rate:            86.00 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample3.jpg
-eval rate:            86.07 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample4.jpg
-eval rate:            85.64 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample5.jpg
-eval rate:            86.31 tokens/s
---------------------
-Average of eval rate:  86.098  tokens/s
-----------------------------------------
-model_name =    deepseek-r1:8b
-prompt = Summarize the key differences between classical and operant conditioning in psychology.
-eval rate:            114.30 tokens/s
-prompt = Translate the following English paragraph into Chinese and elaborate more -> Artificial intelligence is transforming various industries by enhancing efficiency and enabling new capabilities.
-eval rate:            115.31 tokens/s
-prompt = What are the main causes of the American Civil War?
-eval rate:            113.39 tokens/s
-prompt = How does photosynthesis contribute to the carbon cycle?
-eval rate:            113.31 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game.
-eval rate:            102.83 tokens/s
---------------------
-Average of eval rate:  111.828  tokens/s
-----------------------------------------
-model_name =    deepseek-r1:14b
-prompt = Summarize the key differences between classical and operant conditioning in psychology.
-eval rate:            65.39 tokens/s
-prompt = Translate the following English paragraph into Chinese and elaborate more -> Artificial intelligence is transforming various industries by enhancing efficiency and enabling new capabilities.
-eval rate:            65.58 tokens/s
-prompt = What are the main causes of the American Civil War?
-eval rate:            64.86 tokens/s
-prompt = How does photosynthesis contribute to the carbon cycle?
-eval rate:            64.68 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game.
-eval rate:            63.88 tokens/s
---------------------
-Average of eval rate:  64.878  tokens/s
-----------------------------------------
-Sending the following data to a remote server
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 3090', 'driver': '572.42', 'gpu_memory_total': '24576.0 MB', 'gpu_memory_free': '7812.0 MB', 'gpu_memory_used': '16515.0 MB', 'gpu_load': '18.0%', 'gpu_temperature': '38.0°C'}
-Only one GPU card
-Your machine UUID : af47b5e6-98a6-566d-a1aa-09fe727b34eb
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 3090', 'driver': '572.42', 'gpu_memory_total': '24576.0 MB', 'gpu_memory_free': '7812.0 MB', 'gpu_memory_used': '16515.0 MB', 'gpu_load': '2.0%', 'gpu_temperature': '38.0°C'}
-Only one GPU card
-{
-    "mistral:7b": "133.51",
-    "phi4:14b": "70.43",
-    "gemma2:9b": "90.74",
-    "llava:7b": "140.09",
-    "llava:13b": "86.10",
-    "deepseek-r1:8b": "111.83",
-    "deepseek-r1:14b": "64.88",
-    "uuid": "af47b5e6-98a6-566d-a1aa-09fe727b34eb",
-    "ollama_version": "0.7.0"
-}
-----------
-====================
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 3090', 'driver': '572.42', 'gpu_memory_total': '24576.0 MB', 'gpu_memory_free': '7812.0 MB', 'gpu_memory_used': '16515.0 MB', 'gpu_load': '0.0%', 'gpu_temperature': '36.0°C'}
-Only one GPU card
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 3090', 'driver': '572.42', 'gpu_memory_total': '24576.0 MB', 'gpu_memory_free': '7812.0 MB', 'gpu_memory_used': '16515.0 MB', 'gpu_load': '1.0%', 'gpu_temperature': '35.0°C'}
-Only one GPU card
-{
-    "system": "Linux",
-    "memory": 30.18781280517578,
-    "cpu": "AMD Ryzen 7 9800X3D 8-Core Processor",
-    "gpu": "NVIDIA GeForce RTX 3090",
-    "os_version": "Debian GNU/Linux 12 (bookworm)",
-    "system_name": "Linux",
-    "uuid": "af47b5e6-98a6-566d-a1aa-09fe727b34eb"
-}
-----------
-```
-
-## 5090 Results
-
-```
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 5090', 'driver': '576.40', 'gpu_memory_total': '32607.0 MB', 'gpu_memory_free': '10990.0 MB', 'gpu_memory_used': '21112.0 MB', 'gpu_load': '13.0%', 'gpu_temperature': '29.0°C'}
-Only one GPU card
-Total memory size : 30.19 GB
-cpu_info: AMD Ryzen 7 9800X3D 8-Core Processor
-gpu_info: NVIDIA GeForce RTX 5090
-os_version: Debian GNU/Linux 12 (bookworm)
-ollama_version: 0.7.0
-----------
-LLM models file path：/home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/benchmark_models_16gb_ram.yml
-Checking and pulling the following LLM models
-gemma2:9b
-mistral:7b
-phi4:14b
-deepseek-r1:8b
-deepseek-r1:14b
-llava:7b
-llava:13b
-----------
-model_name =    mistral:7b
-prompt = Write a step-by-step guide on how to bake a chocolate cake from scratch.
-eval rate:            208.22 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game
-eval rate:            212.94 tokens/s
-prompt = Create a dialogue between two characters that discusses economic crisis
-eval rate:            213.14 tokens/s
-prompt = In a forest, there are brave lions living there. Please continue the story.
-eval rate:            214.93 tokens/s
-prompt = I'd like to book a flight for 4 to Seattle in U.S.
-eval rate:            205.20 tokens/s
---------------------
-Average of eval rate:  210.886  tokens/s
-----------------------------------------
-model_name =    phi4:14b
-prompt = Write a step-by-step guide on how to bake a chocolate cake from scratch.
-eval rate:            117.13 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game
-eval rate:            117.19 tokens/s
-prompt = Create a dialogue between two characters that discusses economic crisis
-eval rate:            119.47 tokens/s
-prompt = In a forest, there are brave lions living there. Please continue the story.
-eval rate:            118.95 tokens/s
-prompt = I'd like to book a flight for 4 to Seattle in U.S.
-eval rate:            115.53 tokens/s
---------------------
-Average of eval rate:  117.654  tokens/s
-----------------------------------------
-model_name =    gemma2:9b
-prompt = Explain Artificial Intelligence and give its applications.
-eval rate:            134.38 tokens/s
-prompt = How are machine learning and AI related?
-eval rate:            139.72 tokens/s
-prompt = What is Deep Learning based on?
-eval rate:            138.27 tokens/s
-prompt = What is the full form of LSTM?
-eval rate:            138.53 tokens/s
-prompt = What are different components of GAN?
-eval rate:            136.59 tokens/s
---------------------
-Average of eval rate:  137.498  tokens/s
-----------------------------------------
-model_name =    llava:7b
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample1.jpg
-eval rate:            215.82 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample2.jpg
-eval rate:            223.02 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample3.jpg
-eval rate:            223.56 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample4.jpg
-eval rate:            221.57 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample5.jpg
-eval rate:            220.06 tokens/s
---------------------
-Average of eval rate:  220.806  tokens/s
-----------------------------------------
-model_name =    llava:13b
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample1.jpg
-eval rate:            138.95 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample2.jpg
-eval rate:            143.03 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample3.jpg
-eval rate:            144.01 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample4.jpg
-eval rate:            135.71 tokens/s
-prompt = Describe the image, /home/wsl/.local/pipx/venvs/llm-benchmark/lib/python3.11/site-packages/llm_benchmark/data/img/sample5.jpg
-eval rate:            144.50 tokens/s
---------------------
-Average of eval rate:  141.24  tokens/s
-----------------------------------------
-model_name =    deepseek-r1:8b
-prompt = Summarize the key differences between classical and operant conditioning in psychology.
-eval rate:            184.81 tokens/s
-prompt = Translate the following English paragraph into Chinese and elaborate more -> Artificial intelligence is transforming various industries by enhancing efficiency and enabling new capabilities.
-eval rate:            188.91 tokens/s
-prompt = What are the main causes of the American Civil War?
-eval rate:            183.98 tokens/s
-prompt = How does photosynthesis contribute to the carbon cycle?
-eval rate:            178.46 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game.
-eval rate:            170.15 tokens/s
---------------------
-Average of eval rate:  181.262  tokens/s
-----------------------------------------
-model_name =    deepseek-r1:14b
-prompt = Summarize the key differences between classical and operant conditioning in psychology.
-eval rate:            108.07 tokens/s
-prompt = Translate the following English paragraph into Chinese and elaborate more -> Artificial intelligence is transforming various industries by enhancing efficiency and enabling new capabilities.
-eval rate:            108.91 tokens/s
-prompt = What are the main causes of the American Civil War?
-eval rate:            105.16 tokens/s
-prompt = How does photosynthesis contribute to the carbon cycle?
-eval rate:            106.66 tokens/s
-prompt = Develop a python function that solves the following problem, sudoku game.
-eval rate:            100.36 tokens/s
---------------------
-Average of eval rate:  105.832  tokens/s
-----------------------------------------
-Sending the following data to a remote server
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 5090', 'driver': '576.40', 'gpu_memory_total': '32607.0 MB', 'gpu_memory_free': '4916.0 MB', 'gpu_memory_used': '27186.0 MB', 'gpu_load': '78.0%', 'gpu_temperature': '38.0°C'}
-Only one GPU card
-Your machine UUID : d69ee9b0-e46c-5dac-a410-7fddbf157d53
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 5090', 'driver': '576.40', 'gpu_memory_total': '32607.0 MB', 'gpu_memory_free': '4913.0 MB', 'gpu_memory_used': '27189.0 MB', 'gpu_load': '2.0%', 'gpu_temperature': '38.0°C'}
-Only one GPU card
-{
-    "mistral:7b": "210.89",
-    "phi4:14b": "117.65",
-    "gemma2:9b": "137.50",
-    "llava:7b": "220.81",
-    "llava:13b": "141.24",
-    "deepseek-r1:8b": "181.26",
-    "deepseek-r1:14b": "105.83",
-    "uuid": "d69ee9b0-e46c-5dac-a410-7fddbf157d53",
-    "ollama_version": "0.7.0"
-}
-----------
-====================
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 5090', 'driver': '576.40', 'gpu_memory_total': '32607.0 MB', 'gpu_memory_free': '4913.0 MB', 'gpu_memory_used': '27189.0 MB', 'gpu_load': '2.0%', 'gpu_temperature': '35.0°C'}
-Only one GPU card
--------Linux----------
-{'id': '0', 'name': 'NVIDIA GeForce RTX 5090', 'driver': '576.40', 'gpu_memory_total': '32607.0 MB', 'gpu_memory_free': '4914.0 MB', 'gpu_memory_used': '27188.0 MB', 'gpu_load': '1.0%', 'gpu_temperature': '35.0°C'}
-Only one GPU card
-{
-    "system": "Linux",
-    "memory": 30.18781280517578,
-    "cpu": "AMD Ryzen 7 9800X3D 8-Core Processor",
-    "gpu": "NVIDIA GeForce RTX 5090",
-    "os_version": "Debian GNU/Linux 12 (bookworm)",
-    "system_name": "Linux",
-    "uuid": "d69ee9b0-e46c-5dac-a410-7fddbf157d53"
-}
-----------
-```
+   - ```sh
+     llm_benchmark run
+     ```
