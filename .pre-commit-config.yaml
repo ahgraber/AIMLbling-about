@@ -97,7 +97,7 @@ repos:
           - mdformat-toc
           - mdformat-config
           - mdformat-ruff
-          - mdformat-shfmt
+          # - mdformat-shfmt
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: "v0.45.0"
     hooks:
