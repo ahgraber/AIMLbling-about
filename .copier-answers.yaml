@@ -1,6 +1,6 @@
 # Changes here will be overwritten by Copier
-_commit: 2025.3.0-70-gefaa196
-_src_path: https://github.com/ninerealmlabs/precommit-template
+_commit: 2025.3.0-76-g45692f1
+_src_path: gh:ninerealmlabs/precommit.template
 conventional_commits: true
 docker: true
 editorconfig: true
