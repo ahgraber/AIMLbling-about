@@ -1,13 +1,12 @@
 # Changes here will be overwritten by Copier
-_commit: 2024.5.3
-_src_path: gh:ninerealmlabs/precommit.template
+_commit: 2025.3.0-70-gefaa196
+_src_path: https://github.com/ninerealmlabs/precommit-template
+conventional_commits: true
+docker: true
 editorconfig: true
-hadolint: false
-markdownlint: true
+markdown: true
 prettier: true
-ruff: true
-shellcheck: false
-shfmt: false
+python: true
+shell: true
 typos: true
-yamllint: true
-
+yaml: true
