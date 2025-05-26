@@ -103,6 +103,8 @@ tasks:
     cmds:
       - |
         docker build \
+          --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+          --build-arg VCS_REF=$(git rev-parse --short HEAD) \
           --build-arg TREADMILL_PAT=$TREADMILL_PAT \
           -t ghcr.io/ahgraber/aimlbling-about:debug \
           -f {{ .HUGO_DIR }}/docker/Dockerfile \

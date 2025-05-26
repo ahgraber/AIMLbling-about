@@ -48,13 +48,16 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3
 
-      # - name: Get current date 🗓
-      #   id: date
-      #   shell: bash
-      #   run: |
-      #     DATE=$(TZ=America/New_York date +'%Y.%m.%d-%H%M')
-      #     echo "DATE: ${DATE}"
-      #     echo "date=${DATE}" >> $GITHUB_OUTPUT
+      - name: Get build metadata 📊
+        id: build-meta
+        shell: bash
+        run: |
+          BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          VCS_REF=$(git rev-parse HEAD)
+          echo "BUILD_DATE: ${BUILD_DATE}"
+          echo "VCS_REF: ${VCS_REF}"
+          echo "build-date=${BUILD_DATE}" >> $GITHUB_OUTPUT
+          echo "vcs-ref=${VCS_REF}" >> $GITHUB_OUTPUT
 
       - name: Extract metadata 🏷️
         id: meta
@@ -85,6 +88,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
+            BUILD_DATE=${{ steps.build-meta.outputs.build-date }}
+            VCS_REF=${{ steps.build-meta.outputs.vcs-ref }}
             TREADMILL_PAT=${{ secrets.TREADMILL_PAT }}
           context: .  # explicitly include checked-out context with .git/ dir
           file: ./hugo/docker/Dockerfile

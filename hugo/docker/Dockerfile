@@ -1,5 +1,20 @@
 # https://sko.ai/blog/how-to-actually-build-hugo-containers/
 FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.21@sha256:a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c as build
+
+# Set shell options for safety
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
+# Add build-time ARGs
+ARG BUILD_DATE
+ARG VCS_REF
+
+# Add build-time labels
+LABEL org.opencontainers.image.source="https://github.com/ahgraber/aimlbling-about"
+LABEL org.opencontainers.image.description="Generate AIMLbling-About static site with Hugo"
+LABEL org.opencontainers.image.version="1.1.0"
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.revision="${VCS_REF}"
+
 RUN  apk add --no-cache \
       git \
       go \
@@ -25,6 +40,17 @@ RUN --mount=type=cache,target=/tmp/hugo_cache \
     hugo --minify -s ./hugo
 
 FROM docker.io/nginxinc/nginx-unprivileged:1.28@sha256:4261dc9185179b459771f28d95c1dee3b182fa1511528b4cfb6c2a0fdd3577c3
+
+# Add build-time ARGs
+ARG BUILD_DATE
+ARG VCS_REF
+
+# Add runtime labels
+LABEL org.opencontainers.image.source="https://github.com/ahgraber/aimlbling-about"
+LABEL org.opencontainers.image.description="Generate AIMLbling-About static site with Hugo"
+LABEL org.opencontainers.image.version="1.1.0"
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.revision="${VCS_REF}"
 
 COPY --chown=nginx:nginx --from=build /src/hugo/public /site
 COPY --chown=nginx:nginx ./hugo/docker/default.conf /etc/nginx/conf.d/
