@@ -60,71 +60,47 @@ A recent METR report finds that current models (at the time of the release, the 
 
 When I play out this scenario, I can see it going it two different ways -- in one, we see a virtuous cycle driven by the explosion in productivity, with more productivity driving more jobs, new ideas, new companies, etc.; in the other, we see our current employment paradigm collapse as existing workers are accelerated by AI but few new roles are created.
 
+### Rising Unemployment
+
 The New York Times reports we may already be seeing leading evidence of the latter potential future, with rapidly increasing unemployment rates for recent graduates anecdotally driven by hype around "virtual coworkers" that can automate entry-level work.[^new_grads_unemployed] Dario Amodei, the CEO of Anthropic, recently warned that it could extend even further than entry-level jobs. In a conversation with Axios, he reportedly said, "AI could wipe out half of all entry-level white-collar jobs — and spike unemployment to 10-20% in the next one to five years." [^dario_jobs]
 
-On the other hand, Demis Hassabis, the CEO of Google DeepMind, is a bit more optimistic. While AI may allow one person to do the job of 70, he argues that those 70 would be able to go on and have the opportunity to do other things, including starting new businesses. In an interview with the New York Times, he further expands, "I also think that, as we get closer to A.G.I. and we make breakthroughs in material sciences, energy, fusion, these sorts of things, helped by A.I., we should start getting to a position in society where we're getting toward what I would call radical abundance, where there's a lot of resources to go around." [^hassabis_jobs]
+This will cause two problems. First, loss of upcoming juniors means the next generation of workers will not have inherited the skills required to do their job. AI-optimists may believe this to be a non-issue, as "the AI will learn to do it"; however, there is no failsafe in this case, and even with AI there may be an expertise cliff as generational turnover occurs. Second, unless there is a new type of job role  or industry, unemployment will rise. With no entry-level roles, college graduates will have limited employment options. As higher-level roles are squeezed because fewer people are needed to do the same amount of work (given AI assistance), the now-unemployed folks with expertise will fill the few entry-level roles that do exist.
 
-Regardless, _what we do_ for work and _how we do it_ will fundamentally change, and the change will happen rapidly. The best thing for a person to do now is understand the nuance of their job, not only what they do, but why they do it, and the fractal complexities of each decision and possibility-space of the inputs and outputs to their work product. Further, the "soft skills" of time management, leadership and delegation, and clear communication will become even more important. In a world where each worker manages a stable of AI assistants, understanding how to delegate, how to manage the delegates, and how to clearly communicate task requirements and expectations will be critical.
+I think it is incredibly short-sighted for organizations to close the "top of funnel" by replacing entry-level roles with AI. Even if AI can do the same work, you lose the ability to train the next generation; current college students are already much more AI-native than most middle-age workers. Their fresh insights might empower new AI-native practices; they simply lack work experience.
 
-> [!NOTE]
-> Anthropic recently [released a course](https://www.anthropic.com/ai-fluency/introduction-to-ai-fluency) on refining and practicing how to interact with AI and focusing on 4 key competencies: Delegation, Description, Discernment and Diligence.
+<!-- In the most pessimistic case, the ultimate outcome I foresee is dystopia. Extreme "AI offshoring" would result in extreme inequality between the haves and have-nots. Subsequently, history tells us that extreme wealth stratification leads to social unrest (riot, revolt, revolution, civil war).[^inequality] Resetting inequality is achieved only when the "have-nots" have sufficient institutional leverage to affect change, which historically occurred through mass mobilization (French Revolution) or institutional protection (post-WWII).[^historic_shocks] Unfortunately, we are not in a paradigm with strong institutional protections (though grassroots efforts may be effective), and mass mobilization will likely be less effective due to AI-aided technologies (surveillance state, weaponized drones, etc.). -->
 
-## On the Economy
+### Or Employment Flywheel
 
-Unlike Demis Hassabis or Dario Amodei (in his more optimistic moments), I do not believe it is likely that a "radical abundance" scenario emerges. Corporations excel at resource extraction and profiteering (and in the capitalistic world are essentially _mandated_ to do so). New materials science? Great, pay up. One person can do the work of 70? Great, freeze hiring and let 50% of the staff go.
+On the other hand, Demis Hassabis, the CEO of Google DeepMind, is a bit more optimistic. While AI may allow one person to do the job of 70, he argues that those 70 would be able to go on and have the opportunity to do other things, including starting new businesses.[^hassabis_jobs] There is historic precedent for new technologies creating new jobs; assembly lines beget assembly-line workers, the computer created the entire IT industry. It is not unlikely that entirely new job categories could come into existence built on the burgeoning AI industry.
 
-Aside from AI's impact on employment, I anticipate further pressure on the supply-chain side of the IT industry. As AI needs grow (11x growth _minimum_ in this thought experiment!) significantly more compute will be needed. This involves building datacenters, manufacturing computers and their components, mining the raw materials, and building the power generation, energy storage, and power and network infrastructure to support it all. Each of these is a potential bottleneck in the overall supply chain that must itself scale to match the coming demand for AI.[^supply_chain]
+## Resource Economy
+
+In an interview with the New York Times, Hassabis says, "As we get closer to A.G.I. and we make breakthroughs in material sciences, energy, fusion, these sorts of things, helped by A.I., we should start getting to a position in society where we're getting toward what I would call radical abundance, where there's a lot of resources to go around."[^hassabis_jobs] This handwaves away concerns about rapidly increasing energy demand or the approaching limits of our ability to continue to improve the integrated circuit due to wavelengths of light we are able to control, because "AI will solve it".
+
+Unlike Demis Hassabis or Dario Amodei (in his more optimistic moments), I do not believe it is likely that a "radical abundance" scenario emerges. Techological breakthroughs have historically concentrated wealth (and therefore resources) rather than resulting in more equitable distribution. Further, corporations are driven by profit motives and will chase advancements to reduce costs, maximize efficiency, and enter (new) markets where they have competitive advantage; there is no motivation for "radical abundance".
+
+That said, there's money to be made -- As AI needs grow (11x growth _minimum_ mentioned above!) significantly more compute will be needed. This involves building datacenters, manufacturing computers and their components, mining the raw materials, and building the power generation, energy storage, and power and network infrastructure to support it all. Each of these is a potential bottleneck in the overall supply chain that must itself scale to match the coming demand for AI.[^supply_chain]
 
 ## Conclusion
 
 > If you believe that we will have "AGI" such that the AI can serve as a "drop-in" white-collar worker _within our career span_, what should you do?
 
-If your job involves sitting in front of a computer, expect what you do for work to fundamentally change. As discussed above, having a deep understanding of your role and how it integrates with the rest of the organization to create value _and being able to communicate that understanding_ to AI delegates will be a critical skill. The alternative is to pick up a trade skill or join the labor workforce in supporting the supply chain for AI prerequisites.
+In the Age of AI, _what we do_ for work and _how we do it_ will fundamentally change, and the change will happen rapidly. The best thing for a person to do now is understand the nuance of their job, not only what they do, but why they do it, and the fractal complexities of each decision and possibility-space of the inputs and outputs to their work product. Further, the "soft skills" of time management, leadership and delegation, and clear communication will become even more important. In a world where each worker manages a stable of AI assistants, understanding how to delegate, how to manage the delegates, and how to clearly communicate task requirements and expectations will be critical.
 
-The ultimate outcome I foresee is dystopia. "Offshoring" with AI will result in increasing rates of inequality between the haves and have-nots. Subsequently, history tells us that extreme wealth stratification leads to social unrest (riot, revolt, revolution, civil war).[^inequality] Resetting inequality is achieved only when the "have-nots" have sufficient institutional leverage to affect change, which historically occurred through mass mobilization (French Revolution) or institutional protection (post-WWII).[^historic_shocks] Unfortunately, we are not in a paradigm with strong institutional protections (though grassroots efforts may be effective), and mass mobilization will likely be less effective due to AI-aided technologies (surveillance state, weaponized drones, etc.).
-
-## Postscript
-
-This thought experiment ended up being quite a bit more pessimistic than I expected when brainstorming. In contrast to the [AI 2027](https://ai-2027.com/) scenarios, my conclusion is neither "we all ride off into the sunset", nor "scifi Terminator takeover". I deeply hope this potential future is a pessimistic bad dream. I hope that AI-driven productivity gains empower the economic and employment flywheel, and improve quality of life without inducing catastrophic environmental side effects. I hope that policies like Universal Basic Income gain popularity and social support structures can be "powered by AI" to therefore be less distasteful to "small government" proponents. But I wrote my truth; my probability mass results in dystopia.
+> [!NOTE]
+> Anthropic recently [released a course](https://www.anthropic.com/ai-fluency/introduction-to-ai-fluency) on refining and practicing how to interact with AI and focusing on 4 key competencies: Delegation, Description, Discernment and Diligence.
 
 ## References
 
--
--
--
--
--
--
--
--
--
--
--
--
--
-
-[^claude4]: [How Does Claude 4 Think? — Sholto Douglas & Trenton Bricken](https://www.dwarkesh.com/p/sholto-trenton-2) @ ~2hr
-
-[^AEI]: [Introducing the Anthropic Economic Index \\ Anthropic](https://www.anthropic.com/news/the-anthropic-economic-index)
-
-[^AEI_EDU]: [Anthropic Education Report: How University Students Use Claude \\ Anthropic](https://www.anthropic.com/news/anthropic-education-report-how-university-students-use-claude)
-
-[^AEI_SWE]: [Anthropic Economic Index: AI's impact on software development \\ Anthropic](https://www.anthropic.com/research/impact-software-development)
-
-[^pew]: [On Future AI Use in Workplace, US Workers More Worried Than Hopeful | Pew Research Center](https://www.pewresearch.org/social-trends/2025/02/25/u-s-workers-are-more-worried-than-hopeful-about-future-ai-use-in-the-workplace/)
-
-[^mollick]: [The End of Search, The Beginning of Research](https://www.oneusefulthing.org/p/the-end-of-search-the-beginning-of)
-
-[^METR]: [Measuring AI Ability to Complete Long Tasks - METR](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
-
-[^new_grads_unemployed]: [For Some Recent Graduates, the A.I. Job Apocalypse May Already Be Here](https://www.nytimes.com/2025/05/30/technology/ai-jobs-college-graduates.html?unlocked_article_code=1.LU8.Tley.axMtaz01kwv5&smid=url-share)
-
-[^dario_jobs]: [AI jobs danger: Sleepwalking into a white-collar bloodbath](https://www.axios.com/2025/05/28/ai-jobs-white-collar-unemployment-anthropic?_bhlid=de44ede8ac1fac0ec5469bb77e814ab71241e0cf)
-
-[^hassabis_jobs]: [Google DeepMind's Demis Hassabis on AGI, Innovation and More](https://www.nytimes.com/2025/05/23/podcasts/google-ai-demis-hassabis-hard-fork.html?unlocked_article_code=1.LU8.MrST.91r-pTvKxA74&smid=url-share)
-
-[^supply_chain]: [AI chip boom sparks BT substrate materials shortage — TSMC's huge demand causes supply disruptions for NAND flash controllers, SSDs | Tom's Hardware](https://www.tomshardware.com/tech-industry/semiconductors/ai-chip-boom-sparks-bt-substrate-materials-shortage-tsmcs-huge-demand-causes-supply-disruptions-for-nand-flash-controllers-ssds)
-
-[^inequality]: [History of economic inequality](https://en.wikipedia.org/wiki/History_of_economic_inequality#Present_day)
-
-[^historic_shocks]: [Historical effects of shocks on inequality: the great leveler revisited | Humanities and Social Sciences Communications](https://www.nature.com/articles/s41599-021-00763-4)
+- [^claude4]: [How Does Claude 4 Think? — Sholto Douglas & Trenton Bricken](https://www.dwarkesh.com/p/sholto-trenton-2) @ ~2hr
+- [^AEI]: [Introducing the Anthropic Economic Index \\ Anthropic](https://www.anthropic.com/news/the-anthropic-economic-index)
+- [^AEI_EDU]: [Anthropic Education Report: How University Students Use Claude \\ Anthropic](https://www.anthropic.com/news/anthropic-education-report-how-university-students-use-claude)
+- [^AEI_SWE]: [Anthropic Economic Index: AI's impact on software development \\ Anthropic](https://www.anthropic.com/research/impact-software-development)
+- [^pew]: [On Future AI Use in Workplace, US Workers More Worried Than Hopeful | Pew Research Center](https://www.pewresearch.org/social-trends/2025/02/25/u-s-workers-are-more-worried-than-hopeful-about-future-ai-use-in-the-workplace/)
+- [^mollick]: [The End of Search, The Beginning of Research](https://www.oneusefulthing.org/p/the-end-of-search-the-beginning-of)
+- [^METR]: [Measuring AI Ability to Complete Long Tasks - METR](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
+- [^new_grads_unemployed]: [For Some Recent Graduates, the A.I. Job Apocalypse May Already Be Here](https://www.nytimes.com/2025/05/30/technology/ai-jobs-college-graduates.html?unlocked_article_code=1.LU8.Tley.axMtaz01kwv5&smid=url-share)
+- [^dario_jobs]: [AI jobs danger: Sleepwalking into a white-collar bloodbath](https://www.axios.com/2025/05/28/ai-jobs-white-collar-unemployment-anthropic?_bhlid=de44ede8ac1fac0ec5469bb77e814ab71241e0cf)
+- [^hassabis_jobs]: [Google DeepMind's Demis Hassabis on AGI, Innovation and More](https://www.nytimes.com/2025/05/23/podcasts/google-ai-demis-hassabis-hard-fork.html?unlocked_article_code=1.LU8.MrST.91r-pTvKxA74&smid=url-share)
+- [^supply_chain]: [AI chip boom sparks BT substrate materials shortage — TSMC's huge demand causes supply disruptions for NAND flash controllers, SSDs | Tom's Hardware](https://www.tomshardware.com/tech-industry/semiconductors/ai-chip-boom-sparks-bt-substrate-materials-shortage-tsmcs-huge-demand-causes-supply-disruptions-for-nand-flash-controllers-ssds)
