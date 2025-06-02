@@ -30,7 +30,7 @@ Regardless, the point of this blog post isn't to debate capabilities, timelines,
 
 ## Capability Drives Adoption, Use
 
-Let us first assume that a tool (AI Assistant) exists that can complete generic, day-to-day _tasks_ for a white-collar job. Historic adoption patterns indicate that it will not be a binary off -> on switch; rather, we will see a standard S-shaped adoption curve.
+Let us first assume that a tool (AI Assistant) exists that can complete generic, day-to-day _tasks_ for a white-collar job. Adoption of AI tools will likely follow the "typical" S-shaped adoption curve we have seen over history; it will not be a binary off -> on switch.
 
 {{< figure
 src="images/diffusion_of_ideas.png"
@@ -74,7 +74,7 @@ I think it is incredibly short-sighted for organizations to close the "top of fu
 
 On the other hand, Demis Hassabis, the CEO of Google DeepMind, is a bit more optimistic. While AI may allow one person to do the job of 70, he argues that those 70 would be able to go on and have the opportunity to do other things, including starting new businesses.[^hassabis_jobs] There is historic precedent for new technologies creating new jobs; assembly lines beget assembly-line workers, the computer created the entire IT industry. It is not unlikely that entirely new job categories could come into existence built on the burgeoning AI industry.
 
-## Resource Economy
+## Sidebar: Resource Economy
 
 In an interview with the New York Times, Hassabis says, "As we get closer to A.G.I. and we make breakthroughs in material sciences, energy, fusion, these sorts of things, helped by A.I., we should start getting to a position in society where we're getting toward what I would call radical abundance, where there's a lot of resources to go around."[^hassabis_jobs] This handwaves away concerns about rapidly increasing energy demand or the approaching limits of our ability to continue to improve the integrated circuit due to wavelengths of light we are able to control, because "AI will solve it".
 
