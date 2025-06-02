@@ -1,6 +1,6 @@
 ---
-title: {{ replace .Name "-" " " | title }}
-date: {{ .Date }}
+title: {{replace .Name "-" " " | title: null}: null}
+date: {{.Date: null}: null}
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -14,6 +14,7 @@ tags:
   - opinion
   # ai/ml
   - agents
+  - AGI
   - arxiv
   - evals
   - generative AI
