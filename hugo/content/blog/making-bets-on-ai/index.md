@@ -68,11 +68,28 @@ This will cause two problems. First, loss of upcoming juniors means the next gen
 
 I think it is incredibly short-sighted for organizations to close the "top of funnel" by replacing entry-level roles with AI. Even if AI can do the same work, you lose the ability to train the next generation; current college students are already much more AI-native than most middle-age workers. Their fresh insights might empower new AI-native practices; they simply lack work experience.
 
+> [!NOTE]
+> [This reddit discussion](https://www.reddit.com/r/singularity/comments/1l2gwo1/dario_amodei_worries_that_due_to_ai_job_losses/) about Dario Amodei's CNN interview explores some of the concerns about concentration of wealth and power coming from this type of (un)employment disruption. Said Amodei, "We need to be raising the alarms. We can prevent it, but not by just saying 'everything's gonna be OK'."
+>
 <!-- In the most pessimistic case, the ultimate outcome I foresee is dystopia. Extreme "AI offshoring" would result in extreme inequality between the haves and have-nots. Subsequently, history tells us that extreme wealth stratification leads to social unrest (riot, revolt, revolution, civil war).[^inequality] Resetting inequality is achieved only when the "have-nots" have sufficient institutional leverage to affect change, which historically occurred through mass mobilization (French Revolution) or institutional protection (post-WWII).[^historic_shocks] Unfortunately, we are not in a paradigm with strong institutional protections (though grassroots efforts may be effective), and mass mobilization will likely be less effective due to AI-aided technologies (surveillance state, weaponized drones, etc.). -->
 
 ### Or Employment Flywheel
 
 On the other hand, Demis Hassabis, the CEO of Google DeepMind, is a bit more optimistic. While AI may allow one person to do the job of 70, he argues that those 70 would be able to go on and have the opportunity to do other things, including starting new businesses.[^hassabis_jobs] There is historic precedent for new technologies creating new jobs; assembly lines beget assembly-line workers, the computer created the entire IT industry. It is not unlikely that entirely new job categories could come into existence built on the burgeoning AI industry.
+
+It is hard to estimate what the new job roles (or even industries) may look like since there is not really a precedent; as a result, this optimistic interpretation of the influence of AI on employment seems more farfetched than the pessimistic one.
+
+TODO:
+TODO: [If Anyone Can Do it, AI Will Do It Better](https://decision.substack.com/p/if-anyone-can-do-it-ai-will-do-it)
+TODO:
+
+### [AI Changes Everything | Armin Ronacher's Thoughts and Writings](https://lucumr.pocoo.org/2025/6/4/changes/)
+
+_"The job of programmers and artists will change, but they won't vanish. I feel like all my skills that I learned as a programmer are more relevant than ever, just with a new kind of tool. Likewise the abundance of AI generated art also makes me so much more determined that I want to hire an excellent designer as soon as I can. People will always value well crafted products. AI might raise the bar for everybody all at once, but it's the act of careful deliberation and very intentional creation that sets you apart from everybody else."_
+
+... _"The more time I spend with these tools, the more I believe that optimism is the more reasonable stance for everyone. AI can dramatically increase human agency when used well. It can help us communicate across cultures. It can democratize access to knowledge. It can accelerate innovation in medicine, science, and engineering."_
+
+_"Right now it's messy and raw, but the path is clear: we are no longer just using machines, we are now working with them._"
 
 ## Sidebar: Resource Economy
 
