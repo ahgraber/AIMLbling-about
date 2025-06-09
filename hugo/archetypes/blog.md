@@ -1,6 +1,6 @@
 ---
-title: {{replace .Name "-" " " | title: null}: null}
-date: {{.Date: null}: null}
+title: {{ replace .Name "-" " " | title }}
+date: {{ .Date }}
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
