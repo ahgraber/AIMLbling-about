@@ -14,6 +14,7 @@ tags:
   - opinion
   # ai/ml
   - agents
+  - AGI
   - arxiv
   - evals
   - generative AI
