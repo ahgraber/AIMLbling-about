@@ -49,7 +49,6 @@ jobs:
               --format markdown \
               --output results.md \
               --exclude-all-private \
-              --exclude-mail \
               '**/*.md' || true
 
       - name: Print Output
