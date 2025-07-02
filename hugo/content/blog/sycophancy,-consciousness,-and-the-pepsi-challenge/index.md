@@ -23,15 +23,21 @@ draft: true
 
 ## Sycophancy, Planning, and the Pepsi Challenge
 
+Sycophancy [click here for pronunciation guide/recording](https://www.merriam-webster.com/dictionary/sycophancy)
+
 Pepsi challenge = RLHF
 sycophancy problem
+llmarena, llama mavericks custom model
 Short duration task Vs long horizon
 
 ## The Mind-Body Problem
 
 What is consciousness, sentience, identity
 
+- does consciousness/sentience require experience / experiential memory?
+
 Inherent memory, experience, learning
+AI memory is currently mechanistic and external to the model. Natural memory operates in latent space and is integrated
 
 - [Sycophancy in GPT-4o: what happened and what we're doing about it | OpenAI](https://openai.com/index/sycophancy-in-gpt-4o/)
 - [The Illusion of Thinking](https://ml-site.cdn-apple.com/papers/the-illusion-of-thinking.pdf)
