@@ -12,7 +12,7 @@
 
           {{ if .Pages }}
             <ul>
-              {{ range .Pages.ByDate }}
+              {{ range .Pages.ByDate.Reverse }}
                 <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
               {{ end }}
             </ul>
