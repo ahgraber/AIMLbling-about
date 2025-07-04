@@ -26,9 +26,11 @@ draft: true
 Sycophancy [click here for pronunciation guide/recording](https://www.merriam-webster.com/dictionary/sycophancy)
 
 Pepsi challenge = RLHF
-sycophancy problem
+sycophancy problem, alignment
 llmarena, llama mavericks custom model
 Short duration task Vs long horizon
+
+[[2506.09050] ALE-Bench: A Benchmark for Long-Horizon Objective-Driven Algorithm Engineering](https://arxiv.org/abs/2506.09050)
 
 ## The Mind-Body Problem
 
