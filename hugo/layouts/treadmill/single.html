@@ -9,10 +9,14 @@
         <div class="content">
           {{ if .Title }}<h1>{{ .Title }}</h1>{{ end }}
           {{ .Content }}
+          {{ partial "custom/citation.html" . }}
         </div>
-        {{ partial "components/last-updated.html" . }}
-        {{ partial "components/pager.html" . }}
-        {{ partial "components/comments.html" . }}
+        {{- partial "components/last-updated.html" . -}}
+        {{- if (site.Params.blog.article.displayPagination | default true) -}}
+          {{- .Scratch.Set "reversePagination" (.Params.reversePagination | default true) -}}
+          {{- partial "components/pager.html" . -}}
+        {{ end }}
+        {{- partial "components/comments.html" . -}}
       </main>
     </article>
   </div>
