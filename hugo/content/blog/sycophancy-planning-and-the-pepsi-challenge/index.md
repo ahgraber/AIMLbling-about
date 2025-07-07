@@ -1,6 +1,6 @@
 ---
 title: Sycophancy, Planning, and the Pepsi Challenge
-date: 2025-06-29T16:43:42-04:00
+date: 2025-07-07
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -18,7 +18,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 ## Sycophancy
