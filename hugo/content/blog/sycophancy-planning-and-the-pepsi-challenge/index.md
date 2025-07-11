@@ -74,6 +74,7 @@ As we continue moving toward longer conversations and Agentic use cases, I hope 
 - [[2504.20879] The Leaderboard Illusion](https://arxiv.org/abs/2504.20879)
 - [Toward understanding and preventing misalignment generalization | OpenAI](https://openai.com/index/emergent-misalignment/)
 - [Trace](https://microsoft.github.io/Trace/)
+- [Machine Bullshit](https://machine-bullshit.github.io/)
 
 ## References
 
