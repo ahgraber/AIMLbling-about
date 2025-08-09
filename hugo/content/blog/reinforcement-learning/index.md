@@ -79,7 +79,7 @@ flowchart TD
     'mat'"]:::corpus
 
     Loss["Cross-Entropy Loss:
-    -log(0.91) ≈ 0.094"]:::loss
+    −log(P(correct token | context))"]:::loss
 
     Update["Parameter Update:
     Increase P('mat' | context)
