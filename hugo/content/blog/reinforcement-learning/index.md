@@ -1,6 +1,6 @@
 ---
 title: Reinforcement Learning
-date: 2025-07-26T12:04:01-04:00
+date: 2025-08-09
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -16,7 +16,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 I had intended to start this post by proclaiming _"2026 will be the year of reinforcement learning"_ as 2025 is "the year of agents"... But model and research releases over the past several weeks indicate that it might be "H2 2025" is when reinforcement learning for agentic AI really takes off. Open model releases such as Qwen3 (particularly the recent Qwen3 0725 updates), Kimi K2, GLM-4.5, gold-level performance from OpenAI and Google at the International Math Olympiad, and a corresponding rapid increase in reinforcement learning algorithm research and refinement indicate that focus of the industry has shifted from scaling raw data and compute to scaling post-training with reinforcement learning (RL).
