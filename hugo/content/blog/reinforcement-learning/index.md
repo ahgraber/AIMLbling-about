@@ -19,7 +19,7 @@ plotly: false
 draft: false
 ---
 
-I had intended to start this post by proclaiming _"2026 will be the year of reinforcement learning"_ as 2025 is "the year of agents"... But model and research releases over the past several weeks indicate that it might be that "H2 2025" is when reinforcement learning for agentic AI really takes off. Open model releases such as Qwen3 (particularly the recent Qwen3 0725 updates), Kimi K2, GLM-4.5, gold-level performance from OpenAI and Google at the International Math Olympiad, and a corresponding rapid increase in reinforcement learning algorithm research and refinement indicate that the focus of the industry has shifted from scaling raw data and compute to scaling post-training with reinforcement learning (RL).
+I had intended to start this post by proclaiming _"2026 will be the year of reinforcement learning"_ as 2025 is "the year of agents"... But model and research releases over the past several weeks indicate that it might be that "H2 2025" is when reinforcement learning for agentic AI really takes off. Open model releases such as Qwen3 (particularly the recent Qwen3 0725 updates), Kimi K2, GLM-4.5, gold-level performance from OpenAI and Google at the International Math Olympiad, and a corresponding rapid increase in reinforcement learning algorithm research and refinement indicate that the focus of the industry has shifted from scaling raw data and compute to scaling post-training with reinforcement learning (RL).[^glm-4.5]
 
 This hypothesis seems to be further validated by OpenAI's GPT-5 release. GPT-5 is cheaper than GPT-4o while retaining the same inference speed (tokens/second or end-to-end latency), and massively cheaper and faster than GPT-4.5, Claude 4 Opus, or Grok 4, which are known to be among the largest models. This low cost and fast response indicate that GPT-5 is likely not much larger than GPT-4o, indicating that generative AI capabilities can continue to increase (presumably due to better training methods and more training time) without significantly scaling model sizes.[^gpt5]
 
@@ -408,6 +408,8 @@ If 2025 was the year of Agents, 2026 will be the year to tune them. RL fine-tuni
 - Caveat: [Reward Hacking in Reinforcement Learning](https://lilianweng.github.io/posts/2024-11-28-reward-hacking/)
 
 ## Reference
+
+[^glm-4.5]: [[2508.06471] GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models](https://arxiv.org/abs/2508.06471)
 
 [^gpt5]: [Thread by @EpochAIResearch on Thread Reader App – Thread Reader App](https://threadreaderapp.com/thread/1953883611389702169.html)
 
