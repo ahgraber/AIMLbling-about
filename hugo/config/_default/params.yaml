@@ -24,6 +24,12 @@ blog:
     sortOrder: desc # or "asc"
     pagerSize: 20 # Posts per page
 
+# Math / diagram engines
+math:
+  # Global math toggle. If false, pages must set `math: true` in front matter to load KaTeX assets.
+  enable: false
+  engine: katex
+
 # Treadmill section-specific settings
 treadmill:
   sortBy: date

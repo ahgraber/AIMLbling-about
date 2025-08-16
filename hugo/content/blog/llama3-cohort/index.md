@@ -29,6 +29,7 @@ models, I thought it would be useful that aggregate all of the information of th
 ## Performance
 
 > [!NOTE]
+>
 > 1. I've transposed table rows/columns from here on (they fit better that way).
 > 2. I've included benchmarks from OpenAI's GPT4 paper and Anthropic's Claude 3 announcement as points of comparison.
 
@@ -126,10 +127,10 @@ any shenanigans on the _implementation_ of the benchmarks.[^openllm] [^benchmark
 might use 8-shot chain-of-thought, 5-shot chain-of-thought, 0-shot, or majority voting. Further, its often unclear whether the reported benchmarks are done on the model after pretraining, after fine-tuning, or after alignment (or some
 combination that provides the best results). So, take all benchmarks with a grain of salt... which, doesn't that kind of invalidate the raison d'être of a benchmark?
 
-Finally, I have to credit Meta for revealing training cost in terms of GPU hours _and_ energy implications (tons of CO\\$\_2\\$ equivalent). It is frustrating to me that it is nonstandard to discuss energy grid and environmental
+Finally, I have to credit Meta for revealing training cost in terms of GPU hours _and_ energy implications (tons of \(CO_{2}\) equivalent). It is frustrating to me that it is nonstandard to discuss energy grid and environmental
 implications of their training costs. I would like to see all technical papers discuss the training costs/requirements for their models, even if they do not release the source code to replicate. GPU class, GPU time, FLOPs, and
-tCO\\$\_2\\$eq are all important metrics to understand the energy requirements of training a model. Further, I would also like to see papers report the cost per 1M token inference in the same manner - GPUs required, GPU class, FLOPs, and
-tCO\\$\_2\\$eq.
+t\(CO_{2}\)eq are all important metrics to understand the energy requirements of training a model. Further, I would also like to see papers report the cost per 1M token inference in the same manner - GPUs required, GPU class, FLOPs, and
+t\(CO_{2}\)eq.
 
 ## References
 

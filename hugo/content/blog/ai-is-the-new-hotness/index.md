@@ -19,13 +19,13 @@ draft: false
 ---
 
 Meta provided insight into some of the costs of training LLMs in their Llama 2[^llama2] and Llama 3[^llama3] papers,
-listing GPU hours and GPU power draw required to train the models, and **tCO\\$\_2\\$eq**, or metric tons of Carbon
+listing GPU hours and GPU power draw required to train the models, and **t\(CO_{2}\)eq**, or metric tons of Carbon
 Dioxide Equivalent emitted. Of note, we see a huge generational increase from Llama2 to Llama3. It took 12x the
 electricity to train Llama3-8B as it did to train Llama2-7B, and 6.5x the electricity to train Llama3-70B as it did its
 prior generation. It is also possible to glean some insights from larger, closed models; OpenAI reported FLOPs and GPUs
 in the GPT-3 paper[^gpt3], from which power consumption was estimated.[^gpt3-est]
 
-{{< table path="power_emissions.csv" header="true" caption="Calculating tCO\\$\_2\\$eq" >}}
+{{< table path="power_emissions.csv" header="true" caption="Calculating t\(CO_{2}\)eq" >}}
 
 The generational difference in GPU power draw (W) is due to upgrades in training hardware. GPT3 trained on NVIDIA
 _V100_ accelerators (300-330W), Llama 2 trained on NVIDIA _A100_-80GB accelerators (TDP of 350 or 400W), and Llama 3
@@ -123,10 +123,10 @@ theoretical maximum.
 The cumulative annual power use of these GPUs is ~53 million MWh/yr.
 
 $$
-\\begin{align\*}
-9,000,000 \\text{ A100s} \\times 400 \\text{W} \\times 8,765 \\text{ H/yr} & = 31,554,000 \\text{ MWh/yr} \\\\
-3,500,000 \\text{ H100s} \\times 700 \\text{W} \\times 8,765 \\text{ H/yr} & = 21,474,250 \\text{ MWh/yr} \\\\
-\\end{align\*}
+\begin{align*}
+9,000,000 \text{ A100s} \times 400 \text{W} \times 8,765 \text{ H/yr} & = 31,554,000 \text{ MWh/yr} \\
+3,500,000 \text{ H100s} \times 700 \text{W} \times 8,765 \text{ H/yr} & = 21,474,250 \text{ MWh/yr}
+\end{align*}
 $$
 
 ## The catch
@@ -161,15 +161,15 @@ doubled to account for this power draw.
 Total global electricity production is estimated to be 24,816,400 GWh/year.[^wiki] The theoretical all-GPU max
 consumption (including datacenter additions) is 106 GWh/year, or 0.0004% of the global production.
 
-## CO\\$\_2\\$ emissions
+## \(CO_{2}\) emissions
 
 <!-- markdownlint-disable MD028 -->
 
 > The actual power usage of a GPU is dependent on its utilization and is likely to vary from the Thermal Design Power
 > (TDP) that we employ as an estimation for GPU power... We estimate the total emissions for training to be 539
-> tCO\\$\_2\\$eq, of which 100% were directly offset by Meta's sustainability program.[^llama2]
+> t\(CO_{2}\)eq, of which 100% were directly offset by Meta's sustainability program.[^llama2]
 
-> Estimated total emissions were 2290 tCO\\$\_2\\$eq, 100% of which were offset by Meta's sustainability
+> Estimated total emissions were 2290 t\(CO_{2}\)eq, 100% of which were offset by Meta's sustainability
 > program.[^llama3]
 
 <!-- markdownlint-enable MD028 -->
@@ -177,32 +177,32 @@ consumption (including datacenter additions) is 106 GWh/year, or 0.0004% of the 
 As mentioned above, these numbers represent GPU use only, and do not account for the rest of the server or datacenter
 infrastructure.
 
-How did they ascertain tCO\\$\_2\\$eq?
+How did they ascertain t\(CO_{2}\)eq?
 
 $$
-\\begin{align\*}
-\\ce{power consumed (kWh)} & = {\\ce{GPU time (Hours)} \\times \\ce{GPU power draw (W)} \\over 1000}\\\\
-\\ce{metric tons CO_2 equivalent (tCO_2eq)} & = \\ce{power consumed (kWh)} \\times \\ce{emission rate (CO_2/kWh)}\\\\
-\\end{align\*}
+\begin{align*}
+\text{power consumed (kWh)} &= \frac{\text{GPU time (Hours)} \times \text{GPU power draw (W)}}{1000} \\
+\text{metric tons CO$_2$ equivalent (tCO$_2$eq)} &= \text{power consumed (kWh)} \times \text{emission rate (CO$_2$/kWh)}
+\end{align*}
 $$
 
-where the CO\\$\_2\\$ to kWh emission rate, `0.000417`, is given by the EPA based on the US national annual average
-CO\\$\_2\\$ output rate in 2021.[^epa] While not exactly as claimed by Meta, this recalculation is fairly close!
+where the \(CO_{2}\) to kWh emission rate, `0.000417`, is given by the EPA based on the US national annual average
+\(CO_{2}\) output rate in 2021.[^epa] While not exactly as claimed by Meta, this recalculation is fairly close!
 
-|                                                              | GPU-only consumption (MWh) | GPU-only emissions<br>(tCO\\$\_2\\$eq) | + Datacenter (MWh) | + Datacenter emissions<br>(tCO\\$\_2\\$eq) |
-| -----------------------------------------------------------: | -------------------------: | -------------------------------------: | -----------------: | -----------------------------------------: |
-|                                Llama 3 8B<br>(training only) |                        910 |                                    380 |              1,820 |                                        760 |
-|                               Llama 3 70B<br>(training only) |                      4,480 |                                   1870 |              8,960 |                                       3740 |
-| theoretical GPU max consumption<br>Training and/or Inference |                 53,000,000 |                             22,000,000 |        106,000,000 |                                 44,000,000 |
+|                                                              | GPU-only consumption (MWh) | GPU-only emissions<br>(t\(CO_{2}\)eq) | + Datacenter (MWh) | + Datacenter emissions<br>(t\(CO_{2}\)eq) |
+| -----------------------------------------------------------: | -------------------------: | -----------------------------------: | -----------------: | ---------------------------------------: |
+|                                Llama 3 8B<br>(training only) |                        910 |                                  380 |              1,820 |                                      760 |
+|                               Llama 3 70B<br>(training only) |                      4,480 |                                 1870 |              8,960 |                                     3740 |
+| theoretical GPU max consumption<br>Training and/or Inference |                 53,000,000 |                           22,000,000 |        106,000,000 |                               44,000,000 |
 
 > [!NOTE]
-> You may notice that I did not include the A/C power consumption in the CO\\$\_2\\$
+> You may notice that I did not include the A/C power consumption in the \(CO_{2}\)
 > calculation above. I'll get to that in the next section.
 
-Extending our max-consumption exercise from above, the estimated CO\\$\_2\\$ emissions from running all recent
+Extending our max-consumption exercise from above, the estimated \(CO_{2}\) emissions from running all recent
 datacenter GPUs and their associated hardware is 44 million metric tons per year. Or, given the estimates from "Power
-Hungry Processing", each 1,000 10-token inferences releases 0.0000417 tCO\\$\_2\\$eq, or about 1/10$^{th}$ of a pound of
-CO\\$\_2\\$.
+Hungry Processing", each 1,000 10-token inferences releases 0.0000417 t\(CO_{2}\)eq, or about (1/10^{th}) of a pound of
+\(CO_{2}\).
 
 To put these numbers in scale, I'll share some equivalents I've found using the EPA's equivalencies calculator[^epa]:
 
@@ -214,13 +214,13 @@ To put these numbers in scale, I'll share some equivalents I've found using the 
 | theoretical GPU max consumption<br>Training and/or Inference | 1 year of electricity for 4.3 million homes |       11 coal-fired power plants running for 1 year       |
 |                1,000 10-token inferences<br>(7B-class model) |           2.8 smartphone charges            |     0.21 mi driven by a gas-powered passenger vehicle     |
 
-The world's largest carbon capture facility can capture 36,000 tons of CO\\$\_2\\$ per year.[^capture] Capturing the
+The world's largest carbon capture facility can capture 36,000 tons of \(CO_{2}\) per year.[^capture] Capturing the
 carbon emitted by the electricity consumed by datacenters hosting GPU clusters would require 1,200 of them.
 
 > [!NOTE]
 > Microsoft just published their [2024 Environmental Sustainability Report](https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lhhu). In it,
-> they note that while their direct CO\\$\_2\\$ emissions from the datacenter have actually decreased from 2020, their
-> overall CO\\$\_2\\$ emissions have _increased_, due to emissions related to constructing new data centers.
+> they note that while their direct \(CO_{2}\) emissions from the datacenter have actually decreased from 2020, their
+> overall \(CO_{2}\) emissions have _increased_, due to emissions related to constructing new data centers.
 
 ## Water consumption
 
@@ -252,9 +252,9 @@ data centers into the ocean and using water temperatures to cool the server comp
 about ocean warming and icecap melting, I wanted to understand how much directly dumping heat into the ocean would
 effect temperatures:\
 Total global electricity production is estimated to be 24,816,400 GWh/year.[^wiki] If the global electricity production
-was used directly to heat the ocean with no losses, it would increase global ocean temperature by 0.00002\\$\\degree\\$C per
+was used directly to heat the ocean with no losses, it would increase global ocean temperature by 0.00002\(\degree\)C per
 year, assuming electricity production does not change. What a relief!(?) Of course, this assumes the heat is
-dissapated; I imagine that exposing 90\\$\\degree\\$C hotspots directly to ocean ecosystems would have negative impacts.
+dissapated; I imagine that exposing 90\(\degree\)C hotspots directly to ocean ecosystems would have negative impacts.
 
 <!-- ```sh
 #   global power production / ocean volume / water density / water specific heat
@@ -263,8 +263,8 @@ units -t '24816400 GWh / (1347000000 km^3) / waterdensity / water_specificheat'
 
 ## AI has environmental impacts, regardless of offsets
 
-In both their Llama 2 and LLama 3 papers, Meta shared the tCO\\$\_2\\$ emissions equivalents from the electricity use
-for training the models and trumpeted that "100% [of the CO\\$\_2\\$ emissions] were directly offset by Meta's
+In both their Llama 2 and LLama 3 papers, Meta shared the t\(CO_{2}\) emissions equivalents from the electricity use
+for training the models and trumpeted that "100% [of the \(CO_{2}\) emissions] were directly offset by Meta's
 sustainability program"[^llama2]. Microsoft promises, "by 2030, 100% of our electricity consumption will be matched by
 zero carbon energy purchases 100% of the time"[^microsoft-2024-sust]. Further, companies like Google, Meta, and
 Microsoft are incredibly aware of the optics of their energy use, and publish sustainability reports and fund green

@@ -7,17 +7,9 @@ goldmark:
   extensions:
     passthrough:
       delimiters:
-        block:
-          - - \[
-            - \]
-          - - $$
-            - $$
-        inline:
-          - - \(
-            - \)
-          - - \$
-            - \$
-      enable: false
+        block: [['\[', '\]'], ["$$", "$$"]]
+        inline: [['\(', '\)']]
+      enable: true
   strikethrough: true
   table: true
   taskList: true

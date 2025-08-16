@@ -1,5 +1,5 @@
 ---
-title: "Math is Fun"
+title: Math is Fun
 date: 2024-04-22
 tags: []
 series: []
@@ -7,38 +7,27 @@ math: true
 draft: true
 ---
 
-This is an inline \\(a^\*=x-b^\*\\) equation.  
-This is an inline \\$a^\*=x-b^\*\\$ equation with alternate delimiters.
+This is an inline \(a^*=x-b^*\) equation.
 
-These are block equations:
+These are block equations using preferred delimiters:
 
-\\[a^\*=x-b^\*\\]
+$$a^*=x-b^*$$
 
-\\[ a^\*=x-b^\* \\]
-
-\\[
-a^\*=x-b^\*
-\\]
-
-These are block equations using alternate delimiters:
-
-$$a^\*=x-b^\*$$
-
-$$ a^\*=x-b^\* $$
+$$ a^*=x-b^* $$
 
 $$
-a^\*=x-b^\*
+a^*=x-b^*
 $$
 
-\\[
+$$
 \begin{aligned}
-KL(\hat{y} || y) &= \sum_{c=1}^{M}\hat{y}_c \log{\frac{\hat{y}_c}{y_c}} \\
+KL(\hat{y} || y) &= \sum_{c=1}^{M}\hat{y}_c \log{\frac{\hat{y}_c}{y_c}} \
 JS(\hat{y} || y) &= \frac{1}{2}(KL(y||\frac{y+\hat{y}}{2}) + KL(\hat{y}||\frac{y+\hat{y}}{2}))
 \end{aligned}
-\\]
+$$
 
 $$
-C_p[\ce{H2O(l)}] = \pu{75.3 J // mol K}
+C_p[H_2O(\ell)] = 75.3,\text{J},\text{mol}^{-1},\text{K}^{-1}
 $$
 
 $$
@@ -51,9 +40,7 @@ $$
 
 $$
 \vec{\nabla} \times \vec{F} =
-            \left( \frac{\partial F_z}{\partial y} - \frac{\partial F_y}{\partial z} \right) \mathbf{i}
-          + \left( \frac{\partial F_x}{\partial z} - \frac{\partial F_z}{\partial x} \right) \mathbf{j}
-          + \left( \frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y} \right) \mathbf{k}
+\left( \frac{\partial F_z}{\partial y} - \frac{\partial F_y}{\partial z} \right) \mathbf{i} + \left( \frac{\partial F_x}{\partial z} - \frac{\partial F_z}{\partial x} \right) \mathbf{j} + \left( \frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y} \right) \mathbf{k}
 $$
 
 $$
@@ -62,15 +49,15 @@ $$
 
 $$
 (\nabla_X Y)^k = X^i (\nabla_i Y)^k =
-           X^i \left( \frac{\partial Y^k}{\partial x^i} + \Gamma_{im}^k Y^m \right)
+X^i \left( \frac{\partial Y^k}{\partial x^i} + \Gamma_{im}^k Y^m \right)
 $$
 
-When $a \ne 0$, there are two solutions to \\(ax^2 + bx + c = 0\\) and they are
+When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
 $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
 
 $$
 \begin{equation}
-S (ω)=1.466\, H_s^2 \,  \frac{ω_0^5}{ω^6 }  \, e^[-3^ { ω/(ω_0  )]^2}
+S(\omega) = 1.466, H_s^2 , \frac{\omega_0^5}{\omega^6} , e^{-3 (\omega/\omega_0)^2}
 \end{equation}
 $$
 

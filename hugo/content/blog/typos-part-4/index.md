@@ -48,8 +48,8 @@ According to [Huggingface](https://huggingface.co/docs/transformers/en/perplexit
 > Importantly, this means that the tokenization procedure has a direct impact on a model's perplexity which should always be taken into consideration when comparing different models.[^perplexity]
 
 $$
-\text{given sequence } X = (x_0, x_1, \dots, x_n) \\\\
-\text{perplexity}(X) = \exp \left\( {-\frac{1}{n}\sum_i^n \log P(x_n|x_{<n}) } \right\)
+\text{Given sequence } X = (x_0, x_1, \dots, x_n) \
+\text{perplexity}(X) = \exp\left( -\frac{1}{n} \sum_{i=1}^{n} \log P(x_i \mid x_{< i}) \right)
 $$
 
 In plainer language, to calculate perplexity:
