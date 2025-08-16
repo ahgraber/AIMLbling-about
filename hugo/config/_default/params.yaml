@@ -22,6 +22,7 @@ blog:
     # date | lastmod | publishDate | title | weight
     sortBy: date
     sortOrder: desc # or "asc"
+    pagerSize: 20 # Posts per page
 
 # Treadmill section-specific settings
 treadmill:

@@ -21,7 +21,7 @@ outputs:
 module:
   hugoVersion:
     extended: true
-    min: "0.112.0"
+    min: "0.146.0"
   imports:
     - path: github.com/ahgraber/ai-treadmill
       mounts:
@@ -30,7 +30,6 @@ module:
           # Include all markdown files with their directory structure
           includeFiles: ["**/*.md", "**/*.jpeg", "**/*.png"]
     - path: github.com/imfing/hextra
-      version: v0.9.7
 #
 # services:
 #   googleAnalytics:
