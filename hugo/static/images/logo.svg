@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="12in" height="3in" viewBox="0 0 12 3" version="1.1">
+
+  <!-- Background -->
+  <rect width="12" height="3" fill="#1f1f1f" />
+
+  <!-- Orbital Icon -->
+  <g transform="translate(0.25,0.55) scale(1.0)">
+    <!-- Dashed orbit ring -->
+    <circle cx="1" cy="1" r="0.65"
+      fill="none" stroke="#f4b300" stroke-width="0.043"
+      stroke-dasharray="0.255,0.255" transform="rotate(11.25,1,1)" />
+    <!-- Central circle -->
+    <circle cx="1" cy="1" r="0.23"
+      fill="none" stroke="#f4b300" stroke-width="0.07" />
+    <!-- Outer circles -->
+    <g stroke="#f4b300" stroke-width="0.055" fill="none">
+      <circle cx="1.00" cy="0.35" r="0.12"/>
+      <circle cx="1.50" cy="0.50" r="0.12"/>
+      <circle cx="1.65" cy="1.00" r="0.12"/>
+      <circle cx="1.50" cy="1.50" r="0.12"/>
+      <circle cx="1.00" cy="1.65" r="0.12"/>
+      <circle cx="0.50" cy="1.50" r="0.12"/>
+      <circle cx="0.35" cy="1.00" r="0.12"/>
+      <circle cx="0.50" cy="0.50" r="0.12"/>
+    </g>
+  </g>
+
+  <!-- Wordmark (tight single line) -->
+  <text x="2"
+        y="1.9"
+        font-family="OmegaCentauri, sans-serif"
+        font-size="1.1px"
+        font-weight="normal"
+        fill="#ebebeb"
+        letter-spacing="0.02em">
+    NineRealm
+  </text>
+  <text x="8.6"
+        y="1.9"
+        font-family="Futura, sans-serif"
+        font-size="1.125px"
+        font-weight="500"
+        fill="#f4b300"
+        letter-spacing="0.02em">
+    LABS
+  </text>
+
+</svg>
