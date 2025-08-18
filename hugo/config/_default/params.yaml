@@ -47,8 +47,8 @@ navbar:
   displayTitle: true
   displayLogo: true
   logo:
-    path: images/logo-icon.png
-    dark: images/logo-icon.png
+    path: images/icon-transparent.png
+    dark: images/icon-transparent.png
     link: /
     width: 50
     height: 50
