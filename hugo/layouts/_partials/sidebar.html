@@ -1,0 +1,187 @@
+{{- /* Custom override: remove theme toggle from sidebar, keep it in footer. */ -}}
+{{- $context := .context -}}
+
+{{- /* Always allow footer switches (theme toggle) to render */ -}}
+{{- $context.Scratch.Set "enableFooterSwitches" true -}}
+
+{{- $disableSidebar := .disableSidebar | default false -}}
+{{- $displayPlaceholder := .displayPlaceholder | default false -}}
+
+{{- $sidebarClass := cond $disableSidebar (cond $displayPlaceholder "hx:md:hidden hx:xl:block" "hx:md:hidden") "hx:md:sticky" -}}
+
+{{- $navRoot := cond (eq site.Home.Type "docs") site.Home $context.FirstSection -}}
+{{- $pageURL := $context.RelPermalink -}}
+
+{{/* EXPERIMENTAL: per-page front matter `sidebar.hide: true` */}}
+{{- if .context.Params.sidebar.hide -}}
+  {{- $disableSidebar = true -}}
+  {{- $displayPlaceholder = true -}}
+{{- end -}}
+
+
+<aside
+  class="hextra-sidebar-container hx:flex hx:flex-col hx:print:hidden hx:md:top-16 hx:md:shrink-0 hx:md:w-64 hx:md:self-start hx:max-md:[transform:translate3d(0,-100%,0)] {{ $sidebarClass }}">
+  <!-- Search bar on small screen -->
+  <div class="hx:px-4 hx:pt-4 hx:md:hidden">
+    {{ partial "search.html" }}
+  </div>
+
+  <div
+    class="hextra-scrollbar hx:overflow-y-auto hx:overflow-x-hidden hx:p-4 hx:grow hx:md:h-[calc(100vh-var(--navbar-height)-var(--menu-height))]">
+    <!-- Mobile nav tree -->
+    <ul class="hx:flex hx:flex-col hx:gap-1 hx:md:hidden">
+      {{ template "sidebar-main" (dict "context" site.Home "pageURL" $pageURL "page" $context "toc" true) -}}
+      {{ template "sidebar-footer" }}
+    </ul>
+
+    <!-- Desktop nav tree -->
+    {{- if $disableSidebar -}}
+      {{- if $displayPlaceholder }}<div class="hx:max-xl:hidden hx:h-0 hx:w-64 hx:shrink-0"></div>{{ end -}}
+      {{/* We already set enableFooterSwitches above */}}
+    {{- else -}}
+      <ul class="hx:flex hx:flex-col hx:gap-1 hx:max-md:hidden">
+        {{ template "sidebar-main" (dict "context" $navRoot "page" $context "pageURL" $pageURL) }}
+        {{ template "sidebar-footer" }}
+      </ul>
+    {{- end -}}
+  </div>
+
+  {{/* We intentionally removed the theme toggle here.
+    If multilingual, still show language switch (optional).
+  */}}
+  {{ $switchesClass := cond $disableSidebar "hx:md:hidden" "" -}}
+  {{ if hugo.IsMultilingual }}
+    <div
+      class="{{ $switchesClass }} hx:sticky hx:bottom-0 hx:max-h-(--menu-height) hx:bg-white hx:dark:bg-dark hx:mx-4 hx:py-4 hx:shadow-[0_-12px_16px_#fff] hx:dark:shadow-[0_-12px_16px_#111] hx:z-10 hx:flex hx:justify-end">
+      {{- partial "language-switch" (dict "context" $context "grow" true) -}}
+    </div>
+  {{- end -}}
+</aside>
+
+{{- define "sidebar-main" -}}
+  {{ template "sidebar-tree" (dict "context" .context "level" 0 "page" .page "pageURL" .pageURL "toc" (.toc | default false)) }}
+{{- end -}}
+
+{{- define "sidebar-tree" -}}
+  {{- if ge .level 4 -}}
+    {{- return -}}
+  {{- end -}}
+
+  {{- $context := .context -}}
+  {{- $page := .page -}}
+  {{- $pageURL := .page.RelPermalink -}}
+  {{- $level := .level -}}
+  {{- $toc := .toc | default false -}}
+
+  {{- with $items := union .context.RegularPages .context.Sections -}}
+    {{- $items = where $items "Params.sidebar.exclude" "!=" true -}}
+    {{- if eq $level 0 -}}
+      {{- range $items.ByWeight }}
+        {{- if .Params.sidebar.separator -}}
+          <li
+            class="[word-break:break-word] hx:mt-5 hx:mb-2 hx:px-2 hx:py-1.5 hx:text-sm hx:font-semibold hx:text-gray-900 hx:first:mt-0 hx:dark:text-gray-100">
+            <span class="hx:cursor-default">{{ partial "utils/title" . }}</span>
+          </li>
+        {{- else -}}
+          {{- $active := eq $pageURL .RelPermalink -}}
+          {{- $shouldOpen := or (.Params.sidebar.open) (.IsAncestor $page) $active | default true }}
+          <li class="{{ if $shouldOpen }}open{{ end }}">
+            {{- $linkTitle := partial "utils/title" . -}}
+            {{- template "sidebar-item-link" dict "context" . "active" $active "title" $linkTitle "link" .RelPermalink -}}
+            {{- if and $toc $active -}}
+              {{- template "sidebar-toc" dict "page" . -}}
+            {{- end -}}
+            {{- template "sidebar-tree" dict "context" . "page" $page "pageURL" $pageURL "level" (add $level 1) "toc" $toc -}}
+          </li>
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      <div class="hx:ltr:pr-0 hx:overflow-hidden">
+        <ul
+          class='hx:relative hx:flex hx:flex-col hx:gap-1 hx:before:absolute hx:before:inset-y-1 hx:before:w-px hx:before:bg-gray-200 hx:before:content-[""] hx:ltr:ml-3 hx:ltr:pl-3 hx:ltr:before:left-0 hx:rtl:mr-3 hx:rtl:pr-3 hx:rtl:before:right-0 hx:dark:before:bg-neutral-800'>
+          {{- range $items.ByWeight }}
+            {{- $active := eq $pageURL .RelPermalink -}}
+            {{- $shouldOpen := or (.Params.sidebar.open) (.IsAncestor $page) $active | default true }}
+            {{- $linkTitle := partial "utils/title" . -}}
+            <li class="hx:flex hx:flex-col {{ if $shouldOpen }}open{{ end }}">
+              {{- template "sidebar-item-link" dict "context" . "active" $active "title" $linkTitle "link" .RelPermalink -}}
+              {{- if and $toc $active -}}
+                {{ template "sidebar-toc" dict "page" . }}
+              {{- end -}}
+              {{ template "sidebar-tree" dict "context" . "page" $page "pageURL" $pageURL "level" (add $level 1) "toc" $toc }}
+            </li>
+          {{- end -}}
+        </ul>
+      </div>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- define "sidebar-toc" -}}
+  {{ $page := .page }}
+  {{ with $page.Fragments.Headings }}
+    <ul
+      class='hx:flex hx:flex-col hx:gap-1 hx:relative hx:before:absolute hx:before:inset-y-1 hx:before:w-px hx:before:bg-gray-200 hx:before:content-[""] hx:dark:before:bg-neutral-800 hx:ltr:pl-3 hx:ltr:before:left-0 hx:rtl:pr-3 hx:rtl:before:right-0'>
+      {{- range . }}
+        {{- with .Headings }}
+          {{- range . -}}
+            <li>
+              <a
+                href="#{{ anchorize .ID }}"
+                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer hx:text-gray-500 hover:hx:bg-gray-100 hover:hx:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:bg-neutral-800">
+                {{- .Title | safeHTML | plainify | htmlUnescape -}}
+              </a>
+            </li>
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    </ul>
+  {{- end }}
+{{- end -}}
+
+{{- define "sidebar-footer" -}}
+  {{- range site.Menus.sidebar -}}
+    {{- $name := or (T .Identifier) .Name -}}
+    {{ if eq .Params.type "separator" }}
+      <li
+        class="[word-break:break-word] hx:mt-5 hx:mb-2 hx:px-2 hx:py-1.5 hx:text-sm hx:font-semibold hx:text-gray-900 hx:first:mt-0 hx:dark:text-gray-100">
+        <span class="hx:cursor-default">{{ $name }}</span>
+      </li>
+    {{ else }}
+      {{- $link := .URL -}}
+      {{- with .PageRef -}}
+        {{- if hasPrefix . "/" -}}
+          {{- $link = relLangURL (strings.TrimPrefix "/" .) -}}
+        {{- end -}}
+      {{- end -}}
+      <li>{{ template "sidebar-item-link" dict "active" false "title" $name "link" $link }}</li>
+    {{ end }}
+  {{- end -}}
+{{- end -}}
+
+{{- define "sidebar-item-link" -}}
+  {{- $external := strings.HasPrefix .link "http" -}}
+  <a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors hx:text-gray-500 hover:hx:bg-gray-100 hover:hx:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:bg-neutral-800"
+    href="{{ .link }}"
+    {{ if $external }}target="_blank" rel="noreferrer"{{ end }}>
+    {{- .title -}}
+    {{- with .context }}
+      {{- if or .RegularPages .Sections }}
+        <span class="hextra-sidebar-collapsible-button">
+          {{- template "sidebar-collapsible-button" -}}
+        </span>
+      {{- end -}}
+    {{- end -}}
+  </a>
+{{- end -}}
+
+{{- define "sidebar-collapsible-button" -}}
+  <svg
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    class="hx:h-[18px] hx:min-w-[18px] hx:rounded-xs hx:p-0.5 hx:hover:bg-gray-800/5 hx:dark:hover:bg-gray-100/5">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+  </svg>
+{{- end -}}
