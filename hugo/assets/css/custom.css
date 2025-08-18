@@ -3,9 +3,9 @@ core brand colors. It generates accessible "-darker" and "-lighter" variants and
 Hextra theme's default CSS variables (`--hx-*`). */ /* --- 1. Base Color Palette --- */ :root { /* Core Brand Colors */
 --xanthous-base: #f4b300; --tangerine-base: #f28c25; --tomato-base: #f06449; --ylnmn-blue-base: #315080;
 --paynes-gray-base: #50657e; /* Accessible Variants (Generated for contrast against light/dark backgrounds) */
---xanthous-darker: #b38300; --tangerine-darker: #E6730D; --tomato-darker: #E34423; --ylnmn-blue-lighter: #85a2ce;
---paynes-gray-darker: #3C4C5F; --paynes-gray-lighter: #8393A4; /* Neutral Palette */ --slate-gray: #7c90a0;
---eerie-black: #1F1F1F; --battleship-gray: #8a8a8a; --anti-flash-white: #ebebeb; --footer-bg-light: #e0e0e0; } /* ---
+--xanthous-darker: #b38300; --tangerine-darker: #e6730d; --tomato-darker: #e34423; --ylnmn-blue-lighter: #85a2ce;
+--paynes-gray-darker: #3c4c5f; --paynes-gray-lighter: #8393a4; /* Neutral Palette */ --slate-gray: #7c90a0;
+--eerie-black: #1f1f1f; --battleship-gray: #8a8a8a; --anti-flash-white: #ebebeb; --footer-bg-light: #e0e0e0; } /* ---
 2. Theme Variable Overrides --- */ /* Apply the brand palette by overriding Hextra's default variables */ html { /*
 Background */ --hx-color-white: var(--anti-flash-white); /* Text */ --hx-color-slate-900: var(--eerie-black); /*
 Default text */ /* Links */ --hx-color-primary-600: var(--ylnmn-blue-base); /* Borders */ --hx-color-neutral-200:
@@ -13,40 +13,47 @@ var(--slate-gray); /* e.g. h2 bottom border */ } html.dark { /* Background */ --
 Text */ --hx-color-gray-100: var(--anti-flash-white); /* Default text */ --hx-color-slate-100: var(--anti-flash-white);
 /* Heading text */ /* Links */ --hx-color-primary-600: var(--ylnmn-blue-lighter); /* Borders */ --hx-color-primary-100:
 var(--paynes-gray-lighter); --hx-color-neutral-800: var(--paynes-gray-lighter); } /* --- 3. Custom Element Overrides
---- */ /* Headings: Use the accessible xanthous variants */ main
-:where(h1,h2,h3,h4,h5,h6):not(.hextra-steps):not(:where([class~=not-prose],[class~=not-prose] *)) { color:
-var(--xanthous-darker); } .dark main
-:where(h1,h2,h3,h4,h5,h6):not(.hextra-steps):not(:where([class~=not-prose],[class~=not-prose] *)) { color:
-var(--xanthous-base); } /* Ensure heading links inherit the new heading color */ main article h1 a, main article h2 a,
-main article h3 a, main article h4 a, main article h5 a, main article h6 a { color: inherit !important; } /* Navbar
-Text: Use the accessible xanthous variants */ .hextra-nav-container, .hextra-nav-container a, .hextra-nav-container
-button { color: var(--xanthous-darker) !important; } html.dark .hextra-nav-container, html.dark .hextra-nav-container
-a, html.dark .hextra-nav-container button { color: var(--xanthous-base) !important; } /* Reset icon color in Navbar to
-the default text color */ .hextra-nav-container a svg { color: var(--hx-color-slate-900); fill: currentColor; }
-html.dark .hextra-nav-container a svg { color: var(--hx-color-gray-100); fill: currentColor; } /* Citations: Use the
-accessible tangerine variants */ a.footnote-ref { color: var(--tangerine-darker); } html.dark a.footnote-ref { color:
-var(--tangerine-base); } /* Blockquotes: Use the accessible Paynes Gray variants */ blockquote { border-left-color:
+--- */ /* Headings: Use the accessible xanthous variants */ main :where(h1, h2, h3, h4, h5,
+h6):not(.hextra-steps):not(:where([class~="not-prose"], [class~="not-prose"] *)) { color: var(--xanthous-darker); }
+.dark main :where(h1, h2, h3, h4, h5, h6):not(.hextra-steps):not(:where([class~="not-prose"], [class~="not-prose"] *))
+{ color: var(--xanthous-base); } /* Ensure heading links inherit the new heading color */ main article h1 a, main
+article h2 a, main article h3 a, main article h4 a, main article h5 a, main article h6 a { color: inherit !important; }
+/* Navbar Text: Use the accessible xanthous variants */ .hextra-nav-container, .hextra-nav-container a,
+.hextra-nav-container button { color: var(--xanthous-darker) !important; } html.dark .hextra-nav-container, html.dark
+.hextra-nav-container a, html.dark .hextra-nav-container button { color: var(--xanthous-base) !important; } /* Reset
+icon color in Navbar to the default text color */ .hextra-nav-container a svg { color: var(--hx-color-slate-900); fill:
+currentColor; } html.dark .hextra-nav-container a svg { color: var(--hx-color-gray-100); fill: currentColor; } /*
+Ensure linked icons in main content are readable in dark mode */ /* html.dark .content a svg { color:
+var(--hx-color-primary-600); fill: currentColor; } */ /* Footnote Citations: Use the accessible tangerine variants */
+a.footnote-ref { color: var(--tangerine-darker); } html.dark a.footnote-ref { color: var(--tangerine-base); } /*
+Article Citation */ .citation-wrap pre { white-space: pre-wrap; word-break: break-word; overflow-wrap: normal; hyphens:
+none; } /* Blockquotes: Use the accessible Paynes Gray variants */ blockquote { border-left-color:
 var(--paynes-gray-darker); color: var(--paynes-gray-darker); } html.dark blockquote { border-left-color:
-var(--paynes-gray-lighter); color: var(--paynes-gray-lighter); } /* Ensure linked icons in main content are readable in
-dark mode */ html.dark .content a svg { color: var(--hx-color-primary-600); fill: currentColor; } /* Custom style for
-the RSS button (hero-badge shortcode on the blog page). This is targeted using the unique href attribute. */
-a[href="index.xml"] { background-color: var(--ylnmn-blue-base) !important; color: var(--anti-flash-white) !important;
-border-color: var(--ylnmn-blue-base) !important; transition: all 0.2s ease-in-out; } a[href="index.xml"]:hover {
-background-color: var(--ylnmn-blue-lighter) !important; color: var(--jet) !important; border-color:
-var(--ylnmn-blue-lighter) !important; } /* Ensure SVG icon color matches the button's text color */ a[href="index.xml"]
-svg { color: currentColor !important; } /* Custom footer background color for light mode */ html:not(.dark)
-.hextra-footer { background-color: var(--footer-bg-light) !important; } /* Custom fade-out gradient colors for the
-bottom of the sidebar and TOC to match the new theme backgrounds. */ .hextra-sidebar-container > div:last-child,
-.hextra-toc .hextra-scrollbar > div:last-child { --tw-shadow-color: var(--anti-flash-white) !important; } .dark
-.hextra-sidebar-container > div:last-child, .dark .hextra-toc .hextra-scrollbar > div:last-child { --tw-shadow-color:
-var(--eerie-black) !important; } /* --- 4. Custom Hextra Card Styles --- */ /* Card Title & Subtitle Text: Use
-accessible xanthous variants */ .hextra-card .hextra-card-icon, .hextra-card .hextra-card-subtitle { color:
-var(--xanthous-darker) !important; } .dark .hextra-card .hextra-card-icon, .dark .hextra-card .hextra-card-subtitle {
-color: var(--xanthous-base) !important; } /* Card Icon Fill: Use default text colors */ .hextra-card .hextra-card-icon
-svg { color: var(--eerie-black) !important; } .dark .hextra-card .hextra-card-icon svg { color: var(--anti-flash-white)
-!important; } /* --- 5. General Link Style Override --- */ /* This rule ensures all general links in the main content
-area that haven't been specifically styled (like cards, buttons, or footnotes) use the default brand link color. It's
-important for overriding theme utility classes on elements like the "Read more" link. */ main p
-a:not(.hextra-card):not(.footnote-ref):not([href="index.xml"]) { color: var(--hx-color-primary-600) !important;
-text-decoration: underline !important; text-decoration-thickness: 1px !important; } /* Custom dark mode background for
-details shortcode */ html.dark details { background-color: var(--paynes-gray-darker) !important; }
+var(--paynes-gray-lighter); color: var(--paynes-gray-lighter); } /* Custom style for the RSS button (hero-badge
+shortcode on the blog page). This is targeted using the unique href attribute. */ a[href="index.xml"] {
+background-color: var(--ylnmn-blue-base) !important; color: var(--anti-flash-white) !important; border-color:
+var(--ylnmn-blue-base) !important; transition: all 0.2s ease-in-out; } a[href="index.xml"]:hover { background-color:
+var(--ylnmn-blue-lighter) !important; color: var(--jet) !important; border-color: var(--ylnmn-blue-lighter) !important;
+} /* Ensure SVG icon color matches the button's text color */ a[href="index.xml"] svg { color: currentColor !important;
+} /* Custom footer background color for light mode */ html:not(.dark) .hextra-footer { background-color:
+var(--footer-bg-light) !important; } /* Custom dark mode background for details shortcode */ html.dark details {
+background-color: var(--paynes-gray-darker) !important; } /* Target the code block background */ /* .hextra-code-block
+pre { background-color: #FFFFFF !important; } */ html.dark .hextra-code-block pre { background-color: #282828
+!important; } /* Custom fade-out gradient colors for the bottom of the sidebar and TOC to match the new theme
+backgrounds. */ .hextra-sidebar-container > div:last-child, .hextra-toc .hextra-scrollbar > div:last-child {
+--tw-shadow-color: var(--anti-flash-white) !important; } .dark .hextra-sidebar-container > div:last-child, .dark
+.hextra-toc .hextra-scrollbar > div:last-child { --tw-shadow-color: var(--eerie-black) !important; } /* --- 4. Custom
+Hextra Card Styles --- */ /* Card Title & Subtitle Text: Use accessible xanthous variants */ .hextra-card, .hextra-card
+:not(svg) { color: var(--xanthous-darker) !important; } .dark .hextra-card, .dark .hextra-card :not(svg) { color:
+var(--xanthous-base) !important; } /* Ensure SVGs inside links keep their own color */ .hextra-card svg, .hextra-card
+svg * { color: var(--paynes-gray-darker) !important; } .dark .hextra-card svg, .dark .hextra-card svg * { color:
+var(--paynes-gray-lighter) !important; } /* Sidebar Hover State Fix */ .hextra-sidebar-container a:hover {
+background-color: #F4B3001A; /* Light xanthous tint for hover background */ color: var(--eerie-black); /* Ensure text
+is readable */ } .dark .hextra-sidebar-container a:hover { background-color: #B3830033; /* Darker xanthous tint for
+hover background */ color: var(--anti-flash-white); /* Ensure text is readable */ } /* --- 5. General Link Style
+Override --- */ /* This rule ensures all general links in the main content area that haven't been specifically styled
+(like cards, buttons, or footnotes) use the default brand link color. It's important for overriding theme utility
+classes on elements like the "Read more" link. */ main p
+a:not(.hextra-card):not(.hextra-card-subtitle):not(.footnote-ref):not([href="index.xml"]) { color:
+var(--hx-color-primary-600) !important; text-decoration: underline !important; text-decoration-thickness: 1px
+!important; }
