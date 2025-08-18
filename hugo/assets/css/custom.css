@@ -1,159 +1,52 @@
-/* ----------------------------------------------------------------------------- Hextra custom brand theme overrides
---------------------------------------------------------------------------- */ /* ============================= 1. Root
-(Light Theme) ============================= */ :root { --brand-gold: #F4B300; --brand-gold-accessible: #805D00;
---brand-gold-muted: #B07C00; --brand-gold-dim: #C9971A; --brand-yellow: #D9CB9E; --brand-grey: #374140; --brand-black:
-#2A2C2B; --brand-white: #FFFFFF; --brand-white-soft: #F5F6F7; --brand-white-muted: #BDC3C7; --accent-success: #5F6B2B;
---accent-info: #5A6D7A; --accent-warning: var(--brand-gold); --accent-error: #C05A3C; --color-bg: var(--brand-white);
---color-bg-alt: var(--brand-white-soft); --color-surface: #FFFFFF; --color-surface-alt: #FAFAFA; --color-border:
-#E2E5E7; --color-border-strong: #C8CED2; --color-text: var(--brand-black); --color-text-muted: #616A6E;
---color-heading: var(--brand-black); --color-link: var(--brand-gold-accessible); --color-link-hover: var(--brand-gold);
---color-link-active: #594000; --color-focus-ring: var(--brand-gold); --focus-ring-shadow: 0 0 0 3px
-rgba(244,179,0,0.35); --color-code-bg: #F4F5F6; --color-code-border: #E0E2E3; --color-code-text: #2E3334;
---color-selection-bg: rgba(244,179,0,0.35); --color-selection-text: #1F2324; --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
---shadow-md: 0 3px 6px rgba(0,0,0,0.08); --shadow-focus: 0 0 0 2px var(--brand-white), 0 0 0 4px
-var(--color-focus-ring); --ease-standard: cubic-bezier(.4,0,.2,1); --transition-fast: 120ms var(--ease-standard);
---transition-med: 200ms var(--ease-standard); /* Tailwind Typography overrides (light) */ --tw-prose-body:
-var(--color-text); --tw-prose-headings: var(--color-heading); --tw-prose-lead: var(--color-text-muted);
---tw-prose-links: var(--color-link); --tw-prose-bold: var(--color-text); --tw-prose-quotes: var(--color-text);
---tw-prose-quote-borders: var(--brand-gold-muted); --tw-prose-hr: var(--color-border); --tw-prose-code:
-var(--color-code-text); --tw-prose-pre-code: var(--color-code-text); --tw-prose-pre-bg: var(--color-code-bg);
---tw-prose-th-borders: var(--color-border-strong); --tw-prose-td-borders: var(--color-border); } html, body {
-background: var(--color-bg); color: var(--color-text); } /* ============================= 2. Headings & Links (Light)
-============================= */ .prose h1, h1, .content h1 { color: var(--brand-gold-accessible) !important;
-font-weight: 700; line-height: 1.15; } .prose h2, h2, .content h2 { color: var(--color-heading); font-weight: 600; }
-.prose h3, h3, .prose h4, h4, .prose h5, h5, .prose h6, h6 { color: var(--color-heading); font-weight: 600; }
-a:not(.btn):not(.button):not(.no-brand), .prose a { color: var(--color-link) !important; text-decoration-line:
-underline; text-decoration-color: rgba(255,191,0,0.55); text-decoration-thickness: 2px; text-underline-offset: 3px;
-font-weight: 500; transition: color var(--transition-med), text-decoration-color var(--transition-med); }
-a:not(.btn):not(.button):not(.no-brand):hover, a:not(.btn):not(.button):not(.no-brand):focus-visible, .prose a:hover,
-.prose a:focus-visible { color: var(--color-link-hover) !important; text-decoration-color: currentColor; }
-a:not(.btn):not(.button):not(.no-brand):active, .prose a:active { color: var(--color-link-active) !important; } /*
-============================= 3. Prose & Inline Elements ============================= */ .prose strong { color:
-var(--color-text); } .prose code, code:not(pre code) { background: var(--color-code-bg); color: var(--color-code-text);
-border: 1px solid var(--color-code-border); border-radius: 4px; padding: 0.15em 0.4em; font-size: 0.9em; font-weight:
-500; } pre { background: var(--color-code-bg); border: 1px solid var(--color-code-border); box-shadow:
-var(--shadow-sm); } pre code { background: transparent; border: none; padding: 0; } /* Decorative underline for h2 */
-.prose h2 { position: relative; padding-bottom: 0.25em; } .prose h2:after { content: ""; position: absolute; left: 0;
-bottom: 0; height: 3px; width: 60px; background: linear-gradient(90deg, var(--brand-gold-accessible),
-var(--brand-gold)); border-radius: 2px; } /* ============================= 4. Buttons / Badges
-============================= */ .button.primary, .btn-primary { --btn-bg: var(--brand-gold); --btn-color:
-var(--brand-black); background: var(--btn-bg); color: var(--btn-color); border: 1px solid var(--btn-bg); border-radius:
-6px; padding: 0.6em 1.1em; font-weight: 600; transition: background var(--transition-fast), box-shadow
-var(--transition-fast), transform var(--transition-fast); } .button.primary:hover, .btn-primary:hover { background:
-#FFBE14; box-shadow: 0 2px 6px rgba(244,179,0,0.35); } .button.primary:active, .btn-primary:active { background:
-#D99E00; transform: translateY(1px); } .button.primary:focus-visible, .btn-primary:focus-visible { outline: none;
-box-shadow: var(--shadow-focus); } .badge, .tag { background: var(--brand-yellow); color: #3A3020; border: 1px solid
-#CBBF99; } /* ============================= 5. Panels / Cards / Callouts ============================= */ .panel, .card
-{ background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 8px; box-shadow:
-var(--shadow-sm); transition: box-shadow var(--transition-med), border-color var(--transition-med); } .panel:hover,
-.card:hover { border-color: var(--color-border-strong); box-shadow: var(--shadow-md); } .callout, .alert {
---color-accent: var(--brand-gold); border-left: 4px solid var(--color-accent); background: linear-gradient(90deg,
-rgba(244,179,0,0.08), transparent); padding: 1em 1.2em; } .callout.info { --color-accent: var(--accent-info);
-background: linear-gradient(90deg, rgba(90,109,122,0.12), transparent); } .callout.success { --color-accent:
-var(--accent-success); background: linear-gradient(90deg, rgba(95,107,43,0.12), transparent); } .callout.warning {
---color-accent: var(--accent-warning); background: linear-gradient(90deg, rgba(244,179,0,0.12), transparent); }
-.callout.error { --color-accent: var(--accent-error); background: linear-gradient(90deg, rgba(192,90,60,0.12),
-transparent); } /* ============================= 6. Tables ============================= */ .prose table { border: 1px
-solid var(--color-border); } .prose table th { background: var(--brand-yellow); color: #2C2A24; } .prose table
-tr:nth-child(even) { background: var(--color-bg-alt); } /* ============================= 7. Navigation / Active Items
-============================= */ /* Override gold links in navigation areas with grey */ .sidebar a:not(.active),
-.hx-sidebar a:not(.active), .toc a, .hx-toc a, nav a:not(.btn):not(.button):not(.no-brand), .nav-link:not(.active),
-[data-nav] a:not(.btn):not(.button):not(.active) { color: var(--color-text-muted) !important; text-decoration-color:
-rgba(97, 106, 110, 0.4) !important; font-weight: 500 !important; } .sidebar a:not(.active):hover, .hx-sidebar
-a:not(.active):hover, .toc a:hover, .hx-toc a:hover, nav a:not(.btn):not(.button):not(.no-brand):hover,
-.nav-link:not(.active):hover, [data-nav] a:not(.btn):not(.button):not(.active):hover { color: var(--color-text)
-!important; text-decoration-color: currentColor !important; } .nav-item.active, .sidebar .active > a { color:
-var(--color-link) !important; border-left: 3px solid var(--color-link); background: linear-gradient(90deg,
-rgba(244,179,0,0.10), transparent); font-weight: 600; } /* ============================= 8. Forms
-============================= */ input[type=text], input[type=search], textarea, select { background:
-var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); border-radius: 6px; padding:
-0.5em 0.75em; transition: border-color var(--transition-fast), background var(--transition-fast); }
-input:focus-visible, textarea:focus-visible, select:focus-visible { border-color: var(--color-link-hover); outline:
-none; box-shadow: var(--focus-ring-shadow); } /* ============================= 9. Utility Elements
-============================= */ .hr-gold { border: none; height: 3px; background: linear-gradient(90deg,
-var(--brand-gold), var(--brand-gold-accessible)); margin: 2rem 0; } .skip-link { position: absolute; top: -40px; left:
-0; background: var(--brand-gold); color: var(--brand-black); padding: 0.5em 1em; z-index: 1000; border-radius: 0 0 4px
-0; font-weight: 600; transition: top var(--transition-fast); } .skip-link:focus { top: 0; } ::selection { background:
-var(--color-selection-bg); color: var(--color-selection-text); } /* ============================= 10. Restore TOC
-Sticky Footer (Light) ============================= */ /* Remove any earlier overrides by not applying transparent
-!important. If lingering old rules use !important, this later block can reapply style. */ div:has(> #backToTop) { /*
-Let original utility classes handle background/shadow; no override */ background: var(--brand-white); box-shadow: 0
--12px 16px var(--brand-white); border-top: 1px solid var(--color-border); padding-top: 2rem; } @supports
-not(selector(:has(*))) { /* Fallback: approximate the same wrapper using class signature */
-div[class*="hx:sticky"][class*="hx:bottom-0"][class*="hx:pt-8"][class*="hx:bg-white"] { background: var(--brand-white);
-box-shadow: 0 -12px 16px var(--brand-white); border-top: 1px solid var(--color-border); padding-top: 2rem; } }
-#backToTop { background: none; border: none; padding: 0; font-weight: 500; color: var(--color-text-muted); display:
-inline-flex; align-items: center; gap: 0.25rem; transition: color var(--transition-fast), transform
-var(--transition-fast); } #backToTop svg { border-radius: 999px; border: 1px solid currentColor; padding: 2px; }
-#backToTop:hover, #backToTop:focus-visible { color: var(--color-link-hover); transform: translateY(-2px); }
-#backToTop:active { transform: translateY(0); } /* ============================= 11. DARK THEME (Body bg now #111 to
-match original sticky block) ============================= */ :root.dark, [data-theme='dark'] { --color-bg: #111111; /*
-Matches original sticky footer 'dark' tone */ --color-surface: #181A1A; /* Subtle elevation */ --color-surface-alt:
-#202322; --color-border: #2E3332; --color-border-strong: #444A48; --color-header-footer-bg: var(--brand-black); /*
-Brand frame */ --color-text: #E6EBED; --color-text-muted: #A2AAAD; --color-heading: var(--color-text); /* Non-H1
-headings */ --color-link: var(--brand-gold-dim); --color-link-hover: #E5AF22; --color-link-active: #A8770E;
---color-accent: var(--brand-gold); --color-accent-contrast: #151616; --color-code-bg: #141615; --color-code-border:
-#2A2F2D; --color-code-text: #F5F7F6; --color-selection-bg: rgba(244,179,0,0.30); --color-selection-text: #101111;
---focus-ring-shadow: 0 0 0 2px #141615, 0 0 0 4px var(--color-focus-ring); /* Tailwind Typography overrides (dark) */
---tw-prose-body: var(--color-text); --tw-prose-headings: var(--color-text); --tw-prose-links: var(--color-link);
---tw-prose-bold: var(--color-text); --tw-prose-quotes: var(--color-text); --tw-prose-quote-borders:
-var(--brand-gold-muted); --tw-prose-hr: var(--color-border); --tw-prose-code: var(--color-code-text);
---tw-prose-pre-code: var(--color-code-text); --tw-prose-pre-bg: var(--color-code-bg); --tw-prose-th-borders:
-var(--color-border-strong); --tw-prose-td-borders: var(--color-border); } .dark body, [data-theme='dark'] body {
-background: var(--color-bg); color: var(--color-text); } /* Header / Footer */ header, .site-header, .hx-header,
-.hx-navbar, footer, .site-footer, .hx-footer { background: var(--color-header-footer-bg); color: var(--color-text);
-border-color: var(--color-border); } header { border-bottom: 1px solid var(--color-border); } footer { border-top: 1px
-solid var(--color-border); } /* Dark headings */ .dark .prose h1, [data-theme='dark'] .prose h1, .dark h1,
-[data-theme='dark'] h1 { color: var(--brand-gold) !important; } .dark .prose h2, [data-theme='dark'] .prose h2, .dark
-h2, [data-theme='dark'] h2, .dark .prose h3, .dark .prose h4, .dark .prose h5, .dark .prose h6, [data-theme='dark']
-.prose h3, [data-theme='dark'] .prose h4, [data-theme='dark'] .prose h5, [data-theme='dark'] .prose h6 { color:
-var(--color-text) !important; } /* Dark links */ .dark a:not(.btn):not(.button):not(.no-brand), [data-theme='dark']
-a:not(.btn):not(.button):not(.no-brand), .dark .prose a, [data-theme='dark'] .prose a { color: var(--color-link)
-!important; text-decoration-color: rgba(201,151,26,0.55); } .dark a:not(.btn):not(.button):not(.no-brand):hover,
-[data-theme='dark'] a:not(.btn):not(.button):not(.no-brand):focus-visible, .dark .prose a:hover, [data-theme='dark']
-.prose a:hover { color: var(--color-link-hover) !important; text-decoration-color: currentColor; } .dark
-a:not(.btn):not(.button):not(.no-brand):active, [data-theme='dark'] a:not(.btn):not(.button):not(.no-brand):active,
-.dark .prose a:active, [data-theme='dark'] .prose a:active { color: var(--color-link-active) !important; } /* Dark
-navigation overrides - use grey instead of gold */ .dark .sidebar a:not(.active), .dark .hx-sidebar a:not(.active),
-.dark .toc a, .dark .hx-toc a, .dark nav a:not(.btn):not(.button):not(.no-brand), .dark .nav-link:not(.active), .dark
-[data-nav] a:not(.btn):not(.button):not(.active), [data-theme='dark'] .sidebar a:not(.active), [data-theme='dark']
-.hx-sidebar a:not(.active), [data-theme='dark'] .toc a, [data-theme='dark'] .hx-toc a, [data-theme='dark'] nav
-a:not(.btn):not(.button):not(.no-brand), [data-theme='dark'] .nav-link:not(.active), [data-theme='dark'] [data-nav]
-a:not(.btn):not(.button):not(.active) { color: var(--color-text-muted) !important; text-decoration-color: rgba(162,
-170, 173, 0.4) !important; } .dark .sidebar a:not(.active):hover, .dark .hx-sidebar a:not(.active):hover, .dark .toc
-a:hover, .dark .hx-toc a:hover, .dark nav a:not(.btn):not(.button):not(.no-brand):hover, .dark
-.nav-link:not(.active):hover, .dark [data-nav] a:not(.btn):not(.button):not(.active):hover, [data-theme='dark']
-.sidebar a:not(.active):hover, [data-theme='dark'] .hx-sidebar a:not(.active):hover, [data-theme='dark'] .toc a:hover,
-[data-theme='dark'] .hx-toc a:hover, [data-theme='dark'] nav a:not(.btn):not(.button):not(.no-brand):hover,
-[data-theme='dark'] .nav-link:not(.active):hover, [data-theme='dark'] [data-nav]
-a:not(.btn):not(.button):not(.active):hover { color: var(--color-text) !important; text-decoration-color: currentColor
-!important; } /* Panels / cards */ .dark .panel, .dark .card, [data-theme='dark'] .panel, [data-theme='dark'] .card {
-background: var(--color-surface); border-color: var(--color-border); } /* Code blocks */ .dark pre, [data-theme='dark']
-pre { background: var(--color-code-bg); border-color: var(--color-code-border); } /* Callouts */ .dark .callout,
-[data-theme='dark'] .callout { background: linear-gradient(90deg, rgba(244,179,0,0.08), rgba(244,179,0,0.02)); } .dark
-.callout.info { background: linear-gradient(90deg, rgba(90,109,122,0.18), rgba(90,109,122,0.05)); } .dark
-.callout.success { background: linear-gradient(90deg, rgba(95,107,43,0.22), rgba(95,107,43,0.06)); } .dark
-.callout.warning { background: linear-gradient(90deg, rgba(244,179,0,0.22), rgba(244,179,0,0.06)); } .dark
-.callout.error { background: linear-gradient(90deg, rgba(192,90,60,0.22), rgba(192,90,60,0.06)); } /* Tables (dark) */
-.dark .prose table th, [data-theme='dark'] .prose table th { background: #222524; color: var(--color-text); } .dark
-.prose table tr:nth-child(even), [data-theme='dark'] .prose table tr:nth-child(even) { background: #181B1A; } /*
-Primary buttons (dark) */ .dark .button.primary, .dark .btn-primary, [data-theme='dark'] .button.primary,
-[data-theme='dark'] .btn-primary { --btn-bg: var(--brand-gold); --btn-color: var(--brand-black); background:
-var(--btn-bg); color: var(--btn-color); border-color: var(--btn-bg); } .dark .button.primary:hover, .dark
-.btn-primary:hover, [data-theme='dark'] .button.primary:hover, [data-theme='dark'] .btn-primary:hover { background:
-#FFBE14; } .dark .button.primary:active, .dark .btn-primary:active, [data-theme='dark'] .button.primary:active,
-[data-theme='dark'] .btn-primary:active { background: #D99E00; } /* Forms (dark) */ .dark input[type=text], .dark
-input[type=search], .dark textarea, .dark select, [data-theme='dark'] input[type=text], [data-theme='dark']
-input[type=search], [data-theme='dark'] textarea, [data-theme='dark'] select { background: #1A1C1B; border-color:
-#2E3332; color: var(--color-text); } /* Dark TOC sticky footer: restore original visual concept */ .dark div:has(>
-#backToTop), [data-theme='dark'] div:has(> #backToTop) { background: #111111; box-shadow: 0 -12px 16px #111111;
-border-top: 1px solid var(--color-border); padding-top: 2rem; } @supports not(selector(:has(*))) { .dark
-div[class*="hx:sticky"][class*="hx:bottom-0"][class*="hx:pt-8"][class*="hx:dark:bg-dark"], [data-theme='dark']
-div[class*="hx:sticky"][class*="hx:bottom-0"][class*="hx:pt-8"][class*="hx:dark:bg-dark"] { background: #111111;
-box-shadow: 0 -12px 16px #111111; border-top: 1px solid var(--color-border); padding-top: 2rem; } } .dark #backToTop,
-[data-theme='dark'] #backToTop { color: var(--color-text-muted); } .dark #backToTop:hover, .dark
-#backToTop:focus-visible, [data-theme='dark'] #backToTop:hover, [data-theme='dark'] #backToTop:focus-visible { color:
-var(--color-link-hover); } /* ============================= 12. Focus & Accessibility ============================= */
-:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; box-shadow: var(--focus-ring-shadow);
-} /* ============================= 13. Motion Preferences ============================= */ @media
-(prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/* Brand Color System ------------------ This file establishes a systematic and accessible color palette based on the
+core brand colors. It generates accessible "-darker" and "-lighter" variants and then applies them by overriding the
+Hextra theme's default CSS variables (`--hx-*`). */ /* --- 1. Base Color Palette --- */ :root { /* Core Brand Colors */
+--xanthous-base: #f4b300; --tangerine-base: #f28c25; --tomato-base: #f06449; --ylnmn-blue-base: #315080;
+--paynes-gray-base: #50657e; /* Accessible Variants (Generated for contrast against light/dark backgrounds) */
+--xanthous-darker: #b38300; --tangerine-darker: #E6730D; --tomato-darker: #E34423; --ylnmn-blue-lighter: #85a2ce;
+--paynes-gray-darker: #3C4C5F; --paynes-gray-lighter: #8393A4; /* Neutral Palette */ --slate-gray: #7c90a0;
+--eerie-black: #1F1F1F; --battleship-gray: #8a8a8a; --anti-flash-white: #ebebeb; --footer-bg-light: #e0e0e0; } /* ---
+2. Theme Variable Overrides --- */ /* Apply the brand palette by overriding Hextra's default variables */ html { /*
+Background */ --hx-color-white: var(--anti-flash-white); /* Text */ --hx-color-slate-900: var(--eerie-black); /*
+Default text */ /* Links */ --hx-color-primary-600: var(--ylnmn-blue-base); /* Borders */ --hx-color-neutral-200:
+var(--slate-gray); /* e.g. h2 bottom border */ } html.dark { /* Background */ --hx-color-dark: var(--eerie-black); /*
+Text */ --hx-color-gray-100: var(--anti-flash-white); /* Default text */ --hx-color-slate-100: var(--anti-flash-white);
+/* Heading text */ /* Links */ --hx-color-primary-600: var(--ylnmn-blue-lighter); /* Borders */ --hx-color-primary-100:
+var(--paynes-gray-lighter); --hx-color-neutral-800: var(--paynes-gray-lighter); } /* --- 3. Custom Element Overrides
+--- */ /* Headings: Use the accessible xanthous variants */ main
+:where(h1,h2,h3,h4,h5,h6):not(.hextra-steps):not(:where([class~=not-prose],[class~=not-prose] *)) { color:
+var(--xanthous-darker); } .dark main
+:where(h1,h2,h3,h4,h5,h6):not(.hextra-steps):not(:where([class~=not-prose],[class~=not-prose] *)) { color:
+var(--xanthous-base); } /* Ensure heading links inherit the new heading color */ main article h1 a, main article h2 a,
+main article h3 a, main article h4 a, main article h5 a, main article h6 a { color: inherit !important; } /* Navbar
+Text: Use the accessible xanthous variants */ .hextra-nav-container, .hextra-nav-container a, .hextra-nav-container
+button { color: var(--xanthous-darker) !important; } html.dark .hextra-nav-container, html.dark .hextra-nav-container
+a, html.dark .hextra-nav-container button { color: var(--xanthous-base) !important; } /* Reset icon color in Navbar to
+the default text color */ .hextra-nav-container a svg { color: var(--hx-color-slate-900); fill: currentColor; }
+html.dark .hextra-nav-container a svg { color: var(--hx-color-gray-100); fill: currentColor; } /* Citations: Use the
+accessible tangerine variants */ a.footnote-ref { color: var(--tangerine-darker); } html.dark a.footnote-ref { color:
+var(--tangerine-base); } /* Blockquotes: Use the accessible Paynes Gray variants */ blockquote { border-left-color:
+var(--paynes-gray-darker); color: var(--paynes-gray-darker); } html.dark blockquote { border-left-color:
+var(--paynes-gray-lighter); color: var(--paynes-gray-lighter); } /* Ensure linked icons in main content are readable in
+dark mode */ html.dark .content a svg { color: var(--hx-color-primary-600); fill: currentColor; } /* Custom style for
+the RSS button (hero-badge shortcode on the blog page). This is targeted using the unique href attribute. */
+a[href="index.xml"] { background-color: var(--ylnmn-blue-base) !important; color: var(--anti-flash-white) !important;
+border-color: var(--ylnmn-blue-base) !important; transition: all 0.2s ease-in-out; } a[href="index.xml"]:hover {
+background-color: var(--ylnmn-blue-lighter) !important; color: var(--jet) !important; border-color:
+var(--ylnmn-blue-lighter) !important; } /* Ensure SVG icon color matches the button's text color */ a[href="index.xml"]
+svg { color: currentColor !important; } /* Custom footer background color for light mode */ html:not(.dark)
+.hextra-footer { background-color: var(--footer-bg-light) !important; } /* Custom fade-out gradient colors for the
+bottom of the sidebar and TOC to match the new theme backgrounds. */ .hextra-sidebar-container > div:last-child,
+.hextra-toc .hextra-scrollbar > div:last-child { --tw-shadow-color: var(--anti-flash-white) !important; } .dark
+.hextra-sidebar-container > div:last-child, .dark .hextra-toc .hextra-scrollbar > div:last-child { --tw-shadow-color:
+var(--eerie-black) !important; } /* --- 4. Custom Hextra Card Styles --- */ /* Card Title & Subtitle Text: Use
+accessible xanthous variants */ .hextra-card .hextra-card-icon, .hextra-card .hextra-card-subtitle { color:
+var(--xanthous-darker) !important; } .dark .hextra-card .hextra-card-icon, .dark .hextra-card .hextra-card-subtitle {
+color: var(--xanthous-base) !important; } /* Card Icon Fill: Use default text colors */ .hextra-card .hextra-card-icon
+svg { color: var(--eerie-black) !important; } .dark .hextra-card .hextra-card-icon svg { color: var(--anti-flash-white)
+!important; } /* --- 5. General Link Style Override --- */ /* This rule ensures all general links in the main content
+area that haven't been specifically styled (like cards, buttons, or footnotes) use the default brand link color. It's
+important for overriding theme utility classes on elements like the "Read more" link. */ main p
+a:not(.hextra-card):not(.footnote-ref):not([href="index.xml"]) { color: var(--hx-color-primary-600) !important;
+text-decoration: underline !important; text-decoration-thickness: 1px !important; } /* Custom dark mode background for
+details shortcode */ html.dark details { background-color: var(--paynes-gray-darker) !important; }
