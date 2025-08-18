@@ -5,11 +5,11 @@
 {{ $chartID := printf "plotly-%s" (md5 $json) }}
 <!-- Generate a unique ID -->
 
-<!-- <div class="hx-flex hx-justify-center hx-w-full"> -->
+<!-- <div class="hx:flex hx:justify-center hx:w-full"> -->
 <figure>
   <div
     id="{{ $chartID }}"
-    class="plotly hx-flex hx-w-full hx-flex-col hx-items-center"
+    class="plotly hx:flex hx:w-full hx:flex-col hx:items-center"
     style="width:{{ $width }}; height:{{ $height }};"></div>
   <figcaption>{{ $caption }}</figcaption>
 </figure>

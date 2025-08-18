@@ -75,7 +75,7 @@ or by building "agentic" software systems around the model that allow it to act 
 In any of these cases, the startup alters the base AI model by making it better at specific things, by making it more autonomous, or both. And currently, the approach to customizing AI models takes a lot of engineering effort.
 Lukas Petersson wrote [a series of blog posts](https://lukaspetersson.com/blog/2025/bitter-vertical/) applying the Bitter Lesson to AI products, where he conceptualizes a quadrant map defining these product capabilities:
 
-<figure class="hx-flex hx-w-full hx-flex-col hx-items-center">
+<figure class="hx:flex hx:w-full hx:flex-col hx:items-center">
   <span style="height:600px; scale:1.7; transform-origin: top;">
 
 ```mermaid
