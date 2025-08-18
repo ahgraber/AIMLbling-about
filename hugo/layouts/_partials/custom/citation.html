@@ -1,13 +1,9 @@
-{{/* References:
-  - https://arduin.io/papermod-tweaks/
-  - https://discourse.gohugo.io/t/cite-the-blog-post/19190/14
-*/}}
-
-{{/* layouts/_partials/citation.html
-  Renders an APA-style citation for a blog article with a copy button.
-  Usage: {{ partial "citation.html" .
+{{/* Partial: citation
+  Renders APA-style and BibTeX citations for a blog article using native Hextra codeblocks.
+  Usage: {{ partial "components/citation.html" .
 }}
-Note: Must be applied within <content> ... </content> for proper rendering. */}}
+Note: Must be applied within <content> ... </content> for proper rendering. References: -
+https://arduin.io/papermod-tweaks/ - https://discourse.gohugo.io/t/cite-the-blog-post/19190/14 */}}
 {{/* Extract author information */}}
 {{ $authors := default (slice (dict "first" "Alexander" "middle" "H" "last" "Graber")) .Params.authors }}
 
@@ -54,53 +50,57 @@ Note: Must be applied within <content> ... </content> for proper rendering. */}}
 {{ $year := .Page.PublishDate.Format "2006, Jan 2" }}
 {{ $title := .Page.Title }}
 {{ $permalink := .Page.Permalink }}
-{{ $citationId := printf "citation-%d" now.UnixNano }}
 
 
 <h2>Cite this article</h2>
 
-If you would like to reference this article, please consider citing it as:
-{{/* Build Markdown citation string (APA-ish) */}}
-{{- $citationMarkdown := printf "%s (%s). *%s*. AI/MLbling-About. [%s](%s)" $authorName $year $title $permalink $permalink -}}
+<p>If you would like to reference this article, please consider citing it as:</p>
 
+{{/* Build plain citation string (no markdown emphasis inside code fences) */}}
+{{- $citationPlain := printf "%s (%s). %s. AI/MLbling-About. %s" $authorName $year $title $permalink -}}
 
-<div
-  class="hextra-code-block group/code hx:bg-gray-50 dark:hx:bg-neutral-800 hx:mb-4 hx:mt-4 hx:rounded-md hx:border hx:border-black/5 dark:hx:border-white/10 hx:p-4">
-  <div class="hx:flex hx:items-start hx:gap-4">
-    <div class="hx:grow hx:min-w-0 hx:max-w-[68ch] hx:break-words">
-      {{/* Rendered Markdown version (italics, link, etc.) */}}
-      <div id="{{ $citationId }}" class="apa-citation hx:text-base hx:font-mono hx:leading-relaxed">
-        {{ $citationMarkdown | .Page.RenderString }}
-      </div>
-      {{/* Hidden raw markdown source for copy */}}
-      <textarea id="{{ $citationId }}-raw" class="hx:hidden">{{ $citationMarkdown }}</textarea>
-    </div>
-    <div class="hx:shrink-0 hx:flex hx:flex-col hx:items-end hx:pt-1">
-      <button
-        type="button"
-        class="hextra-code-copy-btn hx:cursor-pointer hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:px-2 hx:py-1 hx:text-xs dark:hx:bg-primary-300/10 dark:hx:border-white/10 dark:hx:text-gray-400 dark:hx:hover:text-gray-50"
-        data-copy-target="{{ $citationId }}"
-        aria-label="Copy citation"
-        title="Copy citation">
-        Copy
-      </button>
-    </div>
-  </div>
+{{/* APA Citation Block - using exact Hextra structure */}}
+<div class="hextra-code-block citation-wrap hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+  {{- partial "components/codeblock" (dict "filename" "" "lang" "text" "base_url" "" "content" $citationPlain "options" (dict "linenos" false)) -}}
+
+  {{- if or (eq site.Params.highlight.copy.enable nil) (site.Params.highlight.copy.enable) -}}
+    {{- partialCached "components/codeblock-copy-button" (dict "filename" "") "" -}}
+  {{- end -}}
 </div>
 
-<script>
-  (function(){
-    const root=document.currentScript.previousElementSibling; if(!root) return;
-    const btn=root.querySelector('[data-copy-target="{{ $citationId }}"]');
-    if(!btn) return;
-    btn.addEventListener('click',()=>{
-      const raw=document.getElementById('{{ $citationId }}-raw');
-      const text=raw?raw.value:"";
-      if(!text) return;
-      navigator.clipboard.writeText(text).then(()=>{
-        const original=btn.textContent; btn.textContent='Copied!';
-        setTimeout(()=>{btn.textContent=original;},1800);
-      });
-    });
-  })();
-</script>
+<p>Or with BibTeX:</p>
+
+{{/* BibTeX citation */}}
+{{/* Derive fields for BibTeX */}}
+{{- $pubYear := .Page.PublishDate.Format "2006" -}}
+{{- $pubMonth := .Page.PublishDate.Format "01" -}}
+{{- $pubDay := .Page.PublishDate.Format "02" -}}
+{{- $cleanTitle := replaceRE "[{}]" "" $title -}}
+{{- /* Create a BibTeX key: lastnameYYYYslugfragment */ -}}
+{{- $firstAuthor := index $authors 0 -}}
+{{- $lastName := (or $firstAuthor.last "graber") | urlize -}}
+{{- $slugPart := (strings.TrimSuffix "/" (path.Base .Page.RelPermalink)) -}}
+{{- $slugPart = replaceRE "[^a-zA-Z0-9]+" "" $slugPart -}}
+{{- $bibKey := printf "%s%s%s" $lastName $pubYear (cond (gt (len $slugPart) 0) (printf "_%s" $slugPart) "") -}}
+{{- /* Authors in BibTeX: "Last, F." style joined with ' and ' */ -}}
+{{- $bibAuthors := slice -}}
+{{- range $authors -}}
+  {{- $la := .last | default "Graber" -}}
+  {{- $fi := cond (gt (len (.first | default "")) 0) (substr .first 0 1) "" -}}
+  {{- $mi := cond (gt (len (.middle | default "")) 0) (substr .middle 0 1) "" -}}
+  {{- $name := printf "%s, %s%s" $la $fi (cond (ne $mi "") (printf "%s" $mi) "") -}}
+  {{- $bibAuthors = $bibAuthors | append $name -}}
+{{- end -}}
+{{- $bibAuthorStr := delimit $bibAuthors " and " -}}
+
+{{- /* Build BibTeX entry */ -}}
+{{- $bibtex := printf "@online{%s,\n  author = {%s},\n  title = {%s},\n  year = {%s},\n  date = {%s-%s-%s},\n  url = {%s},\n  urldate = {%s},\n  note = {Blog post}\n}" $bibKey $bibAuthorStr $cleanTitle $pubYear $pubYear $pubMonth $pubDay $permalink (now.Format "2006-01-02") -}}
+
+{{/* BibTeX Block - using exact Hextra structure */}}
+<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+  {{- partial "components/codeblock" (dict "filename" "" "lang" "bibtex" "base_url" "" "content" $bibtex "options" (dict "linenos" false)) -}}
+
+  {{- if or (eq site.Params.highlight.copy.enable nil) (site.Params.highlight.copy.enable) -}}
+    {{- partialCached "components/codeblock-copy-button" (dict "filename" "") "" -}}
+  {{- end -}}
+</div>
