@@ -1,34 +1,43 @@
 @layer theme { :root { /* Simplified Brand Palette */ --xanthous: #f4b300; /* accent color for brand */
---xanthous-darker: #cc9600; /* accent on light backgrounds */ --chefchaouen-blue: #4d78ae; /* links */ --eerie-black:
-#1f1f1f; /* dark background */ --white-smoke: #f2f2f2; /* light background */ /* Override background colors */
---hx-color-white: var(--white-smoke); --hx-color-dark: var(--eerie-black); /* Force primary-600 (used for links) to use
-Chefchaouen Blue directly */ --hx-color-primary-600: var(--chefchaouen-blue) !important; } .dark { /* Use Chefchaouen
-Blue for links in dark mode, too */ --hx-color-primary-600: var(--chefchaouen-blue) !important; } } /* Targeted
-Xanthous Accents */ /* Headings */ main :where(h1, h2, h3, h4, h5,
+--xanthous-darker: #bf8c00; /* accent on light backgrounds */ --xanthous-darkest: #997000; /* accent on light
+backgrounds */ --chefchaouen-blue: #4d78ae; /* links */ --eerie-black: #1f1f1f; /* dark background */ --white-smoke:
+#f2f2f2; /* light background */ /* Override background colors */ --hx-color-white: var(--white-smoke); --hx-color-dark:
+var(--eerie-black); /* Set brand accent color */ --brand-accent-darker: var(--xanthous-darker); /* Override link color
+*/ --hx-color-primary-600: var(--brand-accent) !important; } .dark { /* Set brand accent color */ --brand-accent:
+var(--xanthous); /* Override link color */ --hx-color-primary-600: var(--brand-accent) !important; } } /* Targeted
+Xanthous Accents */ /* Regular headings (not links) */ main :where(h1, h2, h3, h4, h5,
 h6):not(.hextra-steps):not(:where([class~="not-prose"], [class~="not-prose"] *)) { color: var(--xanthous-darker); }
 .dark main :where(h1, h2, h3, h4, h5, h6):not(.hextra-steps):not(:where([class~="not-prose"], [class~="not-prose"] *))
-{ color: var(--xanthous); } /* Navbar */ .hextra-nav-container, .hextra-nav-container a, .hextra-nav-container button {
-color: var(--xanthous-darker) !important; } .dark .hextra-nav-container, .dark .hextra-nav-container a, .dark
-.hextra-nav-container button { color: var(--xanthous) !important; } /* Navigation icons */ .hextra-nav-container a svg
-{ color: var(--hx-color-dark); fill: currentColor; } .dark .hextra-nav-container a svg { color: var(--hx-color-white);
-fill: currentColor; } /* Footer background */ .hextra-footer { background-color: var(--hx-color-neutral-200)
-!important; } .dark .hextra-footer { background-color: #141414 !important; } /* Cards */ .hextra-card, .hextra-card
-:not(svg) { color: var(--xanthous-darker) !important; } .dark .hextra-card, .dark .hextra-card :not(svg) { color:
-var(--xanthous) !important; } .hextra-card svg, .hextra-card svg * { color: #00000033 !important; } .dark .hextra-card
-svg, .dark .hextra-card svg * { color: #ffffff66 !important; } /* Code blocks */ .dark .hextra-code-block pre {
-background-color: #282828 !important; } /* Text Selection Highlighting */ ::selection { background-color: color-mix(in
-srgb, var(--xanthous) 16%, transparent); color: var(--eerie-black); /* Ensure text is readable */ } .dark ::selection {
-background-color: color-mix(in srgb, var(--xanthous-darker) 20%, transparent); color: var(--white-smoke); /* Ensure
-text is readable */ } /* Sidebar hover */ .hextra-sidebar-container a:hover { background-color: color-mix(in srgb,
-var(--xanthous) 16%, transparent); color: var(--eerie-black); } .dark .hextra-sidebar-container a:hover {
-background-color: color-mix(in srgb, var(--xanthous-darker) 20%, transparent); color: var(--white-smoke); } /* Sidebar
-and TOC fade gradients */ .hextra-sidebar-container > div:last-child, .hextra-toc .hextra-scrollbar > div:last-child {
---tw-shadow-color: var(--white-smoke) !important; } .dark .hextra-sidebar-container > div:last-child, .dark .hextra-toc
-.hextra-scrollbar > div:last-child { --tw-shadow-color: var(--eerie-black) !important; } /* --- Links & Citations ---
-*/ /* Footnote citations */ a.footnote-ref { color: var(--brand-xanthous-dark); } .dark a.footnote-ref { color:
-var(--brand-xanthous); } /* Citation wrapper */ .citation-wrap pre { white-space: pre-wrap; word-break: break-word;
+{ color: var(--xanthous); } /* Heading links - override regular heading colors */ main h1 a, main h2 a, main h3 a, main
+h4 a, main h5 a, main h6 a { color: var(--xanthous-darker) !important; /* text-decoration: none; */ background-color:
+color-mix(in srgb, var(--xanthous-darker) 10%, transparent); display: inline; } .dark main h1 a, .dark main h2 a, .dark
+main h3 a, .dark main h4 a, .dark main h5 a, .dark main h6 a { color: var(--xanthous) !important; /* text-decoration:
+none; */ background-color: color-mix(in srgb, var(--xanthous) 10%, transparent); display: inline; } /* Heading links on
+hover */ main h1 a:hover, main h2 a:hover, main h3 a:hover, main h4 a:hover, main h5 a:hover, main h6 a:hover { color:
+var(--xanthous-darker) !important; text-decoration: underline; } .dark main h1 a:hover, .dark main h2 a:hover, .dark
+main h3 a:hover, .dark main h4 a:hover, .dark main h5 a:hover, .dark main h6 a:hover { color: var(--xanthous)
+!important; text-decoration: underline; } /* Heading links for blog list page */ main h3 a[style]:hover { color:
+var(--xanthous-darker) !important; text-decoration: underline !important; } .dark main h3 a[style]:hover { color:
+var(--xanthous) !important; text-decoration: underline !important; } /* Details background */ details {
+background-color: var(--hx-color-neutral-200) !important; } details summary:hover { background-color:
+var(--hx-color-white) !important; } .dark details { /* background-color: #141414 !important; */ background-color:
+var(--hx-color-neutral-800) !important; } .dark details summary:hover { /* background-color: #141414 !important; */
+background-color: var(--hx-color-dark) !important; } /* Footer background */ .hextra-footer { background-color:
+var(--hx-color-neutral-200) !important; } .dark .hextra-footer { background-color: #141414 !important; } /* Code blocks
+*/ .dark .hextra-code-block pre { background-color: #282828 !important; } /* Text Selection Highlighting */ ::selection
+{ background-color: color-mix(in srgb, var(--brand-accent-darker) 16%, transparent); color: var(--hx-color-dark); /*
+Ensure text is readable */ } .dark ::selection { background-color: color-mix(in srgb, var(--brand-accent) 20%,
+transparent); color: var(--hx-color-white); /* Ensure text is readable */ } /* Sidebar hover */
+.hextra-sidebar-container a:hover { background-color: color-mix(in srgb, var(--brand-accent-darker) 16%, transparent);
+color: var(--hx-color-dark); } .dark .hextra-sidebar-container a:hover { background-color: color-mix(in srgb,
+var(--brand-accent) 20%, transparent); color: var(--hx-color-white); } /* Sidebar and TOC fade gradients */
+.hextra-sidebar-container > div:last-child, .hextra-toc .hextra-scrollbar > div:last-child { --tw-shadow-color:
+var(--hx-color-white) !important; } .dark .hextra-sidebar-container > div:last-child, .dark .hextra-toc
+.hextra-scrollbar > div:last-child { --tw-shadow-color: var(--hx-color-dark) !important; } /* --- Links & Citations ---
+*/ /* Footnote citations */ a.footnote-ref { color: var(--brand-accent-darker); } .dark a.footnote-ref { color:
+var(--brand-accent); } /* Citation wrapper */ .citation-wrap pre { white-space: pre-wrap; word-break: break-word;
 overflow-wrap: normal; hyphens: none; } /* General content links */ main p
 a:not(.hextra-card):not(.hextra-card-subtitle):not(.footnote-ref):not([href="index.xml"]) { color:
-var(--chefchaouen-blue) !important; text-decoration: underline !important; text-decoration-thickness: 1px !important; }
-.dark main p a:not(.hextra-card):not(.hextra-card-subtitle):not(.footnote-ref):not([href="index.xml"]) { color:
-var(--chefchaouen-blue) !important; }
+var(--brand-accent-darker) !important; text-decoration: underline !important; text-decoration-thickness: 1px
+!important; } .dark main p a:not(.hextra-card):not(.hextra-card-subtitle):not(.footnote-ref):not([href="index.xml"]) {
+color: var(--brand-accent) !important; }
