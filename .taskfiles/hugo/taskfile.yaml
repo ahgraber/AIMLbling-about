@@ -82,7 +82,7 @@ tasks:
     cmds:
       - "[[ ! -d {{ .HUGO_DIR }}/public ]] || rm -r {{ .HUGO_DIR }}/public"
       - "[[ ! -d {{ .HUGO_DIR }}/resources ]] || rm -r {{ .HUGO_DIR }}/resources"
-      - hugo --gc -S {{ .HUGO_DIR }}
+      - hugo --gc -s {{ .HUGO_DIR }}
     # cmd: nix build '.?submodules=1'
     preconditions:
       - {msg: "Hugo not found", sh: "type hugo"}

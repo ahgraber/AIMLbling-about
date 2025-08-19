@@ -1,0 +1,37 @@
+<svg width="512" height="512" viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="2" height="2" fill="#1f1f1f" />
+
+  <!-- Dashed orbit ring: 8 segments, rotated 11.25° -->
+  <circle
+    cx="1" cy="1"
+    r="0.65"
+    fill="none"
+    stroke="#f4b300"
+    stroke-width="0.043"
+    stroke-dasharray="0.255, 0.255"
+    transform="rotate(11.25,1,1)"
+  />
+
+  <!-- Central circle -->
+  <circle
+    cx="1"
+    cy="1"
+    r="0.23"
+    fill="none"
+    stroke="#f4b300"
+    stroke-width="0.07"
+  />
+
+  <!-- Outer circles at 45° intervals -->
+  <g stroke="#f4b300" stroke-width="0.055" fill="none">
+    <circle cx="1.00" cy="0.35" r="0.12"/>
+    <circle cx="1.50" cy="0.50" r="0.12"/>
+    <circle cx="1.65" cy="1.00" r="0.12"/>
+    <circle cx="1.50" cy="1.50" r="0.12"/>
+    <circle cx="1.00" cy="1.65" r="0.12"/>
+    <circle cx="0.50" cy="1.50" r="0.12"/>
+    <circle cx="0.35" cy="1.00" r="0.12"/>
+    <circle cx="0.50" cy="0.50" r="0.12"/>
+  </g>
+</svg>

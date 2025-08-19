@@ -1,0 +1,25 @@
+{{/* Core scripts (theme, menu, tabs, etc.) */}}
+{{/* Upstream core logic (bundles, search, mermaid) */}}
+{{- partial "scripts/core.html" . -}}
+{{- partial "scripts/search.html" . -}}
+{{- if (.Store.Get "hasMermaid") -}}
+  {{- partial "scripts/mermaid.html" . -}}
+{{- end -}}
+
+{{/* Custom additions */}}
+{{/* Plotly */}}
+{{ if .Params.plotly }}
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{{ end }}
+
+{{/* Runtime enhancement: add .toc-footer class to sticky TOC footer container for CSS token styling */}}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var back = document.getElementById("backToTop")
+    if (!back) return
+    var container = back.closest(".hx\\:sticky")
+    if (container && !container.classList.contains("toc-footer")) {
+      container.classList.add("toc-footer")
+    }
+  })
+</script>

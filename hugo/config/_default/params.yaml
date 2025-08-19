@@ -22,6 +22,13 @@ blog:
     # date | lastmod | publishDate | title | weight
     sortBy: date
     sortOrder: desc # or "asc"
+    pagerSize: 20 # Posts per page
+
+# Math / diagram engines
+math:
+  # Global math toggle. If false, pages must set `math: true` in front matter to load KaTeX assets.
+  enable: false
+  engine: katex
 
 # Treadmill section-specific settings
 treadmill:
@@ -40,8 +47,8 @@ navbar:
   displayTitle: true
   displayLogo: true
   logo:
-    path: images/logo-icon.png
-    dark: images/logo-icon.png
+    path: images/icon-transparent.png
+    dark: images/icon-transparent.png
     link: /
     width: 50
     height: 50

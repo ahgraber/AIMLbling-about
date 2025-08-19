@@ -3,10 +3,14 @@ title: AI/MLbling About
 toc: false
 ---
 
-I'm Alex Graber, an AI/ML Engineer at the Project Management Institute where I work on [Infinity](https://www.pmi.org/infinity),
+<br>
+
+I'm Alex Graber, an AI/ML Engineer at the Project Management Institute where I work on _**[Infinity](https://www.pmi.org/infinity)**_,
 an AI-powered tool and product for Project Managers.
 
 Prior work includes Data Science and ML positions where I focused on business analytics and MLOps.
+
+______________________________________________________________________
 
 <!-- markdownlint-disable MD034 -->
 

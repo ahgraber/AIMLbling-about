@@ -1,0 +1,90 @@
+{{- $enableFooterSwitches := .Scratch.Get "enableFooterSwitches" | default false -}}
+{{- $displayThemeToggle := site.Params.theme.displayToggle | default true -}}
+{{- $footerSwitchesVisible := and $enableFooterSwitches (or hugo.IsMultilingual $displayThemeToggle) -}}
+{{- $poweredBy := (T "poweredBy") | default "Powered by Hugo x Hextra" -}}
+{{- $copyrightSectionVisible := or (.Site.Params.footer.displayPoweredBy | default true) .Site.Params.footer.displayCopyright -}}
+
+
+<footer
+  class="hextra-footer hx:bg-gray-100 hx:pb-6 hx:dark:bg-neutral-900 hx:print:bg-transparent"
+  style="padding-bottom:calc(env(safe-area-inset-bottom) + 1.5rem)">
+  <div
+    class="hextra-custom-footer hextra-max-footer-width hx:pl-[max(env(safe-area-inset-left),1.5rem)] hx:pr-[max(env(safe-area-inset-right),1.5rem)] hx:text-gray-600 hx:dark:text-gray-400">
+    {{- partial "custom/footer.html" (dict "context" . "switchesVisible" $footerSwitchesVisible "copyrightVisible" $copyrightSectionVisible) -}}
+  </div>
+
+  {{- if $copyrightSectionVisible -}}
+    <div class="hextra-max-footer-width hx:mx-auto hx:py-6 hx:px-4 hx:text-gray-600 hx:dark:text-gray-400 hx:relative">
+      {{/* Left-aligned switches container */}}
+      {{- if or $footerSwitchesVisible $displayThemeToggle -}}
+        <div class="hx:absolute hx:left-4 hx:top-8 md:hx:top-10 hx:flex hx:items-center hx:gap-2">
+          {{- if $footerSwitchesVisible -}}
+            {{- partial "language-switch.html" (dict "context" .) -}}
+            {{- with $displayThemeToggle }}{{ partial "theme-toggle.html" }}{{ end -}}
+          {{- else if $displayThemeToggle -}}
+            {{ partial "theme-toggle.html" }}
+          {{- end -}}
+        </div>
+      {{- end -}}
+      <div
+        class="hx:flex hx:w-full hx:flex-col hx:items-center hx:justify-center hx:gap-1 hx:text-center hx:pt-8 md:hx:pt-10">
+        {{- if .Site.Params.footer.displayCopyright }}
+          <div class="hx:text-xs">{{ template "copyright" . }}</div>
+        {{- end -}}
+        {{- if (.Site.Params.footer.displayPoweredBy | default true) }}
+          <div class="hx:font-normal hx:text-[13px] hx:mt-2">{{ template "theme-credit" $poweredBy }}</div>
+        {{- end -}}
+      </div>
+    </div>
+  {{- end -}}
+</footer>
+
+{{- define "copyright" -}}
+  <div
+    class="hx:flex hx:flex-col hx:items-center hx:gap-0 hx:text-current hx:text-sm"
+    xmlns:cc="https://creativecommons.org/ns#"
+    xmlns:dct="https://purl.org/dc/terms/">
+    <div class="hx:font-semibold">AI/MLbling-About © {{ now.Year }} by Alexander Graber</div>
+    <div>
+      is licensed under
+      <a
+        href="https://creativecommons.org/licenses/by-nc/4.0/?ref=chooser-v1"
+        target="_blank"
+        rel="license noopener noreferrer"
+        class="hx:inline-flex hx:items-center">
+        CC BY-NC 4.0
+        <img
+          class="hx:inline-block hx:ltr:ml-1 hx:rtl:mr-1 hx:align-[-2.5px]"
+          style="height:22px!important;margin-left:3px;vertical-align:text-bottom"
+          src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
+          alt="" />
+        <img
+          class="hx:inline-block hx:ltr:ml-1 hx:rtl:mr-1 hx:align-[-2.5px]"
+          style="height:22px!important;margin-left:3px;vertical-align:text-bottom"
+          src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
+          alt="" />
+        <img
+          class="hx:inline-block hx:ltr:ml-1 hx:rtl:mr-1 hx:align-[-2.5px]"
+          style="height:22px!important;margin-left:3px;vertical-align:text-bottom"
+          src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
+          alt="" />
+      </a>
+    </div>
+  </div>
+{{- end -}}
+
+{{- define "theme-credit" -}}
+  <a
+    class="hx:flex hx:text-sm hx:items-center hx:gap-1 hx:text-current"
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Hextra GitHub Homepage"
+    href="https://github.com/imfing/hextra">
+    <span>
+      {{- . | markdownify -}}
+      {{- if strings.Contains . "Hextra" -}}
+        {{- partial "utils/icon.html" (dict "name" "hextra" "attributes" `height=1em class="hx:inline-block hx:ltr:ml-1 hx:rtl:mr-1 hx:align-[-2.5px]"`) -}}
+      {{- end -}}
+    </span>
+  </a>
+{{- end -}}

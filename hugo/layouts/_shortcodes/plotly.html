@@ -1,0 +1,24 @@
+{{ $json := .Get "json" }}
+{{ $height := .Get "height" | default "400px" }}
+{{ $width := .Get "width" | default "100%" }}
+{{ $caption := .Get "caption" }}
+{{ $chartID := printf "plotly-%s" (md5 $json) }}
+<!-- Generate a unique ID -->
+
+<!-- <div class="hx:flex hx:justify-center hx:w-full"> -->
+<figure>
+  <div
+    id="{{ $chartID }}"
+    class="plotly hx:flex hx:w-full hx:flex-col hx:items-center"
+    style="width:{{ $width }}; height:{{ $height }};"></div>
+  <figcaption>{{ $caption }}</figcaption>
+</figure>
+
+<script>
+fetch("{{ $json }}")  // Ensure the JSON URL is correctly referenced
+    .then(response => response.json())
+    .then(fig => {
+        Plotly.newPlot("{{ $chartID }}", fig.data, fig.layout, {responsive: true});
+    })
+    .catch(error => console.error("Error loading Plotly JSON:", error));
+</script>

@@ -1,0 +1,28 @@
+{{/* Conditional KaTeX loader overriding Hextra's always-on behavior.
+
+  Usage:
+  - Site config sets params.math.enable (default false here) and engine (katex).
+  - Page front matter can set `math: true` to force-enable for that page.
+  - If site.Params.math.enable is true, all pages get math unless a page sets `math: false` explicitly.
+
+  We call the upstream Hextra partial only when needed, so we keep its advanced CDN/local logic intact.
+*/}}
+{{- $siteMath := site.Params.math -}}
+{{- $pageMath := .Params.math -}}
+{{- $enabled := false -}}
+{{- if $siteMath.enable -}}
+  {{- /* Global on; allow per-page opt-out with explicit false */ -}}
+  {{- if ne $pageMath false -}}
+    {{- $enabled = true -}}
+  {{- end -}}
+{{- else -}}
+  {{- /* Global off; allow per-page opt-in with true */ -}}
+  {{- if eq $pageMath true -}}
+    {{- $enabled = true -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and $enabled (eq (lower $siteMath.engine) "katex") -}}
+  {{- /* Defer to upstream implementation: replicate path used by theme */ -}}
+  {{- partial "scripts/katex.html" . -}}
+{{- end -}}
