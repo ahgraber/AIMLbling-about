@@ -17,5 +17,5 @@ goldmark:
     hardWraps: false # whether to replace newline characters within a paragraph with <br> elements.
     unsafe: true # whether to render raw HTML mixed within the Markdown
     # xhtml: false
-  highlight:
-    noClasses: false
+highlight:
+  noClasses: false
