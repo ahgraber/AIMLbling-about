@@ -1,6 +1,6 @@
 ---
 title: Fractal Complexity
-date: 2025-09-27T08:44:46-04:00
+date: 2025-09-29
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -15,7 +15,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 I've recently been enamored with the concept of "fractal complexity", not pertaining to the mathematical definition of "complexity", but rather as a way to explain why "it depends" is such a frequent response in conversations between people with various levels of expertise. I believe I came across this idea while listening to an episode of ["Brad and Will Made a TechPod"](https://techpod.content.town) but I cannot find the specific reference.
