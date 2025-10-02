@@ -68,6 +68,8 @@ analytics:
   umami:
     serverURL: "https://umami.ninerealmlabs.com"
     websiteID: "87e6846b-0ad4-41aa-82ae-ed2a4114d22c"
+    scriptName: "script.js" #
+
 # comments:
 #   enable: false
 #   type: giscus
