@@ -44,6 +44,11 @@ DO NOT MAKE CHANGES TO SOURCE CODE. You can only make changes to the unit tests.
 - Utilize mocks and stubs to isolate the unit under test and avoid external dependencies when testing.
 - Avoid testing implementation details; focus on behavior and contracts
 
+### Test Clarity & Assertions
+
+- Use test function docstrings to clearly describe the behavior or contract under test (what is expected and why it matters), avoiding implementation details.
+- Provide clear assertion failure messages explaining the intent and why the test failed (e.g., context like input parameters or expected boundary conditions).
+
 ### Test Data & Fixtures
 
 - Utilize pytest fixtures to set up test environments and share test data.

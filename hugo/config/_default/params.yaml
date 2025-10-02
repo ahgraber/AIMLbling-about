@@ -63,13 +63,11 @@ search:
   flexsearch:
     # index page by: content | summary | heading | title
     index: content
-#
-# analytics:
-#   # https://github.com/umami-software/umami
-#   umami:
-#     server: https://server-url
-#     # script: umami.js
-#     id: "site-id"
+
+analytics:
+  umami:
+    serverURL: "https://umami.ninerealmlabs.com"
+    websiteID: "87e6846b-0ad4-41aa-82ae-ed2a4114d22c"
 # comments:
 #   enable: false
 #   type: giscus
