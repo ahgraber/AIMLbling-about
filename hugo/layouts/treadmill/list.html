@@ -1,5 +1,5 @@
 {{ define "main" }}
-  {{- /* Redirect to latest treadmill post (restored behavior) */ -}}
+  {{- /* Redirect to latest treadmill post */ -}}
   {{- $readMore := (T "readMore") | default "Read more →" -}}
   {{- $sortedPages := partial "utils/sort-pages" (dict "page" . "by" site.Params.blog.list.sortBy "order" site.Params.blog.list.sortOrder) -}}
   {{- with (index $sortedPages 0) -}}
