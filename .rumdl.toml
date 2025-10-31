@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rvben/rumdl/main/rumdl.schema.json
+[global]
+# Exclude/Include files and directories
+exclude = [
+    "node_modules",
+    "build",
+    "dist",
+]
+respect_gitignore = true
+
+# Set markdown flavor (standard, mkdocs)
+flavor = "standard" # TODO: "gfm"
+
+# Set global line length (used by MD013 and other line-length rules)
+line_length = 999999
+
+# Enable/Disable specific rules
+# enable = ["MD001", "MD003", "MD013"]
+disable = [
+  "MD002", # 1st heading H1
+  "MD014", # show command output
+  # "MD028", # blank line inside blockquote
+  "MD033", # inline HTML
+  "MD034", # bare URL
+]
+
+[MD004]
+style = "dash" # Options: "consistent", "asterisk", "plus", "dash", "sublist"
+
+[MD007]
+indent = 2 # default: 4
+
+[MD013]
+line_length = 999999
+code_blocks = false # Don't check code blocks (default: true)
+# code_block_line_length = 119
+headings = true
+# headings_line_length = 80
+tables = false
+# stern = false # Stricter checking without exceptions
+# strict = false # Disables exceptions for URLs, etc.
+reflow = true # Enable automatic text reflow/wrapping (default: false)
+reflow_mode = "normalize" # Reflow mode: "default", "normalize", or "sentence_per_line" (default: "default")
+
+[MD024]
+allow_different_nesting = false  # Allow duplicates at different levels (default: false)
+siblings_only = true           # Only check siblings at same level (default: false)
+
+[MD025]
+level = 1
+front-matter-title = "title"
+
+[MD029]
+style = "ordered" # How to number list items: "one" (all 1), "ordered" (1,2,3), or "zero" (all 0)
+
+# [MD030]
+# ul_single = 1  # Spaces after bullet for single-line items (default: 1)
+# ul_multi = 2   # Spaces after bullet for multi-line items (default: 1)
+# ol_single = 1  # Spaces after number for single-line items (default: 1)
+# ol_multi = 3   # Spaces after number for multi-line items (default: 1)
+
+[MD035]
+style = "---"
+
+[MD046]
+style = "fenced"
+
+[MD048]
+style = "backtick"
+
+[MD049] # italics
+style = "underscore"  # Options: "consistent", "asterisk", "underscore"
+
+[MD050] # bold
+style = "asterisk"  # Options: "consistent", "asterisk", "underscore"
