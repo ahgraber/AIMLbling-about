@@ -38,7 +38,7 @@ Epoch AI reported in August 2025 that open-weight/weight-available models runnin
 
 {{< figure
 src="images/epochai_frontier_match.png"
-alt="Scatter plot titled "Artificial Analysis Intelligence Index" (y-axis 0–100) versus release date (July 2023–July 2025). Two upward trend lines show frontier models (teal) consistently above open models on a consumer GPU (pink), with an indicated ~6‑month lead for frontier models. Example points are labeled (frontier: Claude 2, GPT‑4o, Grok 4; open: Qwen‑14B, Gemma 2 27B, QwQ‑32B). Background shading marks the RTX 4090 era (≤28B) before 2025 and RTX 5090 era (≤40B) after."
+alt="Scatter plot titled 'Artificial Analysis Intelligence Index' (y-axis 0–100) versus release date (July 2023–July 2025). Two upward trend lines show frontier models (teal) consistently above open models on a consumer GPU (pink), with an indicated ~6‑month lead for frontier models. Example points are labeled (frontier: Claude 2, GPT‑4o, Grok 4; open: Qwen‑14B, Gemma 2 27B, QwQ‑32B). Background shading marks the RTX 4090 era (≤28B) before 2025 and RTX 5090 era (≤40B) after."
 caption="Models running on consumer hardware match frontier models on Artificial Analysis' Intelligence Index with approximately 6 months lag [Frontier AI capabilities can be run at home within a year or less | Epoch AI](https://epoch.ai/data-insights/consumer-gpu-model-gap)" >}}
 
 Capabilities formerly limited to large language models that require clusters of nodes of GPUs (a "node" might typically have 8 A100/H100 GPUs; a cluster is made of many nodes) are now accessible with small language models that can run on single-node or single-GPU deployments. This dramatically reduces infrastructure costs for organizations who shift their inference from large to small LMs and comes with benefits to token generation speed (and user-experienced latency).
@@ -87,12 +87,12 @@ While my reaction to "Should we fine-tune a model for this?" may no longer be an
 These capabilities are external to the question of "_Can_ we fine-tune?" but critical for the assessment of "_Should we?_" As discussed above, many technical hurdles to fine-tuning itself have been lowered or removed entirely, but a broader, structured approach for assessing broader organizational readiness is necessary for successful outcomes. This is where a framework like that provided in the [PMI Certified Professional in Managing AI (PMI-CPMAI)](https://www.pmi.org/certifications/ai-project-management-cpmai) comes into play.
 
 > [!IMPORTANT]
-> **Disclosure**: I am employed by the Project Management Institute (PMI) and hold the PMI Certified Professional in Managing AI (PMI-CPMAI) credential. PMI covered the cost of my certification as part of my role.
+> **Disclosure**: I am employed by the Project Management Institute (PMI) and hold the PMI Certified Professional in Managing AI (PMI-CPMAI) credential. PMI covered the cost of my certification as part of my role.\
 > The views expressed here are entirely my own and do not represent PMI's positions or policies. PMI has no influence or editorial oversight on personal projects like this post or, more broadly, my blog.
 
 The PMI-CPMAI methodology provides a structured approach for assessing this very readiness. While I had my personal nits to pick with the certification (e.g., the old exam felt like it tested rote memorization for the CPMAI-supplied specific definitions rather than comprehension and application; I have no insight into the current exam), I believe the course and its content provide real value. It serves as an excellent primer for introducing AI and ML concepts to non-data scientists, and its readiness framework with go/no-go gates forces product teams to take off their rose-colored glasses and honestly assess if they have access to the surrounding, supporting capabilities necessary to turn a potentially viable project into an advisable one.
 
-______________________________________________________________________
+---
 
 ## Further Reading
 
