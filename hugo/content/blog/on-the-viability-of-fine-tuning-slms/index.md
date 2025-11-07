@@ -1,6 +1,6 @@
 ---
 title: On the Viability of Fine-Tuning SLMs
-date: 2025-10-31T09:23:22-04:00
+date: 2025-11-07
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -19,7 +19,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 Until recently, I held the opinion that training custom language models was inadvisable except in relatively rare cases. Simply requiring marginally better performance on your task was insufficient justification for customization; subsequent generations of models from foundation labs would inevitably catch up. Only when you had extreme latency constraints, specific tasks with low drift, and/or such high use that you could guarantee GPU utilization and ROI was it possible to justify the expected economics associated with managing the model lifecycle. And even then, achieving a successful outcome would be unlikely due to the number of ways customization could fail. _Success_ here means both that the custom model performs as or better than expected on in-domain tasks (e.g., better than available alternatives in accuracy and/or speed) and that the business achieves positive ROI as a result of training and deploying the custom model.
