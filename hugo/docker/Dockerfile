@@ -39,7 +39,7 @@ COPY . .
 RUN --mount=type=cache,target=/tmp/hugo_cache \
     hugo --minify -s ./hugo
 
-FROM docker.io/nginxinc/nginx-unprivileged:1.29@sha256:0459cc889c0db39300fb21fb5ab34a546f282084065d5c00fbdf7d4a40804df6
+FROM docker.io/nginxinc/nginx-unprivileged:1.29@sha256:6472391225b0fdd50b51c09a249163cbee5a66af3a78806497d483685628afa1
 
 # Add build-time ARGs
 ARG BUILD_DATE
