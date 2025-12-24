@@ -1,6 +1,6 @@
 ---
 title: Year in Review - 2025
-date: 2025-11-21T08:53:42-05:00
+date: 2025-12-23
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -19,7 +19,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 [Back in January, I made a series of predictions for 2025]({{< ref "/blog/predictions-2025" >}}), assigning somewhat arbitrary probability estimates to each as indicators of my confidence in the prediction. Now that the year is wrapping up, it's time to see what kind of AI Nostradamus I am.
