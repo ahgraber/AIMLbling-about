@@ -14,6 +14,7 @@ import warnings
 from dotenv import load_dotenv
 from IPython.display import Markdown, display
 from rouge_score import rouge_scorer
+from setproctitle import setproctitle
 from tqdm.asyncio import tqdm as atqdm
 from tqdm.auto import tqdm
 
@@ -47,6 +48,9 @@ sys.path.insert(0, str(LOCAL_DIR))
 from src.utils import check_torch_device  # NOQA: E402
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

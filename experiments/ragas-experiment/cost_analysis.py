@@ -10,6 +10,8 @@ import sys
 import textwrap
 import typing as t
 
+from setproctitle import setproctitle
+
 from ragas.metrics import (
     Faithfulness,
     LLMContextRecall,
@@ -55,6 +57,9 @@ from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
 from src.utils import filter_dict_by_keys, pwrap  # NOQA: E402
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

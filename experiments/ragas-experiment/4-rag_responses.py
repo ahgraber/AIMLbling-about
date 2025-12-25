@@ -13,6 +13,7 @@ import warnings
 
 from dotenv import load_dotenv
 from IPython.display import Markdown, display
+from setproctitle import setproctitle
 from tqdm.auto import tqdm
 
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -45,6 +46,9 @@ from src.llamaindex.prompt_templates import BASELINE_QA_PROMPT, DEFAULT_TEXT_QA_
 from src.utils import check_torch_device  # NOQA: E402
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
