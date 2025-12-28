@@ -55,6 +55,7 @@ DO NOT MAKE CHANGES TO SOURCE CODE. You can only make changes to the unit tests.
 
 - Use test function docstrings to clearly describe the behavior or contract under test (what is expected and why it matters), avoiding implementation details.
 - Provide clear assertion failure messages explaining the intent and why the test failed (e.g., context like input parameters or expected boundary conditions).
+- When tests require substantial setup and/or monkeypatching, add comments to help comprehension (Why is the functionality needed? What is the manipulation doing? etc.)
 
 ### Test Data & Fixtures
 
