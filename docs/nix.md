@@ -37,8 +37,11 @@ nix build '.?submodules=1'
 ## Building docker images with nix
 
 - [Nix is a better Docker image builder than Docker's image builder - Xe Iaso](https://xeiaso.net/talks/2024/nix-docker-build/)
+
 - [Rust Environment and Docker Build with Nix Flakes | John's Codes](https://johns.codes/blog/rust-enviorment-and-docker-build-with-nix-flakes#make-a-docker-image)
+
 - [Using Nix with Dockerfiles – Mitchell Hashimoto](https://mitchellh.com/writing/nix-with-dockerfiles)
+
 - [Building on dockerfile-based images - Help - NixOS Discourse](https://discourse.nixos.org/t/building-on-dockerfile-based-images/29583/11)
 
 - [jnsgr.uk/flake.nix at main · jnsgruk/jnsgr.uk](https://github.com/jnsgruk/jnsgr.uk/blob/main/flake.nix)
