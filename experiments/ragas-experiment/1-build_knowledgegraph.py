@@ -240,7 +240,7 @@ em = LangchainEmbeddingsWrapper(
 #
 # Specify the transforms and their order to be applied.
 #
-# Breaking transformations down into stages may make it more resilent
+# Breaking transformations down into stages may make it more resilient
 
 # %%
 summary_extractor = SummaryExtractor(llm=llm)

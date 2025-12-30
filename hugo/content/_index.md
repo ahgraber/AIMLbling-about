@@ -10,7 +10,7 @@ an AI-powered tool and product for Project Managers.
 
 Prior work includes Data Science and ML positions where I focused on business analytics and MLOps.
 
-______________________________________________________________________
+---
 
 <!-- markdownlint-disable MD034 -->
 
