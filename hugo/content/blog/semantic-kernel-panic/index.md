@@ -24,11 +24,9 @@ draft: false
 ---
 
 A few weeks ago at work, I wanted to ensure that the prompt template we used with Semantic Kernel transformed into the OpenAI API spec `messages` array that I expected.
-Little did I know that this simple objective would take me a few days, several experimental notebooks, a thorough tour through the Semantic Kernel's dev blog and (limited) documentation,
-and a review of pretty much the entire python package source code, unit tests, and example library.
+Little did I know that this simple objective would take me a few days, several experimental notebooks, a thorough tour through the Semantic Kernel's dev blog and (limited) documentation, and a review of pretty much the entire python package source code, unit tests, and example library.
 
-Code from these experiments is available
-[here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/sk-rant).
+Code from these experiments [is available here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/sk-rant).
 
 ## What is Semantic Kernel?
 
@@ -42,26 +40,25 @@ as well as more well-known packages in the Python + LLM ecosystem including [Lan
 
 ### Functionality
 
-Semantic Kernel does a few nice things. It is the only AI development framework for C# or Java that I'm aware of.
-It was early to the "function-calling" space, and as such has very good support for agentic-style workflows
-that use LLMs to plan the work, determine which tools to use, create the arguments to call the function, and then _actually invoke the call_.
+Semantic Kernel does a few nice things.
+It is the only AI development framework for C# or Java that I'm aware of.
+It was early to the "function-calling" space, and as such has very good support for agentic-style workflows that use LLMs to plan the work, determine which tools to use, create the arguments to call the function, and then _actually invoke the call_.
 As a Microsoft project, Semantic Kernel has first class support for Azure integrations.
-Finally (and most importantly to this article), Semantic Kernel allows the "chat" interaction method to be defined by templates,
-which can make it easier for developers to dynamically build out interaction contexts with template variables. [^semantic-kernel]
+Finally (and most importantly to this article), Semantic Kernel allows the "chat" interaction method to be defined by templates, which can make it easier for developers to dynamically build out interaction contexts with template variables [^semantic-kernel].
 
 The template functionality allows developers to manage, manipulate, and/or man-in-the-middle the input the user provides.
 This can be extremely useful by providing a way to inject application context into the prompt text.
 RAG (Retrieval Augmented Generation) is a common pattern in which information relevant to the user's request is added to the prompt context before the LLM generates a response.
 This helps ensure the response is grounded and reduces the likelihood of hallucination.
 
+<!-- markdownlint-disable MD013 MD033 MD034 -->
+
 {{% details title="RAG" closed="true" %}}
 
-{{< figure
-src="images/RAG.png"
-alt="retrieval augmented generation"
-link="https://docs.llamaindex.ai/en/stable/"
-caption="Retrieval Augmented Generation. Credit: LlamaIndex" >}}
+{{< figure src="images/RAG.png" alt="retrieval augmented generation" link="https://docs.llamaindex.ai/en/stable/" caption="Retrieval Augmented Generation. Credit: LlamaIndex" >}}
 {{% /details %}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 ## Kernel Panic
 
@@ -163,12 +160,14 @@ The discussion ultimately suggests using Semantic Kernel's OpenTelemetry support
 I ended up doing a lot of extra work trying to figure out what Semantic Kernel is doing to go from a template to the API call.
 The below image is from a call graph I made during the investigation.
 
-{{< figure
-src="images/trace-tree.png"
-alt="traces"
-caption="Simplified call graph of `kernel.invoke`" >}}
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
-The most useful thing was actually reviewing the unit tests! Github issues and discussions did not provide much help, and the documentation was either too high level or pointed to dead pages.
+{{< figure src="images/trace-tree.png" alt="traces" caption="Simplified call graph of `kernel.invoke`" >}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
+
+The most useful thing was actually reviewing the unit tests!
+Github issues and discussions did not provide much help, and the documentation was either too high level or pointed to dead pages.
 
 Semantic Kernel renders templates to text with XML tags that represent the message roles, then converts the XML to Semantic Kernel's `ChatHistory` object that has direct conversion to the `messages` format used by most AI service APIs.
 Since the internal representation of `ChatHistory` is XML, it is easy to go back-and-forth between the rendered template text and the `ChatHistory` object.
@@ -366,8 +365,7 @@ I don't understand how this functionality does not exist as a developer-facing c
 
 I fully recognize that (a) keeping documentation in-sync with an evolving codebase is a huge challenge normally, and (b) supporting multiple languages means that someone is always ahead/behind.
 That said, the documentation experience is _terrible_.
-It is spread across the overview and API reference at [learn.microsoft.com](https://learn.microsoft.com/en-us/semantic-kernel/overview/),
-the [Semantic Kernel devblog](https://devblogs.microsoft.com/semantic-kernel/), and [sample notebooks on github](https://github.com/microsoft/semantic-kernel/tree/main/python/samples).
+It is spread across the overview and API reference at [learn.microsoft.com](https://learn.microsoft.com/en-us/semantic-kernel/overview/), the [Semantic Kernel devblog](https://devblogs.microsoft.com/semantic-kernel/), and [sample notebooks on github](https://github.com/microsoft/semantic-kernel/tree/main/python/samples).
 In some cases, cross-linked references point to dead pages, and sometimes information is present in the dev blog that is not found elsewhere.
 
 To quote [John Green](https://www.wnycstudios.org/podcasts/anthropocene-reviewed), "I rate Semantic Kernel 2 out of 5 stars."

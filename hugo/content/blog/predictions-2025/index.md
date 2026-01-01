@@ -33,7 +33,8 @@ Combined with an explosion of Agentic frameworks ([LangChain](https://github.com
 [CrewAI](https://github.com/crewAIInc/crewAI), [PydanticAI](https://github.com/pydantic/pydantic-ai), etc.),
 2024 was the year AI Agents came into their own.
 
-We will see and even stronger push for Agents in 2025. If you're not yet tired of seeing "agent" or "agentic" plastered all over everything, you will be.
+We will see and even stronger push for Agents in 2025.
+If you're not yet tired of seeing "agent" or "agentic" plastered all over everything, you will be.
 
 _Probability: 100%_
 
@@ -47,8 +48,7 @@ demonstrate that existing models can be deployed/instructed to think deliberatel
 > I recognize that's the popular term; while to some degree it does represent the process of inference-time compute,
 > I think it will take at least until the next generation of models for them to exhibit full-fledged planning, reasoning, or metacognition.
 
-We will see more new models and use of models using inference-time compute in 2025 in situations where low latency is not required, especially to boost performance of small models[^test-time-scaling]
-or where near-human performance is required to automate complex, out-of-domain tasks[^o3].
+We will see more new models and use of models using inference-time compute in 2025 in situations where low latency is not required, especially to boost performance of small models [^test-time-scaling] or where near-human performance is required to automate complex, out-of-domain tasks [^o3].
 And, frontier models using inference-time compute will continue to push the boundary toward super-human performance (but not AGI).
 
 _Probability: 100%_
@@ -99,6 +99,8 @@ _Probability: 80%_
   with AI datacenters associated with brownouts or wildfires ([looking at you, PG&E](https://www.npr.org/2022/04/12/1092259419/california-wildfires-pacific-gas-electric-55-million)) (_Probability: 30%_)
 
 ## References
+
+<!-- markdownlint-disable MD013 -->
 
 [^outlines]: [Structured Generation Improves LLM performance: GSM8K Benchmark](https://blog.dottxt.co/performance-gsm8k.html)
 

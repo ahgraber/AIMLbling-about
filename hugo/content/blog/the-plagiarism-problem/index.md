@@ -14,11 +14,9 @@ draft: false
 ---
 
 The primary training task for generative AI models is inherently plagiaristic.
-New AI-based answer engines leverage these plagiaristic models to provide in-engine responses containing the specific information or content the user is looking for,
-obviating the need for the user to click through to the (original) content and depriving the creator of traffic.
+New AI-based answer engines leverage these plagiaristic models to provide in-engine responses containing the specific information or content the user is looking for, obviating the need for the user to click through to the (original) content and depriving the creator of traffic.
 This breaks the content creation/consumption paradigm, where creators make money based on the number of views the ads on their pages receive, ads are sold by the search engine, and search results are driven by pagerank and SEO.
-To resolve this, pay-per-reference source attribution will have to replace per-view ad revenue in the creator economy, and
-source attribution must be traced through answer engines all the way to the underlying generative models.
+To resolve this, pay-per-reference source attribution will have to replace per-view ad revenue in the creator economy, and source attribution must be traced through answer engines all the way to the underlying generative models.
 
 ## Copycats in training
 
@@ -36,23 +34,17 @@ In each of these (simplified) examples, the training data is built on source con
 Inevitably, organizations training large generative models end up turning to the internet to find large datasets of source material; the source material for the training datasets composed of _someone else's content_.
 
 I said in the intro "the primary training task for generative AI models is inherently plagiaristic", not "is plagiarism".
-While the optimal response for generative training tasks is quite literally plagiarism,
-training a model to perfect accuracy tends to overfit to the training data (reducing real-world performance on non-training data), and as such is typically avoided.
-Since models are _not_ trained to the point of achieving perfect accuracy, training does not guarantee memorization (though memorization _can_ occur);
-rather, it seeks to make the ground truth next-item-in-the-sequence the _most likely_ option.
+While the optimal response for generative training tasks is quite literally plagiarism, training a model to perfect accuracy tends to overfit to the training data (reducing real-world performance on non-training data), and as such is typically avoided.
+Since models are _not_ trained to the point of achieving perfect accuracy, training does not guarantee memorization (though memorization _can_ occur); rather, it seeks to make the ground truth next-item-in-the-sequence the _most likely_ option.
 
 If there are many examples of a piece of information ("The capitol of France is Paris", "France's capitol, Paris", "...in Paris, the capitol of France"), then the model will strongly associate the co-occurring tokens.
 We might liken this to how we might study (cram) for an exam in high school by trying to remember a fact by using flashcards or repeatedly reviewing class notes.
-If there is "conceptual competition" - complex ideas that are represented with many nuanced perspectives,
-information that has changed over time, or knowledge conflicts, then the model will inevitably learn a broader distribution of possible responses.
-If the training sequence is utterly unique, the model has a chance to memorize it because there is minimal competition for the next-token training task. [^knowledge]
+If there is "conceptual competition" - complex ideas that are represented with many nuanced perspectives, information that has changed over time, or knowledge conflicts, then the model will inevitably learn a broader distribution of possible responses.
+If the training sequence is utterly unique, the model has a chance to memorize it because there is minimal competition for the next-token training task [^knowledge].
 
-Recent research has revealed that "non-trivial amounts of repetition are necessary for verbatim memorization to happen",
-and seems to indicate that memorization is more likely for data seen later in training after the model has a good representation of language.
-When responses replicate source content, it can be "rote memorization" through mechanisms of token-level information recall (though this requires many training examples)
-_or_ via unintentional reproduction of the source text based the internalization of abstract or syntactic linguistic structures.
-Without deep mechanistic introspection with respect to the generative process, it is impossible for the end user to determine whether the replicated content was memorized or reconstructed.
-[^memorization]
+Recent research has revealed that "non-trivial amounts of repetition are necessary for verbatim memorization to happen", and seems to indicate that memorization is more likely for data seen later in training after the model has a good representation of language.
+When responses replicate source content, it can be "rote memorization" through mechanisms of token-level information recall (though this requires many training examples) _or_ via unintentional reproduction of the source text based the internalization of abstract or syntactic linguistic structures.
+Without deep mechanistic introspection with respect to the generative process, it is impossible for the end user to determine whether the replicated content was memorized or reconstructed [^memorization].
 
 > [!NOTE]
 > Verbatim plagiarism is made less likely due to the variety of probabilistic decoding techniques (beam search, temperature, nucleus sampling, etc.) that are designed to allow models to avoid only picking the highest-probability token.
@@ -96,8 +88,7 @@ especially the creator economy (i.e., influencers) and any content publication s
 At a high level, the current internet creation/consumption economy involves:\
 A creator produces content and publishes it to the public internet.\
 A search engine indexes that content so it knows what is available, and surfaces relevant content to an interested audience.\
-The audience clicks through to the content, driving ad revenue / views / clout for the creator.
-[^creator]
+The audience clicks through to the content, driving ad revenue / views / clout for the creator [^creator].
 
 > [!NOTE]
 > This representation of the internet / creator economy is simplistic, idealistic, and somewhat out-of-date.
@@ -108,11 +99,9 @@ When an answer engine provides the answer directly, it removes the need for the 
 
 ## The solution requires source attribution
 
-Leaving aside the legal specifics regarding intellectual property rights, licensing, "transformative use", and generative AI (I'm not a lawyer),
-it seems to me that source attribution is the key component that resolves plagiarism concerns and provides the mechanism to retain revenue streams for content creators.
-As I learned in high school, "It's not plagiarism if you cite it."
-In the case of answer engines, it seems obvious to me that the source content used to generate the answer should be provided a utilization fee, akin to how artists are paid per-play on Spotify or Apple Music.
-In fact, this is what Perplexity has proposed after being accused of plagiarism. [^profit-sharing]
+Leaving aside the legal specifics regarding intellectual property rights, licensing, "transformative use", and generative AI (I'm not a lawyer), it seems to me that source attribution is the key component that resolves plagiarism concerns and provides the mechanism to retain revenue streams for content creators.
+As I learned in high school, "It's not plagiarism if you cite it." In the case of answer engines, it seems obvious to me that the source content used to generate the answer should be provided a utilization fee, akin to how artists are paid per-play on Spotify or Apple Music.
+In fact, this is what Perplexity has proposed after being accused of plagiarism [^profit-sharing].
 Identifying the specific source content used to generate the answer is nontrivial, as it requires attributing the content used to train the model as well as any content provided as context during inference.
 
 Inference-time attribution is easy to solve if the source material is accessed in a RAG (Retrieval Augmented Generation) pattern.
@@ -124,15 +113,12 @@ It becomes much harder to resolve the issue of source attribution on the trainin
 Initially, it seems plausible to track how weights change during training and use that information to identify the link between parameter activations and source content.
 When the model generates a response, the activations used during the response could be compared to the patterns of the training materials, and similar patterns would trigger attributing the generated response to the source content.
 However, this approach requires tracking all model weights (billions of parameters) per token, which is unsustainable for even moderately sized models.
-Case in point - Gemma Scope is a 2B model that "used about 15% of the training compute of Gemma 2 9B" and "saved about 20 Pebibytes (PiB) of activations to disk" to trace the influence inputs have on model understanding.[^gemma-scope]
-Additionally, the iterative training process means that the model updates its internal representations as it learns from new examples,
-so the internal representation of content seen at the beginning of training will no longer be valid at the end.
+Case in point - Gemma Scope is a 2B model that "used about 15% of the training compute of Gemma 2 9B" and "saved about 20 Pebibytes (PiB) of activations to disk" to trace the influence inputs have on model understanding [^gemma-scope].
+Additionally, the iterative training process means that the model updates its internal representations as it learns from new examples, so the internal representation of content seen at the beginning of training will no longer be valid at the end.
 An alternative technique might be to run all training materials through the model once it has been trained and trace the activations.
 While this approach resolves the issue of changing internal representation by using the frozen post-training weights, it still requires tracking billions of parameters per token.
 
-A simpler approach in this vein might be to try to represent training content using passage embeddings,
-which might take the form of a weighted mean-pooled embedding (as I used in the [Typos experiment, part 3]({{< ref "/blog/typos-part-3" >}})),
-by simply using the final token embedding of the passage, or by training a Sentence-Transformers-style embedding model. [^sentence-transformers]
+A simpler approach in this vein might be to try to represent training content using passage embeddings, which might take the form of a weighted mean-pooled embedding (as I used in the [Typos experiment, part 3]({{< ref "/blog/typos-part-3" >}})), by simply using the final token embedding of the passage, or by training a Sentence-Transformers-style embedding model [^sentence-transformers].
 To identify source content, the embedding representation of the generated response would be compared to the embedding of the source material.
 The source material with embeddings that are similar to the response embedding would be attributed as sources.
 Essentially, this becomes the RAG pattern over the training material and attribution is equivalently axiomatic.

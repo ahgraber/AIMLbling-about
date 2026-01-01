@@ -14,6 +14,7 @@ Watch [changelog](https://github.com/giscus/giscus/blob/main/CHANGELOG.md) for p
 
 Notes/References:
 
-- `giscus.json` should be placed in the root of the repository whose Discussions is used for giscus. It's used to control how giscus can interact with your repository.
+- `giscus.json` should be placed in the root of the repository whose Discussions is used for giscus.
+  It's used to control how giscus can interact with your repository.
 - [Giscus do not show when self-hosting · giscus · Discussion #705](https://github.com/orgs/giscus/discussions/705)
 - [giscus app refused to connect · Issue #380 · giscus/giscus](https://github.com/giscus/giscus/issues/380#issuecomment-1026328308)
