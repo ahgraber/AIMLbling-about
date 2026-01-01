@@ -45,7 +45,8 @@ python ./download_datasets.py
 
 - [papluca/xlm-roberta-base-language-detection · Hugging Face](https://huggingface.co/papluca/xlm-roberta-base-language-detection) - slow (10x slower than others), fewer languages (20 vs 70+)
 - [adbar/simplemma: Simple multilingual lemmatizer for Python, especially useful for speed and efficiency](https://github.com/adbar/simplemma) - primarily focuses on lemmatization; language detection is side effect
-- [ssut/py-googletrans: (unofficial) Googletrans: Free and Unlimited Google translate API for Python. Translates totally free of charge.](https://github.com/ssut/py-googletrans) - uses API instead of local
+- [ssut/py-googletrans: (unofficial) Googletrans: Free and Unlimited Google translate API for Python.
+  Translates totally free of charge.](https://github.com/ssut/py-googletrans) - uses API instead of local
 - [Spacy FastLang · spaCy Universe](https://spacy.io/universe/project/spacy_fastlang) - uses fasttext
 - [mbanon/fastspell: Targeted language identifier, based on FastText and Hunspell.](https://github.com/mbanon/fastspell) - uses fasttext
 - [Mimino666/langdetect: Port of Google's language-detection library to Python.](https://github.com/Mimino666/langdetect) - langdetect is old

@@ -24,7 +24,7 @@ draft: false
 ---
 
 This is part one of a three-part series ([two]({{< ref "/blog/ragas-to-riches-2" >}}), [three]({{< ref "/blog/ragas-to-riches-3" >}})) where I explore best practices for evaluating RAG architecture via Ragas' recent v0.2 release.
-Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas-experiment).
+Code from these experiments [is available here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas-experiment).
 
 This post covers the preliminary / background material.
 In later posts, I'll cover what makes Ragas v0.2 so special, how it works, and run an experiment with it.
@@ -36,15 +36,19 @@ The idea is that, like a student, a model will provide better answers when given
 Therefore, RAG is a technique that provides the language model with additional, _relevant_ information that is pertinent to the instruction, question, or request so that it can be used when generating a response.
 The additional information acts to "ground" the response, and tends to reduce hallucinations and mitigate incorrect or inconsistent answers.
 
-RAG was originally proposed as a method for domain adaptation or knowledge updates, in which the language model is fine tuned to work with an external knowledgebase and retriever. [^rag]
+RAG was originally proposed as a method for domain adaptation or knowledge updates, in which the language model is fine tuned to work with an external knowledgebase and retriever [^rag].
 The modern RAG implementation uses a general embedding model to locate reference information and user inputs in the same semantic embedding space for search.
 Relevant pieces of information are retrieved and are passed to the LLM for in-context learning.
 RAG systems require a corpus of knowledge to search over, a method for searching/ranking/retrieving the relevant content, and the LLM to synthesize the final answer.
+
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
 {{< figure
 src="images/RAG.png"
 alt="retrieval augmented generation"
 caption="Retrieval Augmented Generation via [Best Practices in Retrieval Augmented Generation - Gradient Flow](https://gradientflow.com/best-practices-in-retrieval-augmented-generation/)" >}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 The above diagram from [GradientFlow](https://gradientflow.com/best-practices-in-retrieval-augmented-generation/) provides a fantastic overview of the RAG procedure.
 Pieces of content are split into chunks, converted into vector embeddings, and stored in a vector database.
@@ -95,24 +99,27 @@ RAG systems typically reduce hallucination as a result of the 'open book exam' n
 `response relevance` (a.k.a. `answer relevance`) measures how relevant the final answer is to the original input - it would not do for the RAG system to provide a faithful answer to a different question! [^response_relevance]
 
 Critically, we need these metrics to be valid data points for comparison (over time, or between RAG architectures).
-This means that (a) we need a baseline to compare against - likely LLM performance without RAG - and (b) we need a benchmark -
-"a standardized basis for comparing different approaches," a dataset with known-good question-context-answer triples and a set of metrics used to evaluate performance.[^methodology]
+This means that (a) we need a baseline to compare against - likely LLM performance without RAG - and (b) we need a benchmark - "a standardized basis for comparing different approaches," a dataset with known-good question-context-answer triples and a set of metrics used to evaluate performance [^methodology].
+
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
 {{< figure
 src="images/RAG experimentation.png"
 alt="empirical evaluations of RAG"
 caption="Key considerations for sound empirical evaluations of RAG systems via [[2410.08801] A Methodology for Evaluating RAG Systems: A Case Study On Configuration Dependency Validation](https://arxiv.org/abs/2410.08801)" >}}
 
+<!-- markdownlint-enable MD013 MD033 MD034 -->
+
 Finally, in the case where the benchmark is artificially generated, it is important that the process of defining the benchmark dataset is independent of the decisions and architectures upon which the RAG system we are evaluating are based.
 
 ## Introducing Ragas v0.2
 
 It is this last point that has me very excited about the possibilities of the new version of Ragas.
-Ragas (RAG ASsessment) is a research-supported [^ragas_arxiv] python framework for evaluating RAG applications [^ragas]
+Ragas (RAG ASsessment) is a research-supported [^ragas_arxiv] python framework for evaluating RAG applications [^ragas].
 The new version 0.2 release provides a synthetic testset generation process that builds a knowledge graph over the document corpus to synthesize questions.
 When combined with new, long-context embedding models, this means that the decisions made for extracting information into the knowledge graph _are different from the decisions made when chunking documents for RAG_.
 For instance, it may make sense to split documents into somewhat larger nodes based on document structure and leverage keyphrase and entity extraction for to build topical clusters for the testset generation.
-Conversely, recent research indicates that smaller, semantically-defined chunks are more optimal for retrieval. [^chunking]
+Conversely, recent research indicates that smaller, semantically-defined chunks are more optimal for retrieval [^chunking].
 
 ## References
 

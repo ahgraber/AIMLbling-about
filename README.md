@@ -16,8 +16,7 @@ and publishing posts when ready (`task hugo:publish path="<relative path to inde
 Drafts are managed in their own `blog/<title>` branch.
 
 Content is written using "standard" markdown ([Goldmark](https://github.com/yuin/goldmark), specifically).
-The [Hextra](https://imfing.github.io/hextra/) theme provides additional features, like shortcodes for
-[callouts](https://imfing.github.io/hextra/docs/guide/shortcodes/callout/), [cards](https://imfing.github.io/hextra/docs/guide/shortcodes/cards/), [hide/show details](https://imfing.github.io/hextra/docs/guide/shortcodes/details/), etc.
+The [Hextra](https://imfing.github.io/hextra/) theme provides additional features, like shortcodes for [callouts](https://imfing.github.io/hextra/docs/guide/shortcodes/callout/), [cards](https://imfing.github.io/hextra/docs/guide/shortcodes/cards/), [hide/show details](https://imfing.github.io/hextra/docs/guide/shortcodes/details/), etc.
 Footnotes are supported, as is [LaTeX](https://imfing.github.io/hextra/docs/guide/latex/), [Mermaid diagrams](https://imfing.github.io/hextra/docs/guide/diagrams/), and syntax highlighting.
 
 Once a draft is finished, it can be published (`task hugo:publish path="<relative path to index.md>"`) on its branch,

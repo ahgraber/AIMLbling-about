@@ -17,23 +17,26 @@ math: true
 draft: false
 ---
 
-Yann LeCun believes autoregressive models inherently suffer from a kind of 'generational drift'[^1] due to compounding errors. Coming from LeCun - Chief AI Scientist at Meta and famed for his work on convolutional neural networks and image
-recognition - this alarming statement carries a lot of weight. It is also, I think, a novel concept to people who are not steeped in statistics, or who do not understand how generative models work. Let's explore further to understand
-LeCun's point, the implications to GPT-style autoregressive language models, and the applications of said models.
+Yann LeCun believes autoregressive models inherently suffer from a kind of 'generational drift' [^1] due to compounding errors.
+Coming from LeCun - Chief AI Scientist at Meta and famed for his work on convolutional neural networks and image recognition - this alarming statement carries a lot of weight.
+It is also, I think, a novel concept to people who are not steeped in statistics, or who do not understand how generative models work.
+Let's explore further to understand LeCun's point, the implications to GPT-style autoregressive language models, and the applications of said models.
 
-LLMs like ChatGPT or Llama are (GPTs - generative pre-trained transformers); they work by generating tokens _in sequence_. At a high level - given an input (your prompt, a global system instruction, etc.), a GPT picks token that is most
-likely going to come next. It does this by understanding the relationships between the trillions of tokens-in-sequence it saw when it was trained. After it picks (or _predicts_) the first token, it will pick the second based on the input
-_and the first predicted token_.
+LLMs like ChatGPT or Llama are (GPTs - generative pre-trained transformers); they work by generating tokens _in sequence_.
+At a high level - given an input (your prompt, a global system instruction, etc.), a GPT picks token that is most likely going to come next.
+It does this by understanding the relationships between the trillions of tokens-in-sequence it saw when it was trained.
+After it picks (or _predicts_) the first token, it will pick the second based on the input _and the first predicted token_.
 
 Wash, rinse, repeat 𝄇
 
 ## Problem: Compounding error
 
-Any time you make a prediction, there is some chance you will predict correctly -- and hopefully that chance is > 50% or you're better off flipping a coin. However, the inverse is also true; any time you make a prediction, there is some
-chance you will predict _incorrectly_.
+Any time you make a prediction, there is some chance you will predict correctly -- and hopefully that chance is > 50% or you're better off flipping a coin.
+However, the inverse is also true; any time you make a prediction, there is some chance you will predict _incorrectly_.
 
-Every time you make a subsequent prediction in a sequence, you increase the chance that an error has occurred _somewhere_ in that sequence. In other words, the likelihood of an error compounds over sequential steps. If every step has an
-error rate of `1%`, the probability of encountering an error after 20 steps is 18%, but after 200 steps, it has grown to 87%!
+Every time you make a subsequent prediction in a sequence, you increase the chance that an error has occurred _somewhere_ in that sequence.
+In other words, the likelihood of an error compounds over sequential steps.
+If every step has an error rate of `1%`, the probability of encountering an error after 20 steps is 18%, but after 200 steps, it has grown to 87%!
 
 ![Compounding Error](images/compounding_error.png)
 
@@ -86,19 +89,24 @@ print(len(tokens))
 
 {{< callout type="question" >}}_I've used ChatGPT, and it doesn't seem like it makes a mistake in the majority of sentences..._{{< /callout >}}
 
-Astute observation! There are a few things at play here...
+Astute observation!
+There are a few things at play here...
 
 ### Text generation with LLMs isn't purely sequential with respect to error
 
 LeCun's point about compounding error is valid for experiments like flipping a coin -- the more flips you perform, the higher the chance of getting tails (assuming tails is a proxy for error in our above experiment)
 
-However, this is not strictly true with LLMs because they take into account the context - _the entire sequence of past words, including those provided in the prompt_. In our coin flip example, it would be as if all prior flips influenced
-the next one. The addition of a token to the prediction context alters the the system from which the next token is generated. As we do not know _how much_ that specific new token alters the specific system, all we can say with respect to
-the compounding error is that the limits of compounding are **at worst** the exponential case, but may be significantly better as though each token generation is a new experiment (i.e., there is no compounding effect).
+However, this is not strictly true with LLMs because they take into account the context - _the entire sequence of past words, including those provided in the prompt_.
+In our coin flip example, it would be as if all prior flips influenced the next one.
+The addition of a token to the prediction context alters the the system from which the next token is generated.
+As we do not know _how much_ that specific new token alters the specific system, all we can say with respect to the compounding error is that the limits of compounding are **at worst** the exponential case, but may be significantly better as though each token generation is a new experiment (i.e., there is no compounding effect).
 
 ### Language is flexible
 
-Language is a bit more flexible than a binary "right vs wrong" assessment. A sentence starting with "An apple" might have continuations:
+Language is a bit more flexible than a binary "right vs wrong" assessment.
+A sentence starting with "An apple" might have continuations:
+
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
 $$
 \begin{align*}
@@ -108,8 +116,11 @@ $$
 \end{align*}
 $$
 
-So an LLM might pick a token that is not 'right' -- it's not what _you_ would pick, but it might be grammatically, logically, and semantically valid. Additionally, because the LLM predicts the next token given all historic context, it is
-plausible that when generating the 5th and 6th token, it starts to veer off into error but then recovers at the 8th token because of the influence of the context. Joannes Vermorel illustrates[^2]:
+<!-- markdownlint-enable MD013 MD033 MD034 -->
+
+So an LLM might pick a token that is not 'right' -- it's not what _you_ would pick, but it might be grammatically, logically, and semantically valid.
+Additionally, because the LLM predicts the next token given all historic context, it is plausible that when generating the 5th and 6th token, it starts to veer off into error but then recovers at the 8th token because of the influence of the context.
+Joannes Vermorel illustrates [^2]:
 
 > Question: Was Pierre-Simon de Laplace a great mathematician? (respond like an opinionated Frenchman)
 >
@@ -141,39 +152,41 @@ The linguistic flexibility that reduced our concerns regarding compounding error
 >
 > Because language is flexible and we don't want our LLMs to sound like robots, we tend to select next tokens from the probability distribution of likely next tokens instead of picking the singular most-likely token.
 
-As one might expect, using a stochastic (random, nondeterministic sampling technique) [^3] to select the next token tends to decrease performance in all tasks except for open-ended generation. [^4] This makes sense - models are trained to
-predict the best next token, and adding random noise in support of flexibility acts in opposition to that goal. And while future tokens might be able to readjust an error in generation, the error is set once generated and influences all
-future tokens that use the context.
+As one might expect, using a stochastic (random, nondeterministic sampling technique) [^3] to select the next token tends to decrease performance in all tasks except for open-ended generation. [^4] This makes sense - models are trained to predict the best next token, and adding random noise in support of flexibility acts in opposition to that goal.
+And while future tokens might be able to readjust an error in generation, the error is set once generated and influences all future tokens that use the context.
 
 ### Compounding error in conversations, chains, agents
 
-Hallucination, by definition, is a judgement that the complete generated response is erroneous as a whole. It is binary test for correct vs. incorrect that is challenging to do at the token level due to the aforementioned linguistic
-flexibility. So, now that we're thinking about the complete output sequence as a whole, does our concern about compounding error change?
+Hallucination, by definition, is a judgement that the complete generated response is erroneous as a whole.
+It is binary test for correct vs. incorrect that is challenging to do at the token level due to the aforementioned linguistic flexibility.
+So, now that we're thinking about the complete output sequence as a whole, does our concern about compounding error change?
 
-ChatGPT, Phind, Perplexity, and the like all feature a conversation-style chat interface, where the forthcoming response includes prior user-machine exchanges in the historic context. If an error (hallucination, confabulation, illogic,
-etc.) occurred in response #2, that error is persisted through the conversation.
+ChatGPT, Phind, Perplexity, and the like all feature a conversation-style chat interface, where the forthcoming response includes prior user-machine exchanges in the historic context.
+If an error (hallucination, confabulation, illogic, etc.) occurred in response #2, that error is persisted through the conversation.
 
-[LangChain](https://www.langchain.com/) is probably the best-known developer framework used for building applications based on LLMs. One of its key features is LCEL (LangChain Expression Language), a method of templating prompts and
-responses so they can be _chained_, or strung together in sequence, to accomplish some task.
+[LangChain](https://www.langchain.com/) is probably the best-known developer framework used for building applications based on LLMs.
+One of its key features is LCEL (LangChain Expression Language), a method of templating prompts and responses so they can be _chained_, or strung together in sequence, to accomplish some task.
 
 {{< callout type="question" >}} I see -- so if the LLM makes an error early in the chain, the error influence later generations? {{< /callout >}}
 
-Right! And, if the LLM has a 1% chance of making a mistake, we're back to our problem of compounding errors.
+Right!
+And, if the LLM has a 1% chance of making a mistake, we're back to our problem of compounding errors.
 
 Last one to hammer the point home --
 
-In the world of LLM application engineering as defined by LangChain, _chains_ are described as predetermined steps (think question/answer or instruction/completion) while _agents_ also use LLMs to reason. In the Agent paradigm, we might
-not only chain steps together, but also ask the LLM to decide which steps. Agents are worth at least another post; superficially, one common pattern is to use the LLM-as-Agent to decompose a big problem into smaller tasks, send those
-subtasks through chains, and then recombine at the end to provide the result. In order for an Agent to operate successfully, it must be able to resolve the risk of compounding error inherent to the multiple tiers of prediction sequences
-(token, response, chain, agent).
+In the world of LLM application engineering as defined by LangChain, _chains_ are described as predetermined steps (think question/answer or instruction/completion) while _agents_ also use LLMs to reason.
+In the Agent paradigm, we might not only chain steps together, but also ask the LLM to decide which steps.
+Agents are worth at least another post; superficially, one common pattern is to use the LLM-as-Agent to decompose a big problem into smaller tasks, send those subtasks through chains, and then recombine at the end to provide the result.
+In order for an Agent to operate successfully, it must be able to resolve the risk of compounding error inherent to the multiple tiers of prediction sequences (token, response, chain, agent).
 
-Sholto Douglas (of Google Deepmind's Gemini team) said it best:[^5]
+Sholto Douglas (of Google Deepmind's Gemini team) said it best:
 
-> If you can't chain tasks successively with high enough probability, then you won't get something that looks like an agent.
+> If you can't chain tasks successively with high enough probability, then you won't get something that looks like an agent [^5].
 
 ## For further exploration
 
-- Why is there error at all? Consider the training data
+- Why is there error at all?
+  Consider the training data
   - Language is messy
   - Training examples may oppose each other (i.e., no 'right' answer or 'right' has changed)
     - [[2403.08319] Knowledge Conflicts for LLMs: A Survey](https://arxiv.org/abs/2403.08319)

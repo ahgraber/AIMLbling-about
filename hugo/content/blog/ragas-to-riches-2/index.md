@@ -24,7 +24,7 @@ draft: false
 ---
 
 This is part two of a three-part series ([one]({{< ref "/blog/ragas-to-riches-1" >}}), [three]({{< ref "/blog/ragas-to-riches-3" >}})) where I explore best practices for evaluating RAG architecture via Ragas' recent v0.2 release.
-Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas-experiment).
+Code from these experiments [is available here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/ragas-experiment).
 
 In this post, I will dive into why I'm so excited about Ragas v0.2 and dive into how it works.
 Specifically, the I am referencing `Ragas v0.2.3`; the team is rapidly iterating and this series of posts will likely end up out of date quite quickly.
@@ -32,11 +32,11 @@ It is my hope that the concepts will remain true, even if the specific procedure
 
 ## Introducing Ragas v0.2
 
-Ragas (RAG ASsessment) is a research-supported [^ragas_arxiv] python framework for evaluating RAG applications [^ragas]
-The new version 0.2 release provides a synthetic testset generation process that builds a knowledge graph over the document corpus to synthesize questions, among other improvements. [^ragas_v0.2]
+Ragas (RAG ASsessment) is a research-supported [^ragas_arxiv] python framework for evaluating RAG applications [^ragas].
+The new version 0.2 release provides a synthetic testset generation process that builds a knowledge graph over the document corpus to synthesize questions, among other improvements [^ragas_v0.2].
 When combined with new, long-context embedding models, this means that the decisions made for extracting information into the knowledge graph _are different from the decisions made when chunking documents for RAG_.
 For instance, it may make sense to split documents into somewhat larger nodes based on document structure and leverage keyphrase and entity extraction for to build topical clusters for the testset generation.
-Conversely, recent research indicates that smaller, semantically-defined chunks are more optimal for retrieval. [^chunking]
+Conversely, recent research indicates that smaller, semantically-defined chunks are more optimal for retrieval [^chunking].
 
 ### [Knowledge Graph Creation](https://docs.ragas.io/en/v0.2.3/concepts/test_data_generation/rag/#knowledge-graph-creation)
 
@@ -59,10 +59,8 @@ default_transforms = [
 ]
 ```
 
-I modified the default pipeline, breaking it into 3 phases for a bit more control for error handling and repair,
-and allowing me to save the interim transformations.
-I also wrote custom `MarkdownTitleExtractor` and `SpacyNERExtractor` classes that are customized to my use case,
-and reduce the overall number of LLM API calls I make (thus reducing my costs).
+I modified the default pipeline, breaking it into 3 phases for a bit more control for error handling and repair, and allowing me to save the interim transformations.
+I also wrote custom `MarkdownTitleExtractor` and `SpacyNERExtractor` classes that are customized to my use case, and reduce the overall number of LLM API calls I make (thus reducing my costs).
 See [1-build_knowledgegraph.py](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/1-build_knowledgegraph.py) for details.
 
 ```py
@@ -98,10 +96,8 @@ apply_transforms(kg, stage3)
 
 As mentioned above, the knowledgegraph contains information about how nodes are related on a topical level, based on summary embeddings, keyphrases, or named entities.
 Ragas builds clusters of nodes given these relationships, and samples from these clusters to synthesize ground-truth responses and generate a question for evaluation.
-Then, it may modify the question based on scenarios that mimic real-world use -- some questions may be revised to include typos (see my [prior work on typos]({{< ref "/blog/typos-part-1" >}})), to be more succinct or more rambling,
-or to take on different user personas.
-The final result is a testset where each record contains a question (`user_input`), the synthetic ground truth / expected response (`reference`),
-the text from the knowledge graph nodes used to generate the ground truth (`reference_contexts`), and the synthesizer name.
+Then, it may modify the question based on scenarios that mimic real-world use -- some questions may be revised to include typos (see my [prior work on typos]({{< ref "/blog/typos-part-1" >}})), to be more succinct or more rambling, or to take on different user personas.
+The final result is a testset where each record contains a question (`user_input`), the synthetic ground truth / expected response (`reference`), the text from the knowledge graph nodes used to generate the ground truth (`reference_contexts`), and the synthesizer name.
 
 Ragas conceptualizes user interactions with RAG systems into 2 dimensions and builds synthesizers for each.
 
@@ -111,8 +107,7 @@ The [Ragas documentation describes](https://docs.ragas.io/en/v0.2.3/concepts/tes
 > **Specific Query**: Focuses on clear, fact-based retrieval. The goal in RAG is to retrieve highly relevant information from one or more documents that directly address the specific question.\
 > **Abstract Query**: Requires a broader, more interpretive response. In RAG, abstract queries challenge the retrieval system to pull from documents that contain higher-level reasoning, explanations, or opinions, rather than simple facts.
 
-The other dimension is single- vs multi-hop:
-Single-hop interactions can be thought of as straightforward question where retrieved context is synthesized directly into a single response.
+The other dimension is single- vs multi-hop: Single-hop interactions can be thought of as straightforward question where retrieved context is synthesized directly into a single response.
 On the other hand, multi-hop interactions may require reasoning after extracting information the retrieved context before responding.
 
 Finally, there is the distinction between single- and multi-_turn_ questions.
@@ -153,11 +148,8 @@ Currently (as of v0.2.3), Ragas does not support generation of synthetic multi-t
 
 ### Evaluation
 
-I used [LlamaIndex to create a local vector database](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/3-build_index_llamaindex.py), and then iterated over the testset,
-asking my LlamaIndex RAG system to [retrieve contexts](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-rag_reretrievals.py) and
-[generate responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-rag_responses.py) for each question in the testset.
-I also [created a baseline set of responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-baseline_responses.p),
-using the LLM to generate responses to the testset questions without providing the retrieved context -- a closed-book exam, metaphorically speaking.
+I used [LlamaIndex to create a local vector database](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/3-build_index_llamaindex.py), and then iterated over the testset, asking my LlamaIndex RAG system to [retrieve contexts](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-rag_reretrievals.py) and [generate responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-rag_responses.py) for each question in the testset.
+I also [created a baseline set of responses](https://github.com/ahgraber/AIMLbling-about/blob/main/experiments/ragas-experiment/4-baseline_responses.p), using the LLM to generate responses to the testset questions without providing the retrieved context -- a closed-book exam, metaphorically speaking.
 
 I elected to use `context precision`, `context recall`, `faithfulness`, and `response relevance` as my evaluation metrics, which we covered in at a high level in [part one]({{< ref "/blog/ragas-to-riches-1#rag-evaluation" >}}).
 
@@ -177,9 +169,7 @@ results = evaluate(dataset=testset, metrics=metrics)
 ### Other updates
 
 One of the other really cool features included in the v0.2 update is [cost estimation](https://docs.ragas.io/en/v0.2.3/howtos/applications/_cost/).
-This feature uses callbacks to extract token use the LLM response object
-([OpenAI](https://platform.openai.com/docs/api-reference/chat/create) and [Anthropic](https://docs.anthropic.com/en/api/messages))
-include token use in the `usage` key in their responses.
+This feature uses callbacks to extract token use the LLM response object ([OpenAI](https://platform.openai.com/docs/api-reference/chat/create) and [Anthropic](https://docs.anthropic.com/en/api/messages)) include token use in the `usage` key in their responses.
 
 Unfortunately, using Ragas' cost estimation functionality requires actually calling the LLM APIs; it cannot preemptively estimate token use or costs.
 
@@ -245,6 +235,8 @@ Given current (Q4 2024) prices (GPT-4o @ $2.50 / 1M tokens; Claude-3.5-Sonnet @ 
 RAGAS uses few-shot prompting, which means the templated prompts with few-shot examples will tend to dominate the total token use if retrieved context tokens < prompt tokens.
 Therefore, parameters like node/chunk size and numbers of nodes/chunks provided functionally have no impact on long-running token use/cost assuming that the retrieved context tokens remains < prompt tokens.
 
+<!-- markdownlint-disable MD013 MD033 MD034 -->
+
 {{< figure
 src="images/testset_chunk_tokens.png"
 alt="prompt length dominates influence of chunk size on token utilization"
@@ -254,11 +246,15 @@ src="images/eval_n_context_chunks.png"
 alt="prompt length dominates influence of chunk count on token utilization"
 caption="Prompt length dominates influence of chunk count on token utilization" >}}
 
+<!-- markdownlint-enable MD013 MD033 MD034 -->
+
 > 'scaled' divides the total token use by the x axis variable
 > to understand whether the increase is proportional to parameter
 
 Parameters that alter the number of overall iterations (i.e., increasing the number of extractor steps in the knowledge graph,
 adding a new document to the knowledge graph, adding questions to the test set, or adding evals) act as multipliers, and have dramatic effects on total token use, though the token use per iteration remains constant.
+
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
 {{< figure
 src="images/testset_n_questions.png"
@@ -268,6 +264,8 @@ caption="Testset size multiplies the total token use, but tokens per question re
 src="images/eval_n_questions.png"
 alt="tokens per question remain constant"
 caption="Testset size multiplies the total token use, but tokens per question remain constant" >}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 > Because the templated prompts dominate token use, leveraging API features such as token caching become an incredibly effective way to save money on API use.
 > API calls that use the same prompt/template should be made in near succession to maintain high cache-hit rates.

@@ -25,4 +25,4 @@ Prior work includes Data Science and ML positions where I focused on business an
 {{< card link="https://linkedin.com/in/ahgraber" title="LinkedIn" icon="linkedin" >}}
 {{< /cards >}}
 
-<!-- markdownlint-enable -->
+<!-- markdownlint-enable MD034 -->

@@ -39,19 +39,21 @@ This process update is the result of workflow friction when using `conda` - it w
    >
    > - [Mamba User Guide](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html)
 
-The result of these issues is that it is hard to maintain a standard environment because you have to jump through hoops:
-First, install or update your conda environment. Then `pip install -r requirements.txt` your dependencies that aren't distributed through anaconda.
+The result of these issues is that it is hard to maintain a standard environment because you have to jump through hoops: First, install or update your conda environment.
+Then `pip install -r requirements.txt` your dependencies that aren't distributed through anaconda.
 Do your pip dependencies have requirements?
-They might override or replace your conda-installed dependencies unless you specify `--no-deps`,
-but then you have to ensure the dependencies of the pip-installed packages are already installed through conda or additionally specified in the `requirements.txt` file.
-Forget `--no-deps`? Start over. 🤦🏻‍♂️
+They might override or replace your conda-installed dependencies unless you specify `--no-deps`, but then you have to ensure the dependencies of the pip-installed packages are already installed through conda or additionally specified in the `requirements.txt` file.
+Forget `--no-deps`?
+Start over. 🤦🏻‍♂️
 
 ## Unified dependency management with `uv`
 
 ![uv](./images/uv.png)
 
-`uv` makes the workflow much simpler. Dependencies are defined in `pyproject.toml` or can reuse an existing `requirements.txt`.
-Virtual environments are automatically created and used. `uv` can manage and install python versions independent of system python.
+`uv` makes the workflow much simpler.
+Dependencies are defined in `pyproject.toml` or can reuse an existing `requirements.txt`.
+Virtual environments are automatically created and used.
+`uv` can manage and install python versions independent of system python.
 Workspaces allow for dependency inheritance and caches for fast switching and to avoid re-downloading and re-building packages.
 `uv` implements dependency locking for reproducibility.
 
@@ -164,8 +166,7 @@ uv run --with jupyter jupyter lab
 #### [Workspaces](https://docs.astral.sh/uv/concepts/projects/workspaces/)
 
 Workspaces organize large codebases by splitting them into multiple packages with common dependencies.
-Workspaces are intended to facilitate the development of multiple interconnected packages within a single repository;
-In a workspace, each package defines its own pyproject.toml, but the workspace shares a single lockfile, ensuring that the workspace operates with a consistent set of dependencies.
+Workspaces are intended to facilitate the development of multiple interconnected packages within a single repository; In a workspace, each package defines its own pyproject.toml, but the workspace shares a single lockfile, ensuring that the workspace operates with a consistent set of dependencies.
 
 To add a workspace to the project, update the `pyproject.toml` with table `[tool.uv.workspace]`
 
@@ -206,8 +207,7 @@ Dependencies specified in `[tool.uv.sources]` of the workspace root apply to all
 
 #### Path dependencies
 
-Workspaces are _not_ suited for cases in which members have conflicting requirements, or desire a separate virtual environment for
-each member.
+Workspaces are _not_ suited for cases in which members have conflicting requirements, or desire a separate virtual environment for each member.
 In this case, path dependencies may be a better option.
 
 ```toml title="pyproject.toml" hl_lines="8"
@@ -221,7 +221,8 @@ dependencies = ["pandas"]
 experiment = { path = "src/uv-demo" } # this applies to all members
 ```
 
-An editable installation is not used for path dependencies by default. An editable installation may be requested for project directories:
+An editable installation is not used for path dependencies by default.
+An editable installation may be requested for project directories:
 
 ```sh
 uv add --editable /path/to/projects/bar/

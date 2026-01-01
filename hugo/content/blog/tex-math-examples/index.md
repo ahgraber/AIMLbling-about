@@ -7,6 +7,8 @@ math: true
 draft: true
 ---
 
+<!-- markdownlint-disable MD013 -->
+
 This is an inline \(a^*=x-b^*\) equation.
 
 These are block equations using preferred delimiters:

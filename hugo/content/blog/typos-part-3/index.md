@@ -14,8 +14,8 @@ draft: false
 math: true
 ---
 
-This is part three of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}), [two]({{< ref "/blog/typos-part-2" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine the influence typos have on LLM response quality. Code
-from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos-experiment).
+This is part three of a four-part series ([one]({{< ref "/blog/typos-part-1" >}}), [two]({{< ref "/blog/typos-part-2" >}}), [four]({{< ref "/blog/typos-part-4" >}})) where I examine the influence typos have on LLM response quality.
+Code from these experiments [is available here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/typos-experiment).
 
 In this post, I induce typos in a standardized set of prompts with increasing frequency in the hopes of understanding how typos influence meaning as represented by **sentence embeddings**.
 
@@ -25,8 +25,8 @@ In this post, I induce typos in a standardized set of prompts with increasing fr
 >
 > In this experiment, I'm concerned with sentence-level embeddings, or finding the vector that represents the meaning of a given sentence.
 
-If you recall, my hypothesis is that because typos change the tokens used to represent text, typos shift a sentence away from its "intended" location in embedding space. Thus, as the typo frequency increases, the typo-laden embedding will
-grow increasingly dissimilar to the correct embedding.
+If you recall, my hypothesis is that because typos change the tokens used to represent text, typos shift a sentence away from its "intended" location in embedding space.
+Thus, as the typo frequency increases, the typo-laden embedding will grow increasingly dissimilar to the correct embedding.
 
 ## Design
 
@@ -45,17 +45,23 @@ proposed in a [Stack Overflow post](https://stackoverflow.com/questions/76926025
 > The idea behind weighted-mean_pooling is that the tokens at the end of the sentence should contribute more than the tokens at the beginning of the sentence because their weights are contextualized with the previous tokens, while the
 > tokens at the beginning have far less context representation.[^stackoverflow]
 
-Although weighted mean-pooling might grant a passage-grain representation, it does not guarantee a _good_ representation. Llama models are not architected for passage embeddings, nor are they specifically tuned with the task of being good
-at semantic search or semantic comparison. Therefore, I also use the [`Sentence-Transformers/all-mpnet-base-v2`](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model, which _is_ designed for semantic comparison.
+Although weighted mean-pooling might grant a passage-grain representation, it does not guarantee a _good_ representation.
+Llama models are not architected for passage embeddings, nor are they specifically tuned with the task of being good at semantic search or semantic comparison.
+Therefore, I also use the [`Sentence-Transformers/all-mpnet-base-v2`](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model, which _is_ designed for semantic comparison.
 
-Semantic comparison typically uses cosine similarity as the comparison metric. It measures the angle between two vectors (irrespective of the vectors' magnitudes). This angle can be between -1 to 1, where -1 means the vectors point in
-completely opposite directions, 0 means they vectors are orthogonal (unrelated), and 1 means the vectors point in exactly the same direction (i.e., have the same meaning).
+Semantic comparison typically uses cosine similarity as the comparison metric.
+It measures the angle between two vectors (irrespective of the vectors' magnitudes).
+This angle can be between -1 to 1, where -1 means the vectors point in completely opposite directions, 0 means they vectors are orthogonal (unrelated), and 1 means the vectors point in exactly the same direction (i.e., have the same meaning).
+
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
 {{< figure
 src="images/cosine-similarity.png"
 alt="cosine similarity"
 caption="Simplified Example of Cosine Similarity, in 2-D"
 width="600">}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 > [!TIP]
 > A fun way to understand semantic similarity is to play the word game [semantle](https://semantle.com/). The goal is to guess the secret word, and your clues are the cold/hot similarity scores of
@@ -70,24 +76,30 @@ For each of these models:
 
 ## Results
 
-The results confirm the hypothesis that increasing typo occurrence shifts a passage away from its "correct" location in embedding space. As the number of typos increases, the passage gets further and further from its baseline location.
+The results confirm the hypothesis that increasing typo occurrence shifts a passage away from its "correct" location in embedding space.
+As the number of typos increases, the passage gets further and further from its baseline location.
+
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
 {{< figure
 src="images/sentence-similarity.png"
 alt="typos reduce similarity"
 caption="Increasing typo occurrence increases distance from 'correct' text in embedding space" >}}
 
-This effect holds true regardless of the model used to generate embeddings at the passage-level granularity. The sentence-transformer model shows the least reduction in embedding performance (i.e., the distance between "correct" and "typo"
-increases the least), which makes sense given its architecture and training objective are optimized to identify the semantic similarity between passages. Llama 3 outperforms Llama 2, but it is difficult to say how much of this difference
-can be attributed to Llama 3's much larger tokenizer vocabulary, and how much of it is due to Llama 3's significantly better performance in general.
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
-Finally, it is important to note that the typo incidence must be higher than normal to have a measurable negative effect on semantic similarity tasks. I would estimate it to be unusual to have more than 15% of the words in a given passage
-have typos. The experimental results at 15% typo occurrence demonstrate a cosine similarity of 0.9 or better -- not identical, but still quite close in embedding space!
+This effect holds true regardless of the model used to generate embeddings at the passage-level granularity.
+The sentence-transformer model shows the least reduction in embedding performance (i.e., the distance between "correct" and "typo" increases the least), which makes sense given its architecture and training objective are optimized to identify the semantic similarity between passages.
+Llama 3 outperforms Llama 2, but it is difficult to say how much of this difference can be attributed to Llama 3's much larger tokenizer vocabulary, and how much of it is due to Llama 3's significantly better performance in general.
+
+Finally, it is important to note that the typo incidence must be higher than normal to have a measurable negative effect on semantic similarity tasks.
+I would estimate it to be unusual to have more than 15% of the words in a given passage have typos.
+The experimental results at 15% typo occurrence demonstrate a cosine similarity of 0.9 or better -- not identical, but still quite close in embedding space!
 
 ## Bonus: Can LLMs Heal Typos?
 
-A question I had going into this experiment was whether it made sense to have a spelling (and or grammar) check between the user and the model to ensure the model receives the cleanest input possible. What if the language model itself can
-fix the typos?
+A question I had going into this experiment was whether it made sense to have a spelling (and or grammar) check between the user and the model to ensure the model receives the cleanest input possible.
+What if the language model itself can fix the typos?
 
 ### Design
 
@@ -106,10 +118,12 @@ Text:
 Correction:
 ```
 
-and compare the results to the baseline questions. For the comparison, I use a multiset variant of the Jaccard index[^jaccard] as a proxy for accuracy (i.e., Does the healed text contain the same words as the baseline?), and semantic
-similarity based on the top-performing Sentence-Transformers model from the experiment above.
+and compare the results to the baseline questions.
+For the comparison, I use a multiset variant of the Jaccard index [^jaccard] as a proxy for accuracy (i.e., Does the healed text contain the same words as the baseline?), and semantic similarity based on the top-performing Sentence-Transformers model from the experiment above.
 
 ### Results
+
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
 <table>
 <tr>
@@ -126,8 +140,10 @@ similarity based on the top-performing Sentence-Transformers model from the expe
 </tr>
 </table>
 
-The Jaccard pseudo-accuracy shows that the language model consistently recovers the original text quite well, though the exact recovery drops off a bit as typo rate increases. Evaluating cosine similarity indicates that even though the
-exact original text is not recovered, _the gist of it is_!
+<!-- markdownlint-enable MD013 MD033 MD034 -->
+
+The Jaccard pseudo-accuracy shows that the language model consistently recovers the original text quite well, though the exact recovery drops off a bit as typo rate increases.
+Evaluating cosine similarity indicates that even though the exact original text is not recovered, _the gist of it is_!
 
 ## References
 

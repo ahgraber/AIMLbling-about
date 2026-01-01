@@ -19,18 +19,20 @@ draft: false
 ---
 
 Facebook's [`fasttext`](https://github.com/facebookresearch/fastText) and Google's [`cl3d`](https://github.com/google/cld3)) were both deprecated mid-2024.
-While multilingual LLMs can accomplish language identification tasks, using even a 7B-parameter LLM to determine a text's language is overkill. I set out to find a replacement that is at least as fast and performant as the deprecated models.
+While multilingual LLMs can accomplish language identification tasks, using even a 7B-parameter LLM to determine a text's language is overkill.
+I set out to find a replacement that is at least as fast and performant as the deprecated models.
 
-Code from these experiments is available [here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/language-identification).
+Code from these experiments [is available here](https://github.com/ahgraber/AIMLbling-about/tree/main/experiments/language-identification).
 
 ## TLDR
 
-[`Lingua`](https://pypi.org/project/lingua-language-detector/) is the best option to replace `fasttext` (or presumably, `cl3d`).
-Its classification performance meets `fasttext` on supported languages, and critically exceeds `fasttext` on the most frequently used languages on the web. `Lingua` is as fast as `fasttext` and has equivalent compute/memory requirements.
+[`Lingua`](https://pypi.org/project/lingua-language-detector/) is the best option to replace  `fasttext` (or presumably, `cl3d`).
+Its classification performance meets `fasttext` on supported languages, and critically exceeds  `fasttext` on the most frequently used languages on the web.  `Lingua` is as fast as  `fasttext` and has equivalent compute/memory requirements.
 
 ## Experiment Design
 
-I'll be using `fasttext` as the base case. For one, it supports far more languages ([217](https://huggingface.co/facebook/fasttext-language-identification)) than `cl3d` (107).
+I'll be using `fasttext` as the base case.
+For one, it supports far more languages ([217](https://huggingface.co/facebook/fasttext-language-identification)) than `cl3d` (107).
 Secondly, I couldn't get `cl3d` to install 😅.
 
 After quite a bit of research and some initial testing to [weed out obvious weak solutions](#rejected-options), I arrived at the following competitive set:
@@ -52,15 +54,19 @@ The benchmark dataset is composed of samples from 4 different datasets:
 - [papluca/language-identification | Hugging Face](https://huggingface.co/datasets/papluca/language-identification)
 - [CohereForAI/Global-MMLU | Hugging Face](https://huggingface.co/datasets/CohereForAI/Global-MMLU)
 
+<!-- markdownlint-disable MD013 MD033 MD034 -->
+
 {{< figure
 src="images/language_samples.png"
 alt="language samples"
 caption="The final dataset contains 80 languages, most with 5000+ samples" >}}
 
+<!-- markdownlint-enable MD013 MD033 MD034 -->
+
 ### Evaluation
 
 The experiment is run multiple times (20) to generate confidence intervals.
-For each run, a set of 100 records per language is sampled from the overall dataset (100 records * 80 languages = 8,000 predictions).
+For each run, a set of 100 records per language is sampled from the overall dataset (100 records\* 80 languages = 8,000 predictions).
 Each model predicts over the same dataset, and predictions and runtime are captured.
 Classification performance is evaluated for each run for each model using multi-class F1 score and Accuracy (not shown).
 
@@ -70,10 +76,14 @@ Classification performance is evaluated for each run for each model using multi-
 
 `fasttext` is the fastest model, followed closely by `Lingua`; `LangId` and `Stanza` lag behind.
 
+<!-- markdownlint-disable MD013 MD033 MD034 -->
+
 {{< figure
 src="images/runtime.png"
 alt="experiment runtime"
 caption="Runtime for 100 samples (lower is better). fasttext and Lingua are >10x faster than LangId and Stanza" >}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 | model    | Mean Runtime |
 | :------- | -----------: |
@@ -84,8 +94,7 @@ caption="Runtime for 100 samples (lower is better). fasttext and Lingua are >10x
 
 ### Memory
 
-I had a hard time validating the memory use of these models; I should probably try again with a dedicated memory profiler
-instead of hacking at it with `psutil`.
+I had a hard time validating the memory use of these models; I should probably try again with a dedicated memory profiler instead of hacking at it with `psutil`.
 Take the following with a grain of salt.
 
 | model    | Memory (MB) |
@@ -102,18 +111,22 @@ Take the following with a grain of salt.
 `fasttext` exhibits the strongest classification performance (F1 score); its performance lead is exaggerated on the base benchmark dataset because it supports all languages in the benchmark, while other models do not.
 Therefore the performance ceiling for other models is lower.
 
-{{< figure
-src="images/f1score.png"
-alt="f1 performance">}}
+<!-- markdownlint-disable MD013 MD033 MD034 -->
+
+{{< figure src="images/f1score.png" alt="f1 performance">}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 #### Supported Languages
 
 When considering the subset of languages supported by each model, `Lingua` outperforms `fasttext` once language support is taken into consideration; while 97 languages (`Lingua`) \<< 209 (`fasttext`),
 we're still covering the majority of languages found on the web.
 
-{{< figure
-src="images/f1score-supported.png"
-alt="f1 on supported languages">}}
+<!-- markdownlint-disable MD013 MD033 MD034 -->
+
+{{< figure src="images/f1score-supported.png" alt="f1 on supported languages">}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 | F1 Score | fasttext | langid | lingua | stanza |
 | :------- | -------: | -----: | -----: | -----: |
@@ -124,13 +137,13 @@ alt="f1 on supported languages">}}
 
 Constraining the experiment further, I examine performance on the 20 most frequent languages found on the web ([according to wikipedia](https://en.wikipedia.org/wiki/Languages_used_on_the_Internet))
 
-{{< figure
-src="images/f1score-web.png"
-alt="f1 on web languages">}}
+<!-- markdownlint-disable MD013 MD033 MD034 -->
 
-{{< figure
-src="images/f1score-web-heatmap.png"
-alt="f1 heatmap">}}
+{{< figure src="images/f1score-web.png" alt="f1 on web languages">}}
+
+{{< figure src="images/f1score-web-heatmap.png" alt="f1 heatmap">}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
 
 > [!WARNING]
 > Chinese ('zh') appears to pull down fasttext's performance considerably.
