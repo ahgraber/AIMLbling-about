@@ -28,6 +28,7 @@ draft: true
 2. Llama is dead or closed/proprietary
 3. Major lab IPO / goes public
 4. Start measuring model training by power scale required to train rather than seen tokens
+5. continued learning: IBM Lora swap (Every person gets a Lora adapter for their memories) and Google titans and other cl architectures (Model are trained to leverage memory Lora)
 
 ## 2026
 
@@ -58,6 +59,8 @@ The legal battles are coming to a head. If courts rule that training on copyrigh
 ---
 
 [Here are my 26 predictions for 2026. I tried hard to come up with more spicy predictions that are still plausible - so they sit somewhere in the 5-60% range for me. China 1. Chinese open model… | Peter Gostev | 11 comments](https://www.linkedin.com/posts/peter-gostev_here-are-my-26-predictions-for-2026-i-tried-activity-7410306771875024896-AyYv?rcm=ACoAAAJqQUgBDbYkc5ejFZHLUU-2mW8LQi4cQ98)
+
+[8 Predictions for 2026. What comes next in AI?](https://www.philschmid.de/2026-predictions)
 
 - [The end of OpenAI, and other 2026 tech predictions | The Verge](https://www.theverge.com/podcast/844401/tech-industry-2026-predictions-openai-apple)
 
