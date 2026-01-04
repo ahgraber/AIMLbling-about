@@ -10,6 +10,7 @@ import sys
 
 from dotenv import load_dotenv
 from IPython.display import Markdown, display
+from setproctitle import setproctitle
 from tqdm.auto import tqdm
 
 # use Llamaindex for the rest of the integrations
@@ -40,6 +41,9 @@ sys.path.insert(0, str(LOCAL_DIR))
 from src.utils import check_torch_device, hugo_title_to_h1  # NOQA: E402
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

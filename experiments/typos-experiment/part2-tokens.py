@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from setproctitle import setproctitle
 
 from transformers import AutoTokenizer
 
@@ -17,6 +18,9 @@ from plotnine import *
 from aiml.utils import basic_log_config, get_repo_path, this_file
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

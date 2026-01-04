@@ -6,6 +6,7 @@ import json
 import logging
 from pathlib import Path
 
+from setproctitle import setproctitle
 from tqdm.auto import tqdm
 
 import requests
@@ -15,6 +16,9 @@ import pandas as pd
 from aiml.utils import basic_log_config, get_repo_path
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

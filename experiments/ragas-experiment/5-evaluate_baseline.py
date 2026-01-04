@@ -15,6 +15,7 @@ import warnings
 
 from dotenv import load_dotenv
 from IPython.display import Markdown, display
+from setproctitle import setproctitle
 from tqdm.auto import tqdm
 
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -55,6 +56,9 @@ from src.ragas.helpers import run_ragas_evals, validate_metrics  # NOQA: E402
 from src.utils import check_torch_device  # NOQA: E402
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

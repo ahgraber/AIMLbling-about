@@ -11,6 +11,7 @@ import sys
 from dotenv import load_dotenv
 from IPython.display import display
 from pydantic import BaseModel
+from setproctitle import setproctitle
 from tqdm.auto import tqdm
 
 # NOTE: RAGAS uses langchain as primary integration, so use it for convenience
@@ -60,6 +61,9 @@ from src.ragas.extractors import (  # NOQA: E402
 from src.utils import check_torch_device, hugo_title_to_h1  # NOQA: E402
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

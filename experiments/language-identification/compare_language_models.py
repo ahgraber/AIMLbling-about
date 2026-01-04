@@ -10,6 +10,7 @@ import time
 
 from IPython.display import display
 from langcodes import Language, find as lcfind, standardize_tag
+from setproctitle import setproctitle
 from tqdm.auto import tqdm, trange
 
 import pandas as pd
@@ -24,6 +25,9 @@ import seaborn as sns
 from aiml.utils import basic_log_config, get_repo_path
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

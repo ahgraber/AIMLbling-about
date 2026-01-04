@@ -13,6 +13,7 @@ import textwrap
 import typing as t
 
 from IPython.display import Markdown, display
+from setproctitle import setproctitle
 from tqdm.auto import tqdm
 
 import numpy as np
@@ -38,6 +39,9 @@ from src.ragas.helpers import TopKRougeScorer  # NOQA: E402
 from src.utils import filter_dict_by_keys  # NOQA:E402
 
 # %%
+# define python process name
+setproctitle(Path(__file__).stem)
+
 basic_log_config()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
