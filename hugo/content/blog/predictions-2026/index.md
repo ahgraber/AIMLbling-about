@@ -1,6 +1,6 @@
 ---
 title: Predictions 2026
-date: 2025-12-23T20:21:38-05:00
+date: 2026-01-03
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -20,7 +20,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 <!-- markdownlint-disable-file MD036 -->
