@@ -23,107 +23,141 @@ plotly: false
 draft: true
 ---
 
-1. (Open) Chinese model will beat big3 proprietary at at least one major dimension (agent/function calling, coding, deep search, photo editing, video generation)
-   I expect a greater chance on visual (image/video) because of chinas police state recordings (???? Can I back this up?)
-2. Llama is dead or closed/proprietary
-3. Major lab IPO / goes public
-4. Start measuring model training by power scale required to train rather than seen tokens
-5. continued learning: IBM Lora swap (Every person gets a Lora adapter for their memories) and Google titans and other cl architectures (Model are trained to leverage memory Lora)
+<!-- markdownlint-disable-file MD036 -->
 
-## 2026
+These are my predictions for AI (primarily LLM-focused) in 2026 along with my certainty / probability estimates.
 
-## Looking ahead to 2026
+## Agents, Cont'd
 
-As we move into 2026, here are the themes I'm watching.
+Agents aren't going anywhere.
+Their capability will increasingly be driven by Reinforcement Learning (RL).
+We will see a divergence: domains with **verifiable tasks** (math, coding) will advance rapidly because the reward signals are clear.
+Subjective domains will lag behind; since reward signals are preferential, subjective reward models risk reward hacking.
 
-### Agents & Reinforcement Learning
+_Probability: 100%_
 
-Agents aren't going anywhere. Their capability will increasingly be driven by Reinforcement Learning (RL). We will see a divergence: domains with **verifiable tasks** (math, coding) will advance rapidly because the reward signals are clear. Subjective domains will lag behind because they are harder to train for without reward hacking.
+Functionally, this means that domains with verifiable tasks will see more and more AI assistance and automation, following the trajectory of software engineering in 2025.
+I expect software engineers' day jobs to generally be less about writing code and more about managing agent swarms and code review.
+
+## Technical Paradigm Shifts
+
+### Smaller Better Faster Stronger
+
+Reinforcement learning and improved post-training techniques are demonstrating that models can improve their capabilities without increasing their parameter counts.
+I believe the industry will pause on scaling model size and instead dedicate compute to current (or smaller!) models training for longer.
+
+_Probability: 90%_
+
+Further, improvements to distillation and reinforcement fine-tuning will dramatically increase the capabilities of smaller models.
+I see models with GPT-4o-level capabilities potentially running on phones (e.g., \<3B parameters), especially when fine-tuned for on-device use cases.
+
+_Probability: 70%_
+
+### Continued Learning
+
+"Treat your LLM like a forgetful intern" is frequently given advice for today's LLMs.
+With no memory, prompts (or [skills](https://agentskills.io/home)) must provide the necessary instructions to complete tasks every time, and Agents (and the LLMs that power them) do not learn from experience.
+
+Recent experiments with LoRA adapters indicate they may be a way to provide customizable, task-specific updates to models; while not real-time learning, this would potentially allow customized task adapters for a standard base model that can be regularly refreshed [^thinking] [^clora] [^alora].
+
+2025 saw research on designing model architectures that are capable of continual learning through memory updates, where models are allowed to update some of their parameters - and in some cases designed with "memory" parameters designated just for this purpose [^titans] [^miras] [^nested] [^continual].
+
+I'll take a flier here - by the end of 2026, a foundation lab will have a model with continual learning such that every person ends up with a slightly different instance of the model based on their interaction history.
+
+_Probability: 30%_
+
+### Architectural Shifts
+
+At least one non-standard AI model architecture (e.g., Text Diffusion Models, Byte Transformers, Latent Reasoning Models) will become broadly available for use case diversification.
+
+_Probability: 75%_
+
+## The Rise of China
+
+An (open-weights) model from a Chinese lab (Qwen, DeepSeek, Kimi, MiniMax, Baidu) will achieve benchmark-leading performance on at least one dimension (Agent/Function-Calling, Coding, Deep Search, Photo Generation/Editing, Video Generation/Editing).
+Furthermore, this performance improvement will be at least a big step rather than a marginal win, and the model will stay at the top of the leaderboard for a considerable time.
+
+_Probability: 75%_
+
+## The Supply Chain Squeeze
+
+GPU production (the GPU chips themselves, via TSMC) are no longer the bottleneck.
+Other board components (other integrated circuits, resistors, capacitors, etc.), supporting servers and networking equipment, and/or power constraints [^know_about_datacenters] [^datacenter_power] will dramatically increase costs for building new datacenters.
+This supply chain squeeze will extend beyond the datacenter and disrupt broader society by measurably influencing the cost of consumer goods or electricity.
+
+_Probability: 100%_
+
+> [!NOTE]
+> This is already happening with DRAM [^dirty_dram] [^40_dram], but I had noted this prediction in an early draft following SemiAnalysis reporting on [memory](https://newsletter.semianalysis.com/p/scaling-the-memory-wall-the-rise-and-roadmap-of-hbm) and [power](https://newsletter.semianalysis.com/p/ai-training-load-fluctuations-at-gigawatt-scale-risk-of-power-grid-blackout) earlier in the year.
+
+## Speaking of Power
+
+Speaking of power constraints, and in association with my above prediction on shifting compute from model size growth to post-training extensions, the industry will start reporting models by energy required to train (kWh) rather than parameter count or training tokens seen.
+
+This will require the prior prediction to come true _and_ for power consumption to be more predictive of performance than parameter count.
+
+_Probability: 40%_
+
+## Lightning Round
+
+- Ads come to at least one consumer AI platform (_Probability: 100%_).\
+  This one should be a gimme given the strong hints from OpenAI in their hiring decisions over 2024-2025 and the mention of ads in their "code red" response to Gemini 3 Pro [^code_red].
+- OpenAI and/or Anthropic will IPO (_Probability: 75%_).
+- A foundation lab will go bankrupt (if startup) or cancel its foundation model initiative (_Probability: 80%_).
+  - Meta kills Llama - or makes it proprietary, which is functionally the same thing for the Llama ecosystem (_Probability: 60%_).
+
+---
+
+## Topics to Watch
+
+I'm not making predictions for these topics, but I think they're worth keeping in mind as we explore the trajectory of AI in 2026.
 
 ### The AI Bubble & Infrastructure
 
-I am increasingly concerned about the economics of this build-out. We are seeing asset prices that exceed intrinsic value, particularly for hardware that depreciates in ~5 years. We are building data centers with timelines that seem impossible given power constraints, permitting issues, and public opposition.
-
-### The Supply Chain Squeeze: DRAM
-
-While everyone was watching GPUs, **DRAM** became the new bottleneck. OpenAI's massive wafer deals (absorbing ~40% of global output) have squeezed the market, forcing players like Micron out of the consumer business. If you're trying to build a PC in 2026, good luck with RAM prices.
+I am increasingly concerned about the economics of this build-out.
+We are seeing asset prices that exceed intrinsic value, particularly for hardware that depreciates in ~5 years.
+We are building data centers with timelines that seem impossible given power constraints, permitting issues, and public opposition [^know_about_datacenters] [^ai_wildfire].
 
 ### Consumer Sentiment
 
-I expect to see rising consumer dissatisfaction as AI is "forced" into products without opt-outs. We will also likely see a rise in "assisted harms"—software exploits, sycophancy, and other risks amplified by AI ubiquity.
+I expect to see rising consumer dissatisfaction as AI is "forced" into products without opt-outs.
+We will also likely see a rise in "assisted harms"—software exploits, sycophancy, and other risks amplified by AI ubiquity [^ai_backlash] [^ai_winter].
 
 ### Copyright
 
-The legal battles are coming to a head. If courts rule that training on copyrighted data requires compensation or removal, we could see massive, expensive retraining operations that could reshape the industry.
+The legal battles are coming to a head.
+If courts rule that training on copyrighted data requires compensation or removal, we could see massive, expensive retraining operations that could reshape the industry.
 
----
+## References
 
-[Here are my 26 predictions for 2026. I tried hard to come up with more spicy predictions that are still plausible - so they sit somewhere in the 5-60% range for me. China 1. Chinese open model… | Peter Gostev | 11 comments](https://www.linkedin.com/posts/peter-gostev_here-are-my-26-predictions-for-2026-i-tried-activity-7410306771875024896-AyYv?rcm=ACoAAAJqQUgBDbYkc5ejFZHLUU-2mW8LQi4cQ98)
+<!-- markdownlint-disable MD013 -->
 
-[8 Predictions for 2026. What comes next in AI?](https://www.philschmid.de/2026-predictions)
+[^thinking]: [LoRA Without Regret - Thinking Machines Lab](https://thinkingmachines.ai/blog/lora/)
 
-- [The end of OpenAI, and other 2026 tech predictions | The Verge](https://www.theverge.com/podcast/844401/tech-industry-2026-predictions-openai-apple)
+[^clora]: [Compress then Serve: Serving Thousands of LoRA Adapters with Little Overhead - 2407.00066v4.pdf](https://www.arxiv.org/pdf/2407.00066)
 
-- [The AI Wildfire Is Coming. It's Going to be Very Painful and Incredibly Healthy.](https://ceodinner.substack.com/p/the-ai-wildfire-is-coming-its-going)
+[^alora]: [[2504.12397] Activated LoRA: Fine-tuned LLMs for Intrinsics](https://arxiv.org/abs/2504.12397)
 
-- [The AI Backlash Is Here: Why Backlash Against Gemini, Sora, ChatGPT Is Spreading in 2025 - Newsweek](https://www.newsweek.com/ai-backlash-openai-meta-friend-10807425)
+[^titans]: [[2501.00663] Titans: Learning to Memorize at Test Time](https://arxiv.org/abs/2501.00663)
 
-- [LLMs are a failure. A new AI winter is coming.](https://taranis.ie/llms-are-a-failure-a-new-ai-winter-is-coming/)
+[^miras]: [[2504.13173] It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://arxiv.org/abs/2504.13173)
 
-- AI expands beyond chat/agent models
+[^nested]: [[2512.24695] Nested Learning: The Illusion of Deep Learning Architectures](https://arxiv.org/abs/2512.24695)
 
-- https://www.nytimes.com/2025/09/30/technology/ai-meta-google-openai-periodic.html
+[^continual]: [[2510.15103] Continual Learning via Sparse Memory Finetuning](https://arxiv.org/abs/2510.15103)
 
-- https://www.nytimes.com/2025/11/17/technology/bezos-project-prometheus.html
+[^know_about_datacenters]: [What you need to know about AI data centers | Epoch AI](https://epoch.ai/blog/what-you-need-to-know-about-ai-data-centers)
 
-- Someone will try to productionize Apps with only AI logic
+[^datacenter_power]: [Data on Frontier AI Data Centers | Epoch AI](https://epoch.ai/data/data-centers)
 
-- [MCP Apps: Extending servers with interactive user interfaces | mcp blog](https://blog.modelcontextprotocol.io/posts/2025-11-21-mcp-apps/)
+[^dirty_dram]: [Sam Altman's Dirty DRAM Deal](https://www.mooreslawisdead.com/post/sam-altman-s-dirty-dram-deal)
 
-> We're proposing a specification for UI resources in MCP, but the implications go further than just a set of schema changes. The MCP Apps Extension is starting to look like an agentic app runtime: a foundation for novel interactions between AI models, users, and applications.
+[^40_dram]: [OpenAI's Stargate project to consume up to 40% of global DRAM output — inks deal with Samsung and SK hynix to the tune of up to 900,000 wafers per month | Tom's Hardware](https://www.tomshardware.com/pc-components/dram/openais-stargate-project-to-consume-up-to-40-percent-of-global-dram-output-inks-deal-with-samsung-and-sk-hynix-to-the-tune-of-up-to-900-000-wafers-per-month)
 
-- [samrolken/nokode](https://github.com/samrolken/nokode)
+[^code_red]: [OpenAI CEO Sam Altman declares 'code red' to improve ChatGPT amid rising competition | AP News](https://apnews.com/article/openai-chatgpt-code-red-google-gemini-00d67442c7862e6663b0f07308e2a40d)
 
-- AI Engineer talk from early 2025(?)
+[^ai_wildfire]: [The AI Wildfire Is Coming. It's Going to be Very Painful and Incredibly Healthy.](https://ceodinner.substack.com/p/the-ai-wildfire-is-coming-its-going)
 
-- AI acceleration hockey stick (science, math, code).
+[^ai_backlash]: [The AI Backlash Is Here: Why Backlash Against Gemini, Sora, ChatGPT Is Spreading in 2025 - Newsweek](https://www.newsweek.com/ai-backlash-openai-meta-friend-10807425)
 
-- https://openai.com/index/accelerating-science-gpt-5/
-
-- [Barbarians at The Gate: How AI is Upending Systems Research](https://adrs-ucb.notion.site/)
-
-- [Autocomp: An ADRS Framework for Optimizing Tensor Accelerator Code](https://adrs-ucb.notion.site/autocomp)
-
-- [[2511.15593] What Does It Take to Be a Good AI Research Agent? Studying the Role of Ideation Diversity](https://arxiv.org/abs/2511.15593)
-
-- https://scalingintelligence.stanford.edu/blogs/fastkernels/
-
-- GPUs are no longer the bottleneck
-
-- DRAM
-
-- [Sam Altman's Dirty DRAM Deal](https://www.mooreslawisdead.com/post/sam-altman-s-dirty-dram-deal),
-
-- [OpenAI's Stargate project to consume up to 40% of global DRAM output — inks deal with Samsung and SK hynix to the tune of up to 900,000 wafers per month | Tom's Hardware](https://www.tomshardware.com/pc-components/dram/openais-stargate-project-to-consume-up-to-40-percent-of-global-dram-output-inks-deal-with-samsung-and-sk-hynix-to-the-tune-of-up-to-900-000-wafers-per-month)
-
-- [Micron Announces Exit from Crucial Consumer Business | Micron Technology](https://investors.micron.com/news-releases/news-release-details/micron-announces-exit-crucial-consumer-business)
-
-- [RAM: WTF? | GamersNexus](https://gamersnexus.net/news/ram-wtf)
-
-- Networking
-
-- Power
-
-- https://epoch.ai/data/data-centers
-
-- [What you need to know about AI data centers | Epoch AI](https://epoch.ai/blog/what-you-need-to-know-about-ai-data-centers)
-
----
-
-[The State Of LLMs 2025: Progress, Progress, and Predictions](https://magazine.sebastianraschka.com/p/state-of-llms-2025)
-
-1. We will likely see an industry-scale, consumer-facing diffusion model for cheap, reliable, low-latency inference, with Gemini Diffusion probably going first.
-2. The open-weight community will slowly but steadily adopt LLMs with local tool use and increasingly agentic capabilities.
-3. RLVR will more widely expand into other domains beyond math and coding (for example, chemistry, biology, and others).
-4. Classical RAG will slowly fade as a default solution for document queries. Instead of using retrieval on every document-related query, developers will rely more on better long-context handling.
-5. A lot of LLM benchmark and performance progress will come from improved tooling and inference-time scaling rather than from training or the core model itself.
+[^ai_winter]: [LLMs are a failure. A new AI winter is coming.](https://taranis.ie/llms-are-a-failure-a-new-ai-winter-is-coming/)
