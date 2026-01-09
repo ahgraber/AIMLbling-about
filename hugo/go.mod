@@ -3,6 +3,6 @@ module github.com/ahgraber/AIMLbling-about
 go 1.23.8
 
 require (
-	github.com/ahgraber/ai-treadmill v0.0.0-20260106145051-0cf61eef190d // indirect
+	github.com/ahgraber/ai-treadmill v0.0.0-20260109142518-bae9539ad621 // indirect
 	github.com/imfing/hextra v0.11.1 // indirect
 )
