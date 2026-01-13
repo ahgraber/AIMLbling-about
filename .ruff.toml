@@ -148,4 +148,4 @@ max-complexity = 18
 ignore-names = []
 
 [lint.pydocstyle]
-convention = "numpy"
+convention = "google"
