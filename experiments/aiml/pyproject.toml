@@ -136,6 +136,7 @@ llamaindex = [
   "llama-index-retrievers-bm25>=0.5",
   "llama-index-vector-stores-duckdb>=0.3",
 ]
+playwright = ["playwright>=1.44.0"]
 
 [tool.uv]
 package = true
