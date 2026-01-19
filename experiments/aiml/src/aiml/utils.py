@@ -1,10 +1,11 @@
-# %% Imports
+# %%
 import datetime
 import logging
 import os
 from pathlib import Path
 import platform
 import subprocess
+import sys
 
 # %%
 logger = logging.getLogger(__name__)
@@ -139,6 +140,71 @@ def get_tool(util: Path | str) -> Path:
 
     tool = which(util, mode=os.X_OK, path=os.environ.get("PATH"))
     return pathify(tool)
+
+
+# %%
+def ensure_playwright_chromium() -> Path:
+    """Ensure Playwright and its Chromium binary are available.
+
+    Returns
+    -------
+    Path
+        Path to the Playwright-managed Chromium executable.
+    """
+    try:
+        import asyncio
+
+        import nest_asyncio
+        from playwright.async_api import async_playwright
+
+    except ImportError as exc:  # pragma: no cover - environment-dependent
+        raise RuntimeError(
+            "Playwright is not installed. Install with:\n  pip install playwright\n  playwright install chromium"
+        ) from exc
+
+    async def _get_chromium_path() -> Path:
+        async with async_playwright() as playwright:
+            return Path(playwright.chromium.executable_path)
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        chromium_path = asyncio.run(_get_chromium_path())
+    else:
+        nest_asyncio.apply()
+        chromium_path = loop.run_until_complete(_get_chromium_path())
+
+    if chromium_path.exists():
+        return chromium_path
+
+    install_cmd = [sys.executable, "-m", "playwright", "install", "chromium"]
+    result = subprocess.run(install_cmd, capture_output=True, text=True)  # NOQA: S603
+    try:
+        result.check_returncode()
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            "Playwright is installed but Chromium is missing. "
+            "Failed to install Chromium via Playwright.\n"
+            f"Command: {' '.join(install_cmd)}\n"
+            f"stdout: {result.stdout}\n"
+            f"stderr: {result.stderr}"
+        ) from exc
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        chromium_path = asyncio.run(_get_chromium_path())
+    else:
+        nest_asyncio.apply()
+        chromium_path = loop.run_until_complete(_get_chromium_path())
+
+    if not chromium_path.exists():
+        raise RuntimeError(
+            "Playwright Chromium path could not be resolved after installation. "
+            "Try running: playwright install chromium"
+        )
+
+    return chromium_path
 
 
 # %%
