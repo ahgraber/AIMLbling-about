@@ -1,6 +1,6 @@
 ---
 title: Predicting LLM Parameters Using Benchmarks
-date: 2026-01-08T19:51:34-05:00
+date: 2026-01-19
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -18,7 +18,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 In a recent episode of the Latent Space podcast ([Artificial Analysis: The Independent LLM Analysis House — with George Cameron and Micah Hill-Smith](https://youtu.be/v5mBjeX4TJ8?si=ViYbKgD6x7fkjEa4)), the Artificial Analysis team pointed out a strong correlation between model performance on their AA-Omniscience Accuracy benchmark and the model's parameter count:
