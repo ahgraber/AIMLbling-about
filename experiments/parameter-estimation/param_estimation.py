@@ -680,7 +680,8 @@ for spec_name, model in fitted_models.items():
         )
 
 predictions_df = pd.DataFrame(prediction_rows).sort_values(["model_spec", "llm"])
-print(predictions_df[["llm", "model_spec", "predicted_totalParams_str"]].to_markdown(index=False))
+predictions_df = predictions_df.pivot(columns="model_spec", index="llm", values="predicted_totalParams_str")
+print(predictions_df[["omniscience_accuracy", "mmlu_pro", "intelligenceIndex"]].to_markdown(index=True))
 
 # %%
 for spec_name, model in fitted_models.items():
