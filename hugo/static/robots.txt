@@ -29,7 +29,7 @@ User-agent: magpie-crawler
 Disallow: /
 
 ############################
-# DATASET / SCRAPING BOTS #
+# DATASET / SCRAPING BOTS  #
 ############################
 
 User-agent: CCBot
@@ -42,7 +42,7 @@ User-agent: peer39_crawler
 Disallow: /
 
 ############################
-# COMMERCIAL MONITORING   #
+# COMMERCIAL MONITORING    #
 ############################
 
 User-agent: AwarioRssBot
@@ -51,21 +51,22 @@ User-agent: DataForSeoBot
 Disallow: /
 
 ############################
-# ALLOWED SEO AUDIT BOTS  #
+# ALLOWED SEO AUDIT BOTS   #
 ############################
 
 User-agent: AhrefsBot
 Allow: /
 
 ############################
-# DEFAULT POLICY          #
+# DEFAULT POLICY           #
 ############################
 
 User-agent: *
+Content-Signal: ai-train=no, search=yes, ai-input=yes
 Allow: /
 
 ############################
-# SITEMAP                 #
+# SITEMAP                  #
 ############################
 
 Sitemap: https://aimlbling-about.ninerealmlabs.com/sitemap.xml
