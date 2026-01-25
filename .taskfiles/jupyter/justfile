@@ -1,0 +1,16 @@
+set shell := ['bash', '-euo', 'pipefail', '-c']
+
+root_dir := `git -C "{{justfile_directory()}}" rev-parse --show-toplevel`
+
+
+doc('Strip metadata but leave outputs (ex. just jupyter:strip ipynb=./experiments/ragas/cost_analysis.ipynb)')
+strip ipynb:
+    @command -v nbstripout >/dev/null || { echo "'nbstripout' not found (run 'pipx install nbstripout')"; exit 1; }
+    [[ -f "{{ipynb}}" ]] || { echo "ipynb not found"; exit 1; }
+    nbstripout "{{ipynb}}" --keep-output
+
+
+# doc('strip metadata from all .ipynb files in dir')
+# strip-all:
+#     @command -v nbstripout >/dev/null || { echo "'nbstripout' not found (run 'pipx install nbstripout')"; exit 1; }
+#     find . -name '*.ipynb' -exec nbstripout {} +

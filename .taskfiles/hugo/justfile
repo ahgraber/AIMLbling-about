@@ -1,0 +1,76 @@
+set shell := ['bash', '-euo', 'pipefail', '-c']
+
+root_dir := `git -C "{{justfile_directory()}}" rev-parse --show-toplevel`
+hugo_dir := "{{root_dir}}/hugo"
+
+
+doc('Create a new draft post from template (req: title="...")')
+new title:
+    @command -v hugo >/dev/null || { echo "Hugo not found"; exit 1; }
+    "{{root_dir}}/scripts/hugo_new_post.sh" "{{root_dir}}" "{{hugo_dir}}" "{{title}}"
+
+
+doc('Catch feature branch up to main')
+catchup:
+    git -C "{{root_dir}}" stash
+    git -C "{{root_dir}}" fetch origin main
+    git -C "{{root_dir}}" rebase origin/main
+    git -C "{{root_dir}}" stash pop
+
+
+doc("Publish a draft post (set 'draft' to false and update the date)")
+publish path:
+    "{{root_dir}}/scripts/hugo_publish.sh" "{{root_dir}}" "{{path}}"
+
+
+# doc('Create a pull request from a draft branch')
+# _pull_request:
+#     @command -v gh >/dev/null || { echo "github cli ('gh') not found"; exit 1; }
+#     gh auth status >/dev/null || { echo "Github auth not found. Run 'gh auth login --hostname github.com'"; exit 1; }
+#     gh pr create --title "Publish post - {{file}}" --body "Pull request body"
+
+
+# doc('Build hugo image')
+# build:
+
+
+doc('Serve the site (with drafts enabled)')
+demo: treadmill
+    @command -v hugo >/dev/null || { echo "Hugo not found"; exit 1; }
+    hugo server -D --disableFastRender -s "{{hugo_dir}}"
+
+
+doc('Clean all rendered static site content')
+clean:
+    @command -v hugo >/dev/null || { echo "Hugo not found"; exit 1; }
+    [[ ! -d "{{hugo_dir}}/public" ]] || rm -r "{{hugo_dir}}/public"
+    [[ ! -d "{{hugo_dir}}/resources" ]] || rm -r "{{hugo_dir}}/resources"
+    hugo --gc -s "{{hugo_dir}}"
+
+
+doc('Start colima')
+_start:
+    @command -v colima >/dev/null || { echo "Colima not found"; exit 1; }
+    colima start
+
+
+doc('Build site with colima/docker')
+build: _start
+    @command -v docker >/dev/null || { echo "Docker not found"; exit 1; }
+    "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}"
+    echo "Run 'colima stop' to clean up!"
+
+
+doc('Run colima/docker container')
+run: _start
+    @command -v docker >/dev/null || { echo "Docker not found"; exit 1; }
+    docker run --rm -p 80:8080 ghcr.io/ahgraber/aimlbling-about:debug
+    echo "Access site at http://127.0.0.1"
+    echo "Run 'colima stop' to clean up!"
+
+
+doc('Update treadmill data')
+treadmill:
+    @command -v hugo >/dev/null || { echo "Hugo not found"; exit 1; }
+    cd "{{hugo_dir}}" && hugo mod get -u github.com/ahgraber/ai-treadmill
+    cd "{{hugo_dir}}" && hugo mod tidy
