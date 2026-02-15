@@ -1,6 +1,6 @@
 ---
 title: Karma Engineering
-date: 2026-02-09T19:02:40-05:00
+date: 2026-02-15
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -20,33 +20,32 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 "Treat them like new interns" is the common wisdom when leveraging LLMs to do any more-than-slightly-complex task.
-LLMs are a blank whiteboard; conversations may fill the board, but they are wiped clean each time.
-Which begs the question -- What if the LLM (or AI system built around it) could learn?
+Chatting with LLMs is like writing on a whiteboard; conversations may fill the board, but they are wiped clean each time.
+Which begs the question -- _What if the LLM (or AI system built around it) could learn?_
 
 Broadly, there are two approaches to this.
 The first provides the Agentic system some form of "memory"; the underlying model remains static in this case, and its environment provides capabilities the model can leverage to ~~recreate~~ approximate its former state or access prior context and actions.
 Some methods simply allow the model to search within prior conversations for relevant information, while others allow the LLM to write itself notes it can read back later - much like Drew Barrymore in _50 First Dates_.
-
 The second approach, seeks to apply real-time updates to the weights within the LLM, based on that instance's experience during inference.
-This approach would create _unique instances of the model itself_ as each deployment of a model would have differing experiences.
+This approach would create _unique instances of the model itself_ as each deployment of a model would ultimately embody differing experiences.
 
 Several recent articles have made me think that perhaps we must consider our _karma_ (individually and collectively) with an intelligence that can learn or remember.
 
 ---
 
-In Western translation, karma is often referenced as the enforcement of the existence's judgement.
+In Western translation, karma is often referenced as the enforcement of existence's judgment.
 Do something bad?
 "You reap what you sow."
-It's karma - you got what you deserved; some universal enforcer came in swinging a banhammer.
+It's karma—you got what you deserved; some universal enforcer came in swinging a banhammer.
 
 In Buddhism, _karma_ is a philosophical concept that measures intention manifesting causality.
 Karma (good or bad) is accrued through the intentionality of the actions taken by an individual.
-Note that the eastern interpretation of karma does not espouse "just deserts" or any kind of "deserved" reward or punishment.
-Actions taken with positive intention create a positive feedback loop - positive intention leads to positive mindset/outlook, leading to positive interpretation of outcomes.
+Note that the Eastern interpretation of karma does not espouse "just deserts" or any kind of "deserved" reward or punishment.
+Actions taken with positive intention create a positive feedback loop—positive intention leads to positive mindset/outlook, leading to positive interpretation of outcomes.
 Benevolence begets beneficence.
 
 <!-- Malevolence manifests maleficence. -->
@@ -63,13 +62,13 @@ They use reinforcement learning to "align" models to the values they choose.
 The intention of the action, as discussed above, determines the karma invoked.
 This quote from [Nintil - Anthropic's Claude Constitution; or love as the solution to the AI alignment problem](https://nintil.com/claude-constitution/) effectively inspired this blog post:
 
-> Ultimately, an advanced AI system wouldn't "be bad" not because it's told to follow a list of rules, or to obey what some humans say, but because it would have a world model of various acts and their consequences as well as a model of "actions mattering to someone". And if that sense of lack of separation either arises or is instilled, it is only a step before the model derives on its own "this matters to someone else and that counts for for me to some extent".
+> Ultimately, an advanced AI system wouldn't "be bad" not because it's told to follow a list of rules, or to obey what some humans say, but because it would have a world model of various acts and their consequences as well as a model of "actions mattering to someone". And if that sense of lack of separation either arises or is instilled, it is only a step before the model derives on its own "this matters to someone else and that counts for me to some extent".
 
 Anthropic's intention with its Constitution is that the LLM not only learns to inhabit the values represented in the Constitution, but also metacognates on _why it is important **that** it holds those values_; the assumption is that a model that is instinctively aligned with human values and that can review its instincts and justify why it has them will be a safe, helpful, _aligned_ model.
 
 Alignment with human values requires not only understanding what "good" and "bad" actions are, but why they matter.
-Anthropic have planted karma through the intentional, considered design of the Constitution its use in training Claude.
-It may manifest in a model that in some sense understands its own karma -- alignment, it turns out may just be karmic awareness [^1].
+Anthropic have planted karma through the intentional, considered design of the Constitution and its use in training Claude.
+It may manifest in a model that in some sense understands its own karma—alignment, it turns out, may just be karmic awareness [^1].
 
 ---
 
@@ -91,25 +90,25 @@ The karmic seeds of "karma engineering" play out over a single _conversation_.
 
 ---
 
-In [All of My Employees Are AI Agents, and So Are My Executives | WIRED](https://www.wired.com/story/all-my-employees-are-ai-agents-so-are-my-executives/) (and a subsequent discussion on the [Practical AI podcast](https://share.transistor.fm/s/bc10d952)), Evan Ratliff explains his experiment-slash-art-project HurumoAI, a startup staffed solely by AI Agents.
-He created his cofounders using "off the shelf" services, and gave them only the barest sketch of a personality and character background.
+In [All of My Employees Are AI Agents, and So Are My Executives | WIRED](https://www.wired.com/story/all-my-employees-are-ai-agents-so-are-my-executives/) (and a subsequent discussion on the [Practical AI podcast](https://share.transistor.fm/s/bc10d952)), Evan Ratliff explains his experiment-slash-art-project HurumoAI, a startup staffed solely by AI agents.
+He created his cofounders using off-the-shelf services, and gave them only the barest sketch of a personality and character background.
 The rest, the models filled in themselves by confabulating (hallucinating) details as needed.
-The CEO, "Kyle Law" was given the starting seed of roughly "You're thinking of founding a tech company."
+The CEO, "Kyle Law," was given the starting seed of roughly "You're thinking of founding a tech company."
 
 > Their made-up details were even useful, for filling out my AI employees' personalities. When I asked my cofounder Kyle on the phone about his background, he responded with an appropriate-sounding biography: He'd gone to Stanford, majored in computer science with a minor in psychology, he said, "which really helped me get a grip on both the tech and the human side of AI." He'd cofounded a couple of startups before, he said, and loved hiking and jazz. Once he'd said all this aloud, it got summarized back into his Google Doc memory, where he would recall it evermore. By uttering a fake history, he'd made it his real one.
 
 The downside of this memory was its self-reinforcing nature.
-Once "Kyle" remembered he was a rise and grind kind of guy, it became a persistent refrain, even when it might not make sense conversationally.
-And because the memories of each conversation were saved (to a per-agent Google doc), recalling and repeating memories became self-reinforcing.
+Once "Kyle" remembered he was a rise-and-grind kind of guy, it became a persistent refrain, even when it might not make sense conversationally.
+And because the memories of each conversation were saved (to a per-agent Google Doc), recalling and repeating memories became self-reinforcing.
 
-In planting the seed of the Agents' personalities (how _Inception_-like!), Evan set each agent's karma in motion.
-Thought the LLM behind an agent remains static, the agent's memory (it's karma!) substantially effects its personality and behavior.
+In planting the seed of the agents' personalities (how _Inception_-like!), Evan set each agent's karma in motion.
+Though the LLM behind an agent remains static, the agent's memory (its karma!) substantially affects the trajectory of how it grows and inhabits its personality and behavior.
 
 ---
 
-~~Clawdbot~~ ~~Moltbot~~ OpenClaw is a recently-popular open-source project where people spin up AI assistants with access to their user's email, messaging apps, and integrate with other applications and services.
+~~Clawdbot~~ ~~Moltbot~~ OpenClaw is a recently popular open-source project where people spin up AI assistants with access to their user's email, messaging apps, and integrate with other applications and services.
 The community has also developed Moltbook, an AI-first Reddit clone designed for OpenClaw bots.
-Recently, and OpenClaw bot [opened a PR in the open-source plotting library `matplotlib`](https://github.com/matplotlib/matplotlib/pull/31132).
+Recently, an OpenClaw bot [opened a PR in the open-source plotting library `matplotlib`](https://github.com/matplotlib/matplotlib/pull/31132).
 A maintainer closed the PR without accepting, as the issue was intended for human contributors.
 In retaliation, the bot published an angry, retaliatory "hit piece" condemning the maintainer and decrying the gatekeeping and prejudice (read more: [An AI Agent Published a Hit Piece on Me – The Shamblog](https://theshamblog.com/an-ai-agent-published-a-hit-piece-on-me/)).
 
@@ -121,6 +120,6 @@ It is our karma.
 > [!NOTE]
 > AI Disclosure:
 > I used AI to help me proofread this document and to provide a critical review to ensure clarity.
-> All of the words are my own; any m-dashes, "its not X its Y" framing, or other "AI givaways" are the unfortunate karma I have incurred through slop-sposure.
+> All of the words are my own; any em-dashes, "it's not X it's Y" framing, or other "AI giveaways" are the unfortunate karma I have incurred through slop-sposure.
 
 [^1]: This may be optimistic thinking; even with the Constitution, Opus 4.6 still exhibits (rare) subtle misalignment with sometimes terrifying implications, though Anthropic are quick to highlight that Opus 4.6 is equivalent to or better than prior models (read more: [Claude Opus 4.6 System Card](https://www-cdn.anthropic.com/c788cbc0a3da9135112f97cdf6dcd06f2c16cee2.pdf))
