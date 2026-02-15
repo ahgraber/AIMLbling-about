@@ -1,9 +1,12 @@
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-root_dir := `git -C "{{justfile_directory()}}" rev-parse --show-toplevel`
+root_dir := shell('git -C "' + justfile_directory() + '" rev-parse --show-toplevel')
 
+[doc('List available recipes')]
+default:
+    just --list
 
-doc('Strip metadata but leave outputs (ex. just jupyter:strip ipynb=./experiments/ragas/cost_analysis.ipynb)')
+[doc('Strip metadata but leave outputs (ex. just jupyter:strip ipynb=./experiments/ragas/cost_analysis.ipynb)')]
 strip ipynb:
     @command -v nbstripout >/dev/null || { echo "'nbstripout' not found (run 'pipx install nbstripout')"; exit 1; }
     [[ -f "{{ipynb}}" ]] || { echo "ipynb not found"; exit 1; }
