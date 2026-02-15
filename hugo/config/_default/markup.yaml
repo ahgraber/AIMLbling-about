@@ -7,8 +7,11 @@ goldmark:
   extensions:
     passthrough:
       delimiters:
-        block: [['\[', '\]'], ["$$", "$$"]]
-        inline: [['\(', '\)']]
+        block:
+          # - ['\[', '\]']
+          - ["$$", "$$"]
+        inline:
+          - ['\(', '\)']
       enable: true
   strikethrough: true
   table: true
