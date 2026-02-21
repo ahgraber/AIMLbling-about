@@ -135,7 +135,7 @@ repos:
           - mdformat-simple-breaks
   # renovate: datasource=github-tags depName=rvben/rumdl-pre-commit
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.1.22  # Use the latest release tag
+    rev: v0.1.25  # Use the latest release tag
     hooks:
       # - id: rumdl      # Lint only (fails on issues)
       #   stages: [pre-commit]
@@ -151,7 +151,7 @@ repos:
         stages: [pre-commit]
   # renovate: datasource=github-tags depName=kynan/nbstripout
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.9.0
+    rev: 0.9.1
     hooks:
       - id: nbstripout
         name: Strip metadata and outputs from ipynb files
@@ -188,7 +188,7 @@ repos:
         stages: [pre-commit]
   # renovate: datasource=github-tags depName=biomejs/pre-commit
   - repo: https://github.com/biomejs/pre-commit
-    rev: v2.4.2
+    rev: v2.4.4
     hooks:
       - id: biome-check
         stages: [pre-commit]
