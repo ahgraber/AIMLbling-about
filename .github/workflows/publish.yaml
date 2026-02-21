@@ -90,7 +90,8 @@ jobs:
           build-args: |
             BUILD_DATE=${{ steps.build-meta.outputs.build-date }}
             VCS_REF=${{ steps.build-meta.outputs.vcs-ref }}
-            TREADMILL_PAT=${{ secrets.TREADMILL_PAT }}
+          secrets: |
+            treadmill_pat=${{ secrets.TREADMILL_PAT }}
           context: .  # explicitly include checked-out context with .git/ dir
           file: ./hugo/docker/Dockerfile
           push: true

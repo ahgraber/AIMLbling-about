@@ -51,25 +51,16 @@ clean:
     hugo --gc -s "{{hugo_dir}}"
 
 
-[doc('Start colima')]
-_start:
-    @command -v colima >/dev/null || { echo "Colima not found"; exit 1; }
-    colima start
-
-
 [doc('Build site with colima/docker')]
-build: _start
+build:
     @command -v docker >/dev/null || { echo "Docker not found"; exit 1; }
-    "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}"
-    echo "Run 'colima stop' to clean up!"
+    "{{root_dir}}/scripts/with_colima.sh" "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}"
 
 
-[doc('Run colima/docker container')]
-run: _start
+[doc('Run colima/docker container for local testing')]
+run:
     @command -v docker >/dev/null || { echo "Docker not found"; exit 1; }
-    docker run --rm -p 80:8080 ghcr.io/ahgraber/aimlbling-about:debug
-    echo "Access site at http://127.0.0.1"
-    echo "Run 'colima stop' to clean up!"
+    "{{root_dir}}/scripts/with_colima.sh" "{{root_dir}}/scripts/hugo_run_local.sh" "{{hugo_dir}}"
 
 
 [doc('Update treadmill data')]

@@ -1,5 +1,5 @@
 # https://sko.ai/blog/how-to-actually-build-hugo-containers/
-FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.23@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659 AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26-alpine3.23 AS build
 
 # Set shell options for safety
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
@@ -17,7 +17,6 @@ LABEL org.opencontainers.image.revision="${VCS_REF}"
 
 RUN  apk add --no-cache \
       git \
-      go \
       hugo \
       tzdata \
       curl \
@@ -30,13 +29,16 @@ ENV DART_SASS_VERSION=1.86.3
 RUN curl -sSL https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64-musl.tar.gz \
     | tar -xz -C /usr/local/bin --strip-components=1
 
-ARG TREADMILL_PAT
-RUN git config --global url."https://${TREADMILL_PAT}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-
 WORKDIR /src
-COPY . .
+COPY .git ./.git
+COPY hugo ./hugo
 
-RUN --mount=type=cache,target=/tmp/hugo_cache \
+RUN --mount=type=secret,id=treadmill_pat,required=false \
+    --mount=type=cache,target=/tmp/hugo_cache \
+    if [ -s /run/secrets/treadmill_pat ]; then \
+      treadmill_pat="$(cat /run/secrets/treadmill_pat)"; \
+      git config --global url."https://${treadmill_pat}:x-oauth-basic@github.com/".insteadOf "https://github.com/"; \
+    fi && \
     hugo --minify -s ./hugo
 
 FROM docker.io/nginxinc/nginx-unprivileged:1.29@sha256:7599b95ec0f0eb3a906500965edbc5186ad7f7d5c36010d89cc2e65abac61546
@@ -53,6 +55,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.revision="${VCS_REF}"
 
 COPY --chown=nginx:nginx --from=build /src/hugo/public /site
-COPY --chown=nginx:nginx ./hugo/docker/default.conf /etc/nginx/conf.d/
+COPY --chown=nginx:nginx --from=build /src/hugo/docker/default.conf /etc/nginx/conf.d/
 
 USER nginx

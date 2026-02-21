@@ -24,10 +24,17 @@ TREADMILL_PAT="${TREADMILL_PAT:-}"
 build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 vcs_ref=$(git -C "${repo_root}" rev-parse --short HEAD)
 
-docker build \
-  --build-arg BUILD_DATE="${build_date}" \
-  --build-arg VCS_REF="${vcs_ref}" \
-  --build-arg TREADMILL_PAT="${TREADMILL_PAT}" \
-  -t ghcr.io/ahgraber/aimlbling-about:debug \
-  -f "${hugo_dir}/docker/Dockerfile" \
-  "${repo_root}"
+build_cmd=(
+  docker build
+  --build-arg "BUILD_DATE=${build_date}"
+  --build-arg "VCS_REF=${vcs_ref}"
+  -t ghcr.io/ahgraber/aimlbling-about:debug
+  -f "${hugo_dir}/docker/Dockerfile"
+)
+
+if [[ -n "${TREADMILL_PAT}" ]]; then
+  build_cmd+=(--secret "id=treadmill_pat,env=TREADMILL_PAT")
+fi
+
+build_cmd+=("${repo_root}")
+"${build_cmd[@]}"
