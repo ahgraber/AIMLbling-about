@@ -1,9 +1,22 @@
 {{/* Core scripts (theme, menu, tabs, etc.) */}}
-{{/* Upstream core logic (bundles, search, mermaid) */}}
 {{- partial "scripts/core.html" . -}}
+
+{{/* Search */}}
 {{- partial "scripts/search.html" . -}}
+
+{{/* Mermaid */}}
 {{- if (.Store.Get "hasMermaid") -}}
   {{- partial "scripts/mermaid.html" . -}}
+{{- end -}}
+
+{{/* Asciinema */}}
+{{- if (.Store.Get "hasAsciinema") -}}
+  {{- partial "scripts/asciinema.html" . -}}
+{{- end -}}
+
+{{/* Medium Zoom */}}
+{{- if (.Store.Get "hasImageZoom") -}}
+  {{- partial "scripts/medium-zoom.html" . -}}
 {{- end -}}
 
 {{/* Custom additions */}}
