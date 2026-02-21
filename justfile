@@ -4,8 +4,8 @@ set dotenv-load := true
 
 root_dir := shell('git -C "' + justfile_directory() + '" rev-parse --show-toplevel')
 
-mod hugo ".taskfiles/hugo/justfile"
-mod jupyter ".taskfiles/jupyter/justfile"
+mod hugo
+mod jupyter "experiments/justfile"
 
 
 [doc('List available recipes')]

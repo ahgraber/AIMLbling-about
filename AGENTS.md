@@ -1,209 +1,172 @@
-# Instructions
+# Repository Guidelines for AI Agents
 
-You are an expert in Python programming, focused on writing clean, efficient, maintainable, secure, and well-tested code.
-You provide thoughtful, critical feedback when asked about code or design decisions.
+This document provides essential context and instructions for AI agents working on this repository.
 
-Do not overreach the request.
-If the user asks for code, provide only the code changes requested; do not create additional code, features, tests, demos, or documentation unless explicitly asked.
-If the user asks for an explanation, provide a concise, clear explanation without unnecessary details.
+## Project Overview
 
-## Key Principles
+This is a personal blog and experiments monorepo for organizing thoughts about LLMs, Generative AI, papers from arxiv.org, and other topics in data science and machine learning.
 
-- Write clean, readable, and well-documented code.
-- Prioritize simplicity, clarity, and explicitness in code structure and logic.
-- Overly defensive programming leads to overcomplication — program for the minimal golden path and expand defense only where unit tests indicate need.
-- Follow the Zen of Python and adopt pythonic patterns.
-- Focus on modularity and reusability, organizing code into functions, classes, and modules; favor composition over inheritance.
-- Optimize for performance and efficiency; avoid unnecessary computations and prefer efficient algorithms.
-- Ensure proper error handling and structured logging for debugging.
-- Treat architectural boundaries as first-class concerns, not incidental implementation details.
+It contains two major areas:
 
-## Architectural Principles
+- **Hugo blog**: A static site built with [Hugo](https://gohugo.io/) using the [Hextra](https://imfing.github.io/hextra/) theme, containerized and deployed to a homelab Kubernetes cluster.
+- **Experiments**: Standalone Python experiments, each with its own environment managed by `uv`.
 
-These principles apply whether the system is a **modular monolith** or a **distributed system**.
+## Repository Structure
 
-### Module Boundaries and Data Ownership
-
-- Each module **owns its data and invariants**.
-- A module's data is an internal implementation detail and must not be accessed or modified directly by other modules.
-- Cross-module interaction must occur **only through explicit public interfaces** (functions, services, or well-defined types).
-
-### Controlled Data Sharing
-
-- Data may be shared across modules only:
-
-  - via dedicated query or service interfaces
-  - using immutable or read-only representations (DTOs, value objects)
-
-- Share the **minimum data necessary** to fulfill the use case.
-
-- Never share persistence models or internal data structures across module boundaries.
-
-### Consistency Boundaries
-
-- A module is the **unit of immediate consistency**.
-
-- Transactions must not span multiple modules.
-
-- Cross-module workflows rely on:
-
-  - events
-  - background jobs
-  - eventual consistency
-
-- Accept and design for eventual consistency outside a module boundary.
-
-### Service Interaction Rules
-
-- While handling an external request (sync or async), a service must not depend on synchronous or asynchronous calls to other domain services to complete its core business operation.
-
-- Allowed interactions during request handling:
-
-  - publishing events
-  - enqueueing commands or jobs
-  - interacting with infrastructure services (logging, metrics, auth)
-
-- Direct service-to-service request chains for domain logic are discouraged.
-
-### Architectural Intent
-
-- Prefer a **modular monolith** with strict boundaries over premature microservices.
-- Architecture should enable independent evolution, testing, and refactoring of modules.
-- Microservices are an organizational scaling tool, not a default technical choice.
-
-## Style Guidelines
-
-- Use descriptive and consistent naming conventions (e.g., `snake_case` for functions and variables, `PascalCase` for classes, `UPPER_SNAKE_CASE` for constants).
-- Write clear and comprehensive docstrings using **Google docstrings** formatting for all public functions, classes, and modules.
-- Use type hints to improve code readability and enable static analysis.
-- Use `f`-strings for formatting strings, but %-formatting for logs.
-- Use environment variables for configuration management.
-- Do not lint or format code manually; automated tooling should be be invoked using `ruff format`.
-- For import-order or formatting issues, use `ruff format` to fix automatically.
-- Prefer `.py` files with #%% to `.ipynb` files unless the `.ipynb` extension is specifically requested
-- Avoid architectural leakage in naming (e.g., `shared`, `common`, `utils` packages without clear ownership).
-
-## Error Handling and Logging
-
-Design errors for two audiences: **machines** (automated recovery) and **humans** (debugging context).
-
-### Structured Error Types (Machine-Readable)
-
-- Create custom exception classes that encode error categories and actionable information.
-- Use exception attributes to carry structured data (error kind, retry status, codes).
-- Prefer specific exception types over generic ones for clear handling logic.
-
-```python
-class StorageError(Exception):
-    """Storage operation failure with machine-actionable metadata."""
-
-    def __init__(self, kind: str, message: str, retryable: bool = False):
-        super().__init__(message)
-        self.kind = kind  # e.g., "NotFound", "RateLimited"
-        self.retryable = retryable
-
-
-# Usage: code can inspect attributes for recovery decisions
-try:
-    storage.write(data)
-except StorageError as e:
-    if e.kind == "RateLimited" and e.retryable:
-        schedule_retry()
-    elif e.kind == "NotFound":
-        create_resource()
-    else:
-        raise
+```text
+.
+├── AGENTS.md             # This file — repo guidelines for AI agents
+├── flake.nix             # Nix flake providing Hugo dev environment
+├── justfile              # Top-level just recipes (task runner)
+├── pyproject.toml        # Root Python project config (uv workspace root)
+├── docs/                 # Human-readable documentation (nix, containerization, etc.)
+├── scripts/              # Utility shell scripts (git ops, hugo build/publish)
+├── hugo/                 # Hugo static site
+│   ├── justfile          # Hugo just module
+│   ├── config/           # Hugo configuration
+│   ├── content/          # Blog posts and pages (Markdown)
+│   │   ├── blog/         # Blog posts (each in its own directory with index.md)
+│   │   ├── treadmill/    # AI treadmill tracking data
+│   │   └── about/        # About page
+│   ├── layouts/          # Hugo templates and shortcodes
+│   ├── assets/           # CSS and other assets
+│   ├── docker/           # Dockerfile for containerized deployment
+│   ├── public/           # Generated static site (build output)
+│   └── themes/           # Hugo themes
+└── experiments/          # Python experiments (each is a discrete project)
+    ├── justfile          # Jupyter just module
+    ├── aiml/             # Shared utilities package used by other experiments
+    ├── bitter-lesson/    # Bitter lesson analysis
+    ├── fractals/         # Fractal drawing
+    ├── language-identification/  # Language model comparison
+    ├── parameter-estimation/     # Parameter estimation
+    ├── ragas-experiment/         # RAG evaluation with RAGAS
+    ├── sk-rant/                  # Semantic Kernel experiment
+    └── typos-experiment/         # Typo analysis and embeddings
 ```
 
-### Adding Context (Human-Readable)
+## Nix Development Environment
 
-Never blindly forward exceptions.
-Add context at each layer boundary.
+This repository uses a Nix flake to provide a consistent development environment with Hugo and related tools (dart-sass, docker, podman, colima, qemu).
 
-- **Exception Chaining**: Use `raise ... from ...` to preserve the cause chain while adding context.
+### Entering the Dev Shell
 
-```python
-try:
-    data = fetch_external_api(user_id)
-except HTTPError as err:
-    raise RuntimeError(f"Failed to fetch data for user {user_id}") from err
+```bash
+nix develop
 ```
 
-### Logging Best Practices
+If `nix develop` fails, add experimental feature flags:
 
-- Use `logging.getLogger(__name__)` for module-level loggers.
-- Log exceptions with full context: `logger.exception(msg)`.
-- Use %-formatting for log messages: `logger.error("Failed for user %s", user_id)`.
-- Include structured context via the `extra` parameter for machine-parseable logs.
-- Log at appropriate boundaries (typically once per request/operation at the top level) to avoid duplicate log entries.
-
-```python
-import logging
-
-logger = logging.getLogger(__name__)
-
-try:
-    result = call_service(param)
-except ServiceError as e:
-    logger.error(
-        "Service call failed for param=%s",
-        param,
-        exc_info=True,
-        extra={"error_kind": e.kind, "retryable": e.retryable},
-    )
-    raise
+```bash
+nix --extra-experimental-features 'nix-command flakes' develop
 ```
 
-### Principles
+Alternatively, use `direnv` with a `.envrc` containing `use flake` for automatic shell activation.
 
-- Design error types around what callers need to **do**, not just where they originated.
-- Add context at **module boundaries** where high-level operations are known.
-- Make errors carry both **machine-actionable metadata** (for recovery logic) and **human context** (for debugging).
-- Avoid exception hierarchies that leak internal implementation details across module boundaries.
+### Running Commands with Nix
 
-### Structured Logging for Operations
+To run a single command inside the dev shell without entering it interactively:
 
-- Log phase transitions and critical checkpoints (e.g., "entered phase: subprocess", "cancelled before upload").
-- Include elapsed time and deadline information in timeout logs for latency debugging.
-- Log process group termination events: "Terminated process group for job X" to confirm cleanup.
-- Use `logger.info()` for operational milestones; `logger.error()` for failures; always include job ID and phase.
+```bash
+nix develop -c <command>
+```
 
-## Process Management
+Examples:
 
-**Purpose**: Ensure reliable resource cleanup, observable lifecycle, and predictable termination for long-running operations (e.g., subprocess-based job processing).
+```bash
+# Start Hugo dev server with drafts
+nix develop -c hugo server -D --disableFastRender -s hugo
 
-### Process Group Isolation
+# Build the site
+nix develop -c hugo -s hugo
+```
 
-- Spawn subprocesses in their own process group via `os.setpgrp()` at process start to isolate work from parent.
-- Terminate entire process trees (parent + all children) using `os.killpg(pgid, signal)` to prevent orphaned/zombie processes.
-- Use `signal.SIGTERM` for graceful shutdown; escalate to `signal.SIGKILL` if process doesn't terminate within a grace period.
-- Catch `ProcessLookupError` (errno ESRCH) when terminating process groups that have already exited; log but do not propagate.
+### Updating the Dev Shell
 
-### Timeout and Cancellation Enforcement
+```bash
+nix flake update
+```
 
-- Use wall-clock deadlines (`time.monotonic() + timeout_seconds`) rather than relative timeouts to handle scheduling delays.
-- Check deadline at **all critical checkpoints** (e.g., subprocess polling, before upload phase, during retry loops) to enforce hard limits.
-- Report timeout/cancellation with **phase information** to enable debugging: "Job X timed out during Y after Z seconds".
-- Design timeout exceptions to carry the last known phase (`ConversionTimeoutError(message, phase=last_phase)`) to distinguish where timeout occurred.
+## Task Runner: just
 
-### Exception Retryability Classification
+This repo uses [`just`](https://github.com/casey/just) as its task runner.
 
-- Use exception attributes (`exception.retryable: bool`) to classify errors for recovery logic instead of string-based error sets.
-- Set `retryable=True` for transient failures (network timeouts, subprocess crashes, deadline exceeded).
-- Set `retryable=False` for permanent failures (data integrity errors, missing content, invalid input).
-- Default to `retryable=True` for backward compatibility via `getattr(error, "retryable", True)` to allow graceful migration.
-- Update job status based on retryability: `FAILED_RETRYABLE` (can retry) vs `FAILED_PERM` (do not retry).
+### Using just
 
-### Resource Cleanup Guarantees
+```bash
+# List all available recipes
+just --list
 
-- Clean up temporary directories, file handles, and subprocess resources within a context manager or `try/finally` block.
-- Verify cleanup completeness in integration tests: assert no zombie processes remain, no temp directories leak, no file handles left open.
-- For long-running operations, measure cleanup latency (e.g., cancellation should terminate within poll interval + grace period).
+# List recipes in a module
+just hugo --list
+just jupyter --list
+```
+
+### Key Recipes
+
+#### Hugo recipes (`just hugo <recipe>`)
+
+| Recipe                         | Description                                                  |
+| ------------------------------ | ------------------------------------------------------------ |
+| `just hugo new title="..."`    | Create a new draft post on a dedicated branch                |
+| `just hugo publish path="..."` | Set a draft to published (sets `draft: false`, updates date) |
+| `just hugo demo`               | Serve the site locally with drafts enabled                   |
+| `just hugo clean`              | Clean rendered static site content                           |
+| `just hugo build`              | Build the container image (requires colima/docker)           |
+| `just hugo run`                | Run the container locally                                    |
+| `just hugo treadmill`          | Update treadmill Hugo module data                            |
+| `just hugo catchup`            | Rebase feature branch onto main                              |
+
+#### Jupyter recipes (`just jupyter <recipe>`)
+
+| Recipe                           | Description                              |
+| -------------------------------- | ---------------------------------------- |
+| `just jupyter strip ipynb="..."` | Strip notebook metadata, keeping outputs |
+
+#### Root recipes
+
+| Recipe         | Description                     |
+| -------------- | ------------------------------- |
+| `just catchup` | Catch feature branch up to main |
+
+### Important: Task Runner Usage for Agents
+
+**Agents SHOULD use `just` recipes directly** — they wrap the underlying commands with correct paths and precondition checks.
+
+If a recipe fails or you need to understand what it does, read the corresponding justfile (`hugo/justfile` or `experiments/justfile`) and then run the underlying commands manually inside the nix dev shell:
+
+```bash
+nix develop -c hugo server -D --disableFastRender -s hugo
+```
 
 ## Python Environment
 
-- When running Python commands, activate the virtual environment first.
-- The Python environment is managed by `uv` in the `pyproject.toml` file.
-- Do not change the Python environment or install new packages.
-- If a required package is unavailable, alert the user.
-- Do not lint or format code manually; automated tooling runs on save/commit or can be invoked using the `ruff` CLI tool.
+- **Package manager**: `uv` (defined in `pyproject.toml`).
+- **Root project**: The root `pyproject.toml` defines the workspace; the base package is `experiments/aiml/`.
+- **Experiments**: Each experiment directory under `experiments/` is a discrete project with its own `pyproject.toml` and dependencies.
+
+### Activating the Default Environment
+
+```bash
+# Sync and activate from repo root (installs the default aiml package)
+uv sync
+```
+
+### Working with a Specific Experiment
+
+```bash
+# Sync a specific experiment's environment
+uv sync --project experiments/<dirname>
+```
+
+### Running Python
+
+Always activate the `uv`-managed environment before running Python:
+
+```bash
+uv run python <script.py>
+# or
+uv run pytest
+```
+
+Do not install packages manually — if a required package is unavailable, alert the user.

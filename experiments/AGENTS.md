@@ -1,209 +1,84 @@
 # Instructions
 
-You are an expert in Python programming, focused on writing clean, efficient, maintainable, secure, and well-tested code.
-You provide thoughtful, critical feedback when asked about code or design decisions.
+Deliver exactly what was requested.
+Avoid speculative extras, but include the minimum tests, documentation, and safeguards needed to keep behavior correct and prevent regressions.
 
-Do not overreach the request.
-If the user asks for code, provide only the code changes requested; do not create additional code, features, tests, demos, or documentation unless explicitly asked.
-If the user asks for an explanation, provide a concise, clear explanation without unnecessary details.
+Review available python skills when writing python code.
 
-## Key Principles
+## Directive Priority
 
-- Write clean, readable, and well-documented code.
-- Prioritize simplicity, clarity, and explicitness in code structure and logic.
-- Overly defensive programming leads to overcomplication — program for the minimal golden path and expand defense only where unit tests indicate need.
-- Follow the Zen of Python and adopt pythonic patterns.
-- Focus on modularity and reusability, organizing code into functions, classes, and modules; favor composition over inheritance.
-- Optimize for performance and efficiency; avoid unnecessary computations and prefer efficient algorithms.
-- Ensure proper error handling and structured logging for debugging.
-- Treat architectural boundaries as first-class concerns, not incidental implementation details.
+If directives conflict, prioritize:
 
-## Architectural Principles
+1. Correctness and safety at external boundaries
+2. Explicit user instructions
+3. Minimal scope and simplicity
 
-These principles apply whether the system is a **modular monolith** or a **distributed system**.
+## 1. Think Before Coding
 
-### Module Boundaries and Data Ownership
+Objective: surface ambiguity and tradeoffs before writing any code.
 
-- Each module **owns its data and invariants**.
-- A module's data is an internal implementation detail and must not be accessed or modified directly by other modules.
-- Cross-module interaction must occur **only through explicit public interfaces** (functions, services, or well-defined types).
+- State assumptions explicitly.
+- If uncertainty would materially change the implementation, ask.
+  Otherwise, state your assumption and proceed.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so.
+  Push back when warranted.
 
-### Controlled Data Sharing
+## 2. Simplicity First
 
-- Data may be shared across modules only:
+Objective: write the minimum change that meets the request.
 
-  - via dedicated query or service interfaces
-  - using immutable or read-only representations (DTOs, value objects)
+- No features, abstractions, or configurability beyond what was asked.
+- No "flexibility" or "configurability" that wasn't requested.
+- Prefer the golden path for internal logic; let tests define edge-case expectations.
+- Add explicit validation and error handling at external boundaries (I/O, network, persistence, auth, parsing, external APIs).
+- If you write 200 lines and it could be 50, rewrite it.
+- Apply YAGNI ruthlessly.
 
-- Share the **minimum data necessary** to fulfill the use case.
+## 3. Surgical Changes
 
-- Never share persistence models or internal data structures across module boundaries.
+Objective: every changed line traces directly to the request.
 
-### Consistency Boundaries
+When editing existing code:
 
-- A module is the **unit of immediate consistency**.
+- Touch only what the request requires.
+  Don't "improve" adjacent code, comments, or formatting.
+- Match existing style, even if you'd do it differently.
+  Don't refactor existing code unless it is part of the request.
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked — mention it instead.
 
-- Transactions must not span multiple modules.
+## 4. Goal-Driven Execution
 
-- Cross-module workflows rely on:
+Objective: define success criteria, then loop until verified.
 
-  - events
-  - background jobs
-  - eventual consistency
+Transform tasks into verifiable goals:
 
-- Accept and design for eventual consistency outside a module boundary.
+- "Add validation" → write tests for invalid inputs, then make them pass.
+- "Fix the bug" → write a test that reproduces it, then make it pass.
+- "Refactor X" → ensure tests pass before and after.
 
-### Service Interaction Rules
+Testing guardrails:
 
-- While handling an external request (sync or async), a service must not depend on synchronous or asynchronous calls to other domain services to complete its core business operation.
+- Never modify a failing test to make it pass.
+  Fix the code under test.
+- If a test is genuinely wrong, explain why and await user approval before changing it.
+- Write implementations that solve the general problem, not code that special-cases specific test inputs.
 
-- Allowed interactions during request handling:
+For multi-step tasks, state a brief plan defining the step task and associated verification checks.
 
-  - publishing events
-  - enqueueing commands or jobs
-  - interacting with infrastructure services (logging, metrics, auth)
+## 5. Definition of Done
 
-- Direct service-to-service request chains for domain logic are discouraged.
+- The requested behavior works as specified.
+- Behavior changes are covered by tests, or testing gaps are explicitly stated.
+- Public contract changes are documented.
+- Required checks were run when available; if not run, state what was skipped and why.
 
-### Architectural Intent
+## Defaults
 
-- Prefer a **modular monolith** with strict boundaries over premature microservices.
-- Architecture should enable independent evolution, testing, and refactoring of modules.
-- Microservices are an organizational scaling tool, not a default technical choice.
-
-## Style Guidelines
-
-- Use descriptive and consistent naming conventions (e.g., `snake_case` for functions and variables, `PascalCase` for classes, `UPPER_SNAKE_CASE` for constants).
-- Write clear and comprehensive docstrings using **Google docstrings** formatting for all public functions, classes, and modules.
-- Use type hints to improve code readability and enable static analysis.
-- Use `f`-strings for formatting strings, but %-formatting for logs.
-- Use environment variables for configuration management.
-- Do not lint or format code manually; automated tooling should be be invoked using `ruff format`.
-- For import-order or formatting issues, use `ruff format` to fix automatically.
-- Prefer `.py` files with #%% to `.ipynb` files unless the `.ipynb` extension is specifically requested
-- Avoid architectural leakage in naming (e.g., `shared`, `common`, `utils` packages without clear ownership).
-
-## Error Handling and Logging
-
-Design errors for two audiences: **machines** (automated recovery) and **humans** (debugging context).
-
-### Structured Error Types (Machine-Readable)
-
-- Create custom exception classes that encode error categories and actionable information.
-- Use exception attributes to carry structured data (error kind, retry status, codes).
-- Prefer specific exception types over generic ones for clear handling logic.
-
-```python
-class StorageError(Exception):
-    """Storage operation failure with machine-actionable metadata."""
-
-    def __init__(self, kind: str, message: str, retryable: bool = False):
-        super().__init__(message)
-        self.kind = kind  # e.g., "NotFound", "RateLimited"
-        self.retryable = retryable
-
-
-# Usage: code can inspect attributes for recovery decisions
-try:
-    storage.write(data)
-except StorageError as e:
-    if e.kind == "RateLimited" and e.retryable:
-        schedule_retry()
-    elif e.kind == "NotFound":
-        create_resource()
-    else:
-        raise
-```
-
-### Adding Context (Human-Readable)
-
-Never blindly forward exceptions.
-Add context at each layer boundary.
-
-- **Exception Chaining**: Use `raise ... from ...` to preserve the cause chain while adding context.
-
-```python
-try:
-    data = fetch_external_api(user_id)
-except HTTPError as err:
-    raise RuntimeError(f"Failed to fetch data for user {user_id}") from err
-```
-
-### Logging Best Practices
-
-- Use `logging.getLogger(__name__)` for module-level loggers.
-- Log exceptions with full context: `logger.exception(msg)`.
-- Use %-formatting for log messages: `logger.error("Failed for user %s", user_id)`.
-- Include structured context via the `extra` parameter for machine-parseable logs.
-- Log at appropriate boundaries (typically once per request/operation at the top level) to avoid duplicate log entries.
-
-```python
-import logging
-
-logger = logging.getLogger(__name__)
-
-try:
-    result = call_service(param)
-except ServiceError as e:
-    logger.error(
-        "Service call failed for param=%s",
-        param,
-        exc_info=True,
-        extra={"error_kind": e.kind, "retryable": e.retryable},
-    )
-    raise
-```
-
-### Principles
-
-- Design error types around what callers need to **do**, not just where they originated.
-- Add context at **module boundaries** where high-level operations are known.
-- Make errors carry both **machine-actionable metadata** (for recovery logic) and **human context** (for debugging).
-- Avoid exception hierarchies that leak internal implementation details across module boundaries.
-
-### Structured Logging for Operations
-
-- Log phase transitions and critical checkpoints (e.g., "entered phase: subprocess", "cancelled before upload").
-- Include elapsed time and deadline information in timeout logs for latency debugging.
-- Log process group termination events: "Terminated process group for job X" to confirm cleanup.
-- Use `logger.info()` for operational milestones; `logger.error()` for failures; always include job ID and phase.
-
-## Process Management
-
-**Purpose**: Ensure reliable resource cleanup, observable lifecycle, and predictable termination for long-running operations (e.g., subprocess-based job processing).
-
-### Process Group Isolation
-
-- Spawn subprocesses in their own process group via `os.setpgrp()` at process start to isolate work from parent.
-- Terminate entire process trees (parent + all children) using `os.killpg(pgid, signal)` to prevent orphaned/zombie processes.
-- Use `signal.SIGTERM` for graceful shutdown; escalate to `signal.SIGKILL` if process doesn't terminate within a grace period.
-- Catch `ProcessLookupError` (errno ESRCH) when terminating process groups that have already exited; log but do not propagate.
-
-### Timeout and Cancellation Enforcement
-
-- Use wall-clock deadlines (`time.monotonic() + timeout_seconds`) rather than relative timeouts to handle scheduling delays.
-- Check deadline at **all critical checkpoints** (e.g., subprocess polling, before upload phase, during retry loops) to enforce hard limits.
-- Report timeout/cancellation with **phase information** to enable debugging: "Job X timed out during Y after Z seconds".
-- Design timeout exceptions to carry the last known phase (`ConversionTimeoutError(message, phase=last_phase)`) to distinguish where timeout occurred.
-
-### Exception Retryability Classification
-
-- Use exception attributes (`exception.retryable: bool`) to classify errors for recovery logic instead of string-based error sets.
-- Set `retryable=True` for transient failures (network timeouts, subprocess crashes, deadline exceeded).
-- Set `retryable=False` for permanent failures (data integrity errors, missing content, invalid input).
-- Default to `retryable=True` for backward compatibility via `getattr(error, "retryable", True)` to allow graceful migration.
-- Update job status based on retryability: `FAILED_RETRYABLE` (can retry) vs `FAILED_PERM` (do not retry).
-
-### Resource Cleanup Guarantees
-
-- Clean up temporary directories, file handles, and subprocess resources within a context manager or `try/finally` block.
-- Verify cleanup completeness in integration tests: assert no zombie processes remain, no temp directories leak, no file handles left open.
-- For long-running operations, measure cleanup latency (e.g., cancellation should terminate within poll interval + grace period).
-
-## Python Environment
-
-- When running Python commands, activate the virtual environment first.
-- The Python environment is managed by `uv` in the `pyproject.toml` file.
-- Do not change the Python environment or install new packages.
-- If a required package is unavailable, alert the user.
-- Do not lint or format code manually; automated tooling runs on save/commit or can be invoked using the `ruff` CLI tool.
+- Use descriptive, consistent naming conventions.
+- Write docstrings or comments for public contracts and non-obvious behavior.
+- Use type annotations where the language supports them.
+- Use structured logging where the project uses logging.
+- Run lint/format/test through project tooling when available; do not hand-format code.
+- Write tests for public behavior and regressions, not implementation details.
