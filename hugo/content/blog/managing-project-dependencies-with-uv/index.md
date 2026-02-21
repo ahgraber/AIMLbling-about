@@ -245,9 +245,9 @@ As a result, I end up with a fairly complex configuration:
 - `experiments\*\pyproject.toml` define the workspace dependencies, and typically leverate the predefined sets with `aiml[set1, set2,...]` (2, 3).
   If needed, the workspace can define additional dependencies or override the optional dependencies specified in `aiml`.
 
-{{< tabs items="root,main,workspace" >}}
+{{< tabs >}}
 
-{{< tab >}}
+{{< tab name="root" >}}
 
 This is the `pyproject.toml` at the root of the repo:
 
@@ -302,7 +302,7 @@ explicit = true
 ```
 
 {{< /tab >}}
-{{< tab >}}
+{{< tab name="main" >}}
 
 This is the `experiments\aiml\pyproject.toml` for the "main" codebase; we assume this local package will be available in all other workspaces
 and declare a standardized set of dependencies for the project that can be used per-workspace
@@ -468,7 +468,7 @@ macos-max-compat = true
 ```
 
 {{< /tab >}}
-{{< tab >}}
+{{< tab name="workspace" >}}
 
 This is the `experiments\*\pyproject.toml` of a workspace.
 

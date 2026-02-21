@@ -48,10 +48,8 @@ According to [Huggingface](https://huggingface.co/docs/transformers/en/perplexit
 
 <!-- markdownlint-disable MD013 MD033 MD034 -->
 
-$$
-\text{Given sequence } X = (x_0, x_1, \dots, x_n) \
-\text{perplexity}(X) = \exp\left( -\frac{1}{n} \sum_{i=1}^{n} \log P(x_i \mid x_{< i}) \right)
-$$
+$$ \text{Given sequence } X = (x_0, x_1, \dots, x_n) \
+\text{perplexity}(X) = \exp\left( -\frac{1}{n} \sum_{i=1}^{n} \log P(x_i \mid x_{< i}) \right) $$
 
 <!-- markdownlint-enable MD013 MD033 MD034 -->
 
@@ -73,12 +71,13 @@ Although perplexity is an "internal" evaluation of model performance (i.e., it u
 MMLU (Massive Multitask Language Understanding) is a popular benchmark used to compare language model performance [^mmlu].
 MMLU is a multiple-choice question-answering benchmark; the LLM is told the topic, given 5 question/answer examples, then the actual question and the various multiple-choice answers to select from.
 The ground-truth answers are known to us, and we evaluate the model's performance like grading a quiz.
-The MMLU benchmark test set contains 14,079 questions; evaluating all of these can be an expensive and time-consuming task. _tinyBenchmarks_ has identified a subset of 100 questions that are sufficient to estimate performance on the whole MMLU set [^tinybench].
+The MMLU benchmark test set contains 14,079 questions; evaluating all of these can be an expensive and time-consuming task.
+_tinyBenchmarks_ has identified a subset of 100 questions that are sufficient to estimate performance on the whole MMLU set [^tinybench].
 
 Note that I have only induced typos in the _question_ text (not the answers or the examples).
 To see whether the typo-fication of the questions unduly influences the standard few-shot approach, I also posing the _tinyBenchmarks_ MMLU questions in 0-shot format (i.e., with no examples, but with system instructions that provide guidance on how to answer).
 
-{{< tabs items="5-shot (example),0-shot (example)" >}} {{< tab >}}
+{{< tabs >}} {{< tab name="5-shot (example)" >}}
 
 ```txt
 The following are multiple choice questions (with answers) about high school
@@ -151,7 +150,7 @@ Answer:
 
 ```
 
-{{< /tab >}} {{< tab >}}
+{{< /tab >}} {{< tab name="0-shot (example)" >}}
 
 ```txt
 System:
@@ -212,7 +211,8 @@ caption="Typo Occurrence Rate Decreases Question-Answering Accuracy" >}}
 ## Conclusion
 
 In this series, I've examined how typos effect transformers-based autoregressive language models (GPTs).
-In [part two]({{< ref "/blog/typos-part-2" >}}), I found that typos increase the number of tokens required to represent text. [Part three]({{< ref "/blog/typos-part-3" >}}) demonstrated that typos alter a passage's location in embedding space, and that LLMs are remarkably good at recovering typo-laden text back to something that approximates the baseline when instructed.
+In [part two]({{< ref "/blog/typos-part-2" >}}), I found that typos increase the number of tokens required to represent text.
+[Part three]({{< ref "/blog/typos-part-3" >}}) demonstrated that typos alter a passage's location in embedding space, and that LLMs are remarkably good at recovering typo-laden text back to something that approximates the baseline when instructed.
 In this final experiment, I found that typos increase a model's perplexity, and that they can reduce a model's ability to respond correctly.
 
 ### Implications

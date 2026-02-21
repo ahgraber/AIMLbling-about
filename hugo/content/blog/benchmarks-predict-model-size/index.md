@@ -69,7 +69,7 @@ However, model labs tend to share the number of total vs active parameters, and 
 Therefore, I modeled (roughly) the inverse of sparsity as the ratio of active:total parameters per token.
 
 > [!NOTE]
-> 
+>
 > - [Omniscience](https://artificialanalysis.ai/evaluations/omniscience) is Artificial Analysis' own benchmark which rewards precise knowledge and penalizes hallucinated responses. Omniscience Accuracy is the "correctness" component of Omniscience, measuring the proportion of correctly answered questions out of all questions, regardless of whether the model chooses to answer. Omniscience also tracks Hallucination Rate (how often the model answers incorrectly when it should have refused or admitted to not knowing the answer) and Attempt Rate.
 > - [MMLU Pro](https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro) an enhanced approach to the Massive Multitask Language Understanding (MMLU) benchmark designed to evaluate language understanding, integrating more challenging, reasoning-focused questions and a greater spread of possible response options.
 > - [Artificial Analysis Intelligence Index](https://artificialanalysis.ai/methodology/intelligence-benchmarking) is a composition of a composition of 10 different benchmarks, used to compare LLM capabilities across a broad range of use cases. Developed by Artificial Analysis, they run their own independent tests so model performance can be compared apples-to-apples.
@@ -119,15 +119,15 @@ Given these metrics, we can use Omniscience Accuracy (or MMLU Pro or Intelligenc
 
 ### Predictions
 
-{{< tabs items="Omniscience Accuracy, MMLU Pro, Intelligence Index" >}}
+{{< tabs >}}
 
-{{< tab >}}
+{{< tab name="Omniscience Accuracy" >}}
 !["A scatter plot with a regression line showing the relationship between model size and an "omniscience_accuracy" score. The x-axis is "omniscience_accuracy score," ranging from roughly 0.05 to 0.55. The y-axis is "Total parameters (log scale)," ranging from under 1 billion to well over 1 trillion parameters. Models are plotted as labeled points, including GPT-4o, GPT-4.1, GPT-5, GPT-5.1, GPT-5.2, GPT-5 mini, GPT-5 nano, Claude 3.7 Sonnet, Claude 4.5 Haiku, Claude 4.5 Sonnet, Claude Opus 4.5, Gemini 2.5 Flash, Gemini 2.5 Pro, Gemini 3 Flash, and Gemini 3 Pro Preview. The regression line slopes steeply upward and closely tracks the data, with an annotated R² of 0.84, indicating a strong relationship between omniscience_accuracy and total parameter count. A color scale shows prediction error magnitude, which is generally small relative to the range shown. The overall message is that omniscience_accuracy is a strong predictor of model size, with higher scores corresponding to much larger models."](images/omniscience_accuracy.png)
 {{< /tab >}}
-{{< tab >}}
+{{< tab name="MMLU Pro" >}}
 !["A scatter plot with a regression line showing the relationship between model size and MMLU-Pro benchmark score. The x-axis is "mmlu_pro score," ranging from approximately 0.15 to 0.9. The y-axis is "Total parameters (log scale)," ranging from a few hundred million to over 1 trillion parameters. Each model is shown as a point, with circles for actual values and triangles for regression predictions, and labeled with model names including GPT-4.1, GPT-4o, GPT-5, GPT-5.1, GPT-5.2, Claude 4.5 Sonnet, Claude 4.5 Haiku, Claude Opus 4.5, Gemini 2.5 Pro, Gemini 3 Pro, and Gemini 3 Flash. The regression line slopes upward and closely follows the data. The annotation reports a relatively strong fit (R² = 0.75), indicating that MMLU-Pro score correlates well with total parameter count. Prediction errors, shown by a color scale, are generally smaller than in the intelligenceIndex plot. Overall, the chart shows that higher MMLU-Pro scores tend to correspond to larger models."](images/mmlu_pro.png)
 {{< /tab >}}
-{{< tab >}}
+{{< tab name="Intelligence Index" >}}
 !["A scatter plot with a fitted regression line showing the relationship between large language model size and an "intelligenceIndex" score. The x-axis is "intelligenceIndex score," ranging roughly from 5 to 50. The y-axis is "Total parameters (log scale)," ranging from about 1 billion to over 5 trillion parameters. Each model appears as a point, with circles representing actual parameter counts and triangles representing values predicted by the regression. Points are labeled with model names such as GPT-5, GPT-5 mini, Claude 4.5 Opus, Claude 4.5 Sonnet, Gemini 3 Pro Preview, Gemini 2.5 Pro, and GPT-5 nano. A straight regression line slopes upward, but the annotation reports a low fit quality (R² = 0.07), indicating that intelligenceIndex explains little of the variance in total parameters. Many gray points are widely scattered vertically, showing large differences in parameter counts for similar intelligenceIndex scores. A color scale labeled "Abs. Error (log10)" indicates prediction error magnitude, with warmer colors showing larger errors. Overall, the chart emphasizes that intelligenceIndex is a weak predictor of total model size."](images/intelligence_index.png)
 {{< /tab >}}
 
