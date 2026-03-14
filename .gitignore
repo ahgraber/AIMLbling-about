@@ -10,6 +10,7 @@
 # Editors
 .vscode/
 *.profraw
+CLAUDE.md
 
 # Trash
 .DS_Store
