@@ -7,9 +7,19 @@ In which I organize my thoughts about LLMs, Generative AI, cool papers from arxi
 This blog is built with [Hugo](https://gohugo.io/) using the [Hextra](https://imfing.github.io/hextra/) theme.
 `hugo` and its prerequisites `git`, `go` and `dart-sass` are required.
 
-I also use [Task](https://taskfile.dev/) to define standard tasks (see ./Taskfile.yaml and ./.taskfiles/hugo/taskfile.yaml),
-such as automatically creating a new branch per post for drafting (`task: hugo:new title="<title>"`),
-and publishing posts when ready (`task hugo:publish path="<relative path to index.md>"`).
+### First-time setup
+
+Hugo fetches private modules (e.g. `ai-treadmill`) via HTTPS.
+GitHub credentials must be available to `git` for this to work.
+Authenticate with the GitHub CLI and store credentials in the system keychain:
+
+```sh
+gh auth login --git-protocol https --web
+```
+
+I also use [just](https://github.com/casey/just) to define standard tasks (see ./justfile and ./hugo/justfile),
+such as automatically creating a new branch per post for drafting (`just hugo new "<title>"`),
+and publishing posts when ready (`just hugo publish "<relative path to index.md>"`).
 
 ## Drafting new posts
 

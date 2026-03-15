@@ -1,4 +1,5 @@
 set shell := ['bash', '-euo', 'pipefail', '-c']
+set dotenv-path := "../.env" # root_dir + "/.env"
 
 root_dir := shell('git -C "' + justfile_directory() + '" rev-parse --show-toplevel')
 hugo_dir := root_dir + "/hugo"
