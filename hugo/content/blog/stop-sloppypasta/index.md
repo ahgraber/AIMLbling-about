@@ -16,7 +16,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 LinkedIn is rife with the drive-by copy-paste of raw LLM output, and the trend has bled into Discord, Reddit, and other online forums, work chats, and emails.
