@@ -6,14 +6,57 @@ root_dir := shell('git -C "' + justfile_directory() + '" rev-parse --show-toplev
 default:
     just --list
 
-[doc('Strip metadata but leave outputs (ex. just jupyter:strip ipynb=./experiments/ragas/cost_analysis.ipynb)')]
+[doc('Create a new experiment')]
+new name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    dir="{{root_dir}}/experiments/{{name}}"
+    if [[ -d "$dir" ]]; then
+      echo "Error: experiments/{{name}} already exists" >&2
+      exit 1
+    fi
+    mkdir -p "$dir"
+    cat > "$dir/pyproject.toml" <<PYPROJECT
+    [project]
+    name = "{{name}}"
+    version = "0.0.1"
+    description = ""
+    requires-python = ">=3.10, <3.14"
+    dependencies = ["aiml[ds,plot]"]
+
+    [tool.basedpyright]
+    exclude = ["**/node_modules", "**/__pycache__", "**/*_cache"]
+    reportMissingImports = "error"
+    reportMissingTypeStubs = false
+    PYPROJECT
+    echo "# {{name}}" > "$dir/README.md"
+    echo "Created experiments/{{name}}/"
+    echo "  → Edit pyproject.toml to add experiment-specific dependencies"
+    echo "  → Run 'uv lock && just experiments sync {{name}}' to set up"
+
+[doc('List available experiments')]
+list:
+    @ls -1d {{root_dir}}/experiments/*/pyproject.toml | sed 's|.*/experiments/||;s|/pyproject.toml||'
+
+[doc('Sync an experiment environment')]
+sync name=`ls -1d "$(git rev-parse --show-toplevel)"/experiments/*/pyproject.toml | sed 's|.*/experiments/||;s|/pyproject.toml||' | fzf --prompt="experiment> "`:
+    uv sync --package {{name}}
+
+[doc('Run a command in an experiment context')]
+run name=`ls -1d "$(git rev-parse --show-toplevel)"/experiments/*/pyproject.toml | sed 's|.*/experiments/||;s|/pyproject.toml||' | fzf --prompt="experiment> "` *args:
+    uv run --package {{name}} {{args}}
+
+[doc('Upgrade workspace dependencies and re-lock')]
+upgrade:
+    uv lock --upgrade
+    @echo "Lock updated. Run 'just experiments sync <name>' to install."
+
+[doc('Run tests for an experiment')]
+test name=`ls -1d "$(git rev-parse --show-toplevel)"/experiments/*/pyproject.toml | sed 's|.*/experiments/||;s|/pyproject.toml||' | fzf --prompt="experiment> "` *args:
+    uv run --package {{name}} pytest {{args}}
+
+[doc('Strip metadata but leave outputs (ex. just experiments strip ipynb=./experiments/ragas/cost_analysis.ipynb)')]
 strip ipynb:
     @command -v nbstripout >/dev/null || { echo "'nbstripout' not found (run 'pipx install nbstripout')"; exit 1; }
     [[ -f "{{ipynb}}" ]] || { echo "ipynb not found"; exit 1; }
     nbstripout "{{ipynb}}" --keep-output
-
-
-# doc('strip metadata from all .ipynb files in dir')
-# strip-all:
-#     @command -v nbstripout >/dev/null || { echo "'nbstripout' not found (run 'pipx install nbstripout')"; exit 1; }
-#     find . -name '*.ipynb' -exec nbstripout {} +

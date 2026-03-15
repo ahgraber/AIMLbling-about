@@ -15,7 +15,7 @@ It contains two major areas:
 
 ```text
 .
-├── AGENTS.md             # This file — repo guidelines for AI agents
+├── AGENTS.md/CLAUDE.md   # This file — repo guidelines for AI agents
 ├── flake.nix             # Nix flake providing Hugo dev environment
 ├── justfile              # Top-level just recipes (task runner)
 ├── pyproject.toml        # Root Python project config (uv workspace root)
@@ -34,7 +34,7 @@ It contains two major areas:
 │   ├── public/           # Generated static site (build output)
 │   └── themes/           # Hugo themes
 └── experiments/          # Python experiments (each is a discrete project)
-    ├── justfile          # Jupyter just module
+    ├── justfile          # Experiments just module
     ├── aiml/             # Shared utilities package used by other experiments
     ├── bitter-lesson/    # Bitter lesson analysis
     ├── fractals/         # Fractal drawing
@@ -99,7 +99,7 @@ just --list
 
 # List recipes in a module
 just hugo --list
-just jupyter --list
+just experiments --list
 ```
 
 ### Key Recipes
@@ -117,11 +117,17 @@ just jupyter --list
 | `just hugo treadmill`          | Update treadmill Hugo module data                            |
 | `just hugo catchup`            | Rebase feature branch onto main                              |
 
-#### Jupyter recipes (`just jupyter <recipe>`)
+#### Experiment recipes (`just experiments <recipe>`)
 
-| Recipe                           | Description                              |
-| -------------------------------- | ---------------------------------------- |
-| `just jupyter strip ipynb="..."` | Strip notebook metadata, keeping outputs |
+| Recipe                               | Description                              |
+| ------------------------------------ | ---------------------------------------- |
+| `just experiments new <name>`        | Scaffold a new experiment                |
+| `just experiments list`              | List available experiments               |
+| `just experiments sync <name>`       | Sync an experiment's environment         |
+| `just experiments run <name> <cmd>`  | Run a command in an experiment context   |
+| `just experiments upgrade`           | Upgrade workspace deps and re-lock       |
+| `just experiments test <name>`       | Run tests for an experiment              |
+| `just experiments strip ipynb="..."` | Strip notebook metadata, keeping outputs |
 
 #### Root recipes
 
@@ -142,31 +148,42 @@ nix develop -c hugo server -D --disableFastRender -s hugo
 ## Python Environment
 
 - **Package manager**: `uv` (defined in `pyproject.toml`).
-- **Root project**: The root `pyproject.toml` defines the workspace; the base package is `experiments/aiml/`.
-- **Experiments**: Each experiment directory under `experiments/` is a discrete project with its own `pyproject.toml` and dependencies.
+- **Workspace**: The root `pyproject.toml` defines a uv workspace with all experiments as members.
+  A single `uv.lock` at the root resolves dependencies for all workspace members.
+- **Shared package**: `experiments/aiml/` provides shared utilities and optional dependency groups (ds, plot, nlp, torch, etc.) used by experiments.
+- **Excluded member**: `experiments/language-identification/` is excluded from the workspace due to conflicting constraints (`numpy<2`).
+  It has its own `uv.lock` and is managed independently.
 
-### Activating the Default Environment
+### Syncing an Experiment
 
 ```bash
-# Sync and activate from repo root (installs the default aiml package)
+# Sync a specific experiment (preferred)
+just experiments sync <name>
+
+# Or equivalently:
+uv sync --package <name>
+
+# Sync the default (aiml) environment
 uv sync
 ```
 
-### Working with a Specific Experiment
+### Running Commands in an Experiment Context
 
 ```bash
-# Sync a specific experiment's environment
-uv sync --project experiments/<dirname>
+# Run a command in an experiment's environment
+just experiments run <name> python <script.py>
+
+# Or equivalently:
+uv run --package <name> python <script.py>
 ```
 
-### Running Python
-
-Always activate the `uv`-managed environment before running Python:
+### Working with the Excluded Member
 
 ```bash
+# language-identification is managed independently
+cd experiments/language-identification
+uv sync
 uv run python <script.py>
-# or
-uv run pytest
 ```
 
 Do not install packages manually — if a required package is unavailable, alert the user.
