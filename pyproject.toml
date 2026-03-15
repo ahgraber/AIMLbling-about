@@ -4,7 +4,7 @@ name = "aimlbling-about"
 version = "v0.beta"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10, <3.14"
 dependencies = [
   "aiml[ds,db,plot]", # default venv
 ]
@@ -26,18 +26,12 @@ package = false
 default-groups = ["dev", "test"]
 python-preference = "managed"
 
-# NOTE: Do not use workspaces b/c of conflicts between workspace dependencies
-#[tool.uv.workspace]
-#members = ["./experiments/*"]
-#exclude = ["./docs", "./hugo", "./experiments/aiml", "./experiments/language-detection"]
+[tool.uv.workspace]
+members = ["experiments/*"]
+exclude = ["experiments/language-identification"]
 
 [tool.uv.sources]
-#aiml = { workspace = true }
-aiml = { path = "./experiments/aiml" }
-# language-detection = { path = "./experiments/language-detection" }
-# ragas-experiment = { path = "./experiments/ragas-experiment" }
-# sk-rant = { path = "./experiments/sk-rant" }
-# typos-experiment = { path = "./experiments/typos-experiment" }
+aiml = { workspace = true }
 
 python-type-stubs = { git = "https://github.com/microsoft/python-type-stubs" }
 

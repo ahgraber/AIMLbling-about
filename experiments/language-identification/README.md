@@ -7,11 +7,11 @@ What are the best (most accurate, fastest) alternatives that are still being act
 
 ## Experiment
 
-> The experiment must be run from the local experiment folder, not the repository root!
-> This is because the environment is unique from other experiments and does not use the same dependencies.
+> This experiment is **excluded** from the uv workspace because `fasttext` (archived) pins `numpy<2`, which would constrain the entire workspace.
+> It has its own `uv.lock` and must be synced independently:
 >
 > ```sh
-> cd ./experiments/language-detection
+> cd experiments/language-identification
 > uv sync
 > ```
 
