@@ -34,5 +34,12 @@
       matchManagers: ["pep621", "pip_requirements", "pip_setup", "pyenv", "setup-cfg"],
       enabled: false,
     },
+    // Homebrew/actions has no semver releases and uses a branch (@master);
+    // pinning its digest requires a cross-org GraphQL call that fails with App tokens
+    {
+      description: ["Skip digest pinning for Homebrew/actions"],
+      matchDepNames: ["Homebrew/actions"],
+      pinDigests: false,
+    },
   ],
 }
