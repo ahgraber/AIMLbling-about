@@ -25,6 +25,7 @@ Repository = "https://github.com/ahgraber/AIMLbling-about"
 package = false
 default-groups = ["dev", "test"]
 python-preference = "managed"
+exclude-newer = "3 days"
 
 [tool.uv.workspace]
 members = ["experiments/*"]

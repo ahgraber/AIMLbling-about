@@ -141,6 +141,7 @@ playwright = ["playwright>=1.44.0"]
 [tool.uv]
 package = true
 default-groups = ["dev", "test"]
+exclude-newer = "3 days"
 
 [tool.uv.sources]
 microsoft-python-type-stubs = { git = "https://github.com/microsoft/python-type-stubs" }

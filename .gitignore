@@ -1,5 +1,14 @@
 # gitignore
 
+# git
+.worktrees/
+
+# dot-directories, unless explicitly kept
+.*/
+!.github/
+!.specs/
+!.renovate/
+
 # hugo files
 /hugo/assets/jsconfig.json
 /hugo/public/
