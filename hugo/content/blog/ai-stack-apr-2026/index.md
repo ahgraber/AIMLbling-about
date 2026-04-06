@@ -24,10 +24,16 @@ draft: false
 ---
 
 AI tools change fast.
-This post is intended to snapshot how I use AI today and provide some context for how I arrived here (_This narration is from memory, so the trajectory is right, though the dates may not be_).
+This post is intended to snapshot how I use AI today and provide some context for how I arrived here.
 I do not anticipate keeping this post up-to-date, though I may revisit the idea with update posts in the future.
 
 {{< details title="Three years of history" >}}
+
+> [!TIP]
+> Feel free to collapse this historic context if you just want to get to the tools and way of working!
+
+> [!NOTE]
+> This narration is from memory, so the trajectory is right, though the dates may not be.
 
 I distinctly remember being quite dubious when ChatGPT launched, and I think I've carried that "doubt, but verify" perspective through my adoption of AI tools.
 The first AI-backed tool I remember finding useful was phind.com (now defunct; here's an old [Product Hunt](https://www.producthunt.com/products/phind-com-ai-search-engine) reference).
@@ -42,10 +48,12 @@ It wasn't until late 2024 that I found utility in using Copilot-style assistants
 
 2025 is when AI got good enough that I was willing to pay for it.
 By May, I found using Copilot at work had enough utility that I broke down and bought myself a subscription for personal projects.
-I missed the early Claude Code boat - I didn't want to pay for a subscription on top of Copilot, and pay-per-use via the API proved heinously expensive (I tried it exactly once).
-I started an OpenAI subscription in September of 2025 - initially for Deep Research, then for web-search backed chats.
-Like many others, I experienced a step-change in model capabilities when GPT-5.2 and Opus 4.5 were released ([The November 2025 inflection point](https://simonwillison.net/2026/Jan/4/inflection/)), and OpenAI's Codex CLI and VSCode extension changed the way I worked on personal projects - I delegated more and more and wrote less and less.
-Earlier this year, I swapped my OpenAI subscription to Anthropic (before the [#QuitGPT](https://quitgpt.org/) campaign, but for similar reasons - don't `@` me).
+I skipped the early Claude Code boat.
+I didn't want to pay for a subscription on top of Copilot, and pay-per-use via the API proved heinously expensive (I tried it exactly once).
+I started an OpenAI subscription in September of 2025 -- initially for Deep Research, then for web-search backed chats.
+Like many others, I experienced a step-change in model capabilities when GPT-5.2 and Opus 4.5 were released ([The November 2025 inflection point](https://simonwillison.net/2026/Jan/4/inflection/)), and OpenAI's Codex CLI and VSCode extension changed the way I worked on personal projects: I delegated more and more and wrote less and less.
+Earlier this year, I swapped my OpenAI subscription to Anthropic (before the [#QuitGPT](https://quitgpt.org/) campaign, but for similar reasons.
+_Don't `@` me_).
 I've found Claude Opus/Sonnet 4.6 to be similarly performant to GPT-5.3-codex or GPT-5.4.
 However, OpenAI are (or at least, were) _considerably_ more generous with what you could get done on their $20/month subscription tier, which means their subscription provides more "intelligence per dollar".
 
@@ -74,8 +82,8 @@ I've also ~~ripped off~~ incorporated several of Jesse Vincent's ideas in some o
 While I prefer to unify my configuration when possible, I do use some tool-specific customizations!
 I've customized my Claude Code setup with an eye on having a more secure sandbox by default, primarily using Claude hooks ([How I Use AI (Apr 2026) - Hooks](https://gist.github.com/ahgraber/2efa040f9ba8d15a6e0da7712105dbf3)).
 And I have retained some Github Copilot prompts ([How I Use AI (Apr 2026) - Prompts](https://gist.github.com/ahgraber/48140ba2396b87dafc6ed474ab47c779)) for quick, in-IDE proofreading and refining of markdown prose.
-I also have a standard instruction for generating alt-text.
-I do a lot of writing in VSCode, and these make it really quick to gut-check my grammar and rubber-duck whether my writing is coherent or has leaps in logic.
+I also use a standard prompt for generating alt-text.
+I do a lot of writing in VSCode, and prompts make it really quick to gut-check my grammar and rubber-duck whether my writing is coherent or has leaps in logic.
 
 ## Using AI
 
@@ -103,7 +111,7 @@ I do allow LLMs to write my tests (though I fully understand why this is controv
 I stay tighter in-the-loop in this part of the process, and I've started to leverage fuzzing tests more to hopefully make it more difficult for the LLMs to write _passing_ tests instead of _effective_ tests.
 I will also swap model families between code implementation and test implementation within the same SDD workflow (Claude implements, GPT tests).
 
-> [!TIP]
+> [!IMPORTANT]
 > Important instructions during test generation:
 >
 > - Do not change source code, you are only writing tests.
