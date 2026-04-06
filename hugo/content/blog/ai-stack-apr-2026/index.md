@@ -1,6 +1,6 @@
 ---
 title: How I Use AI (Apr, 2026)
-date: 2026-04-02T12:40:21-04:00
+date: 2026-04-05
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -20,7 +20,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 AI tools change fast.
