@@ -174,6 +174,16 @@ We can only try to use AI less, use the smallest models capable of completing yo
 
 Some anecdotes from my experience in building AI products (both professional and personal):
 
+<!-- markdownlint-disable MD013 MD033 MD034 -->
+
+{{< figure
+src="images/opinion.gif"
+alt=`The Dude from The Big Lebowski shrugging and saying "That's just like... your opinion, man"`
+caption="That's just like... your opinion, man (via giphy)"
+link="https://giphy.com/gifs/thegoodfilms-film-the-big-lebowski-dude-MPuTZQqOmYKPK" >}}
+
+<!-- markdownlint-enable MD013 MD033 MD034 -->
+
 ### Frustrations with Inference APIs
 
 The lack of a singular, standard inference API spec is hugely frustrating.
