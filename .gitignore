@@ -1,64 +1,86 @@
-# gitignore
-
-# git
-.worktrees/
-
-# dot-directories, unless explicitly kept
+# -------------------------------------------------------
+# Dot-directories: ignore all, allowlist what we track
+# -------------------------------------------------------
 .*/
 !.claude/
 !.github/
 !.specs/
 !.renovate/
 
-# hugo files
+# -------------------------------------------------------
+# OS
+# -------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------------------------------------
+# Secrets & environment
+# -------------------------------------------------------
+.env
+.envrc
+*.pem
+*.key
+*.pgp
+.decrypted~*
+
+# -------------------------------------------------------
+# AI tooling (local/personal files only)
+# -------------------------------------------------------
+CLAUDE.md
+CLAUDE.local.md
+.claude/settings.local.json
+docs/superpowers/
+
+# -------------------------------------------------------
+# Python
+# -------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.coverage
+.coverage.*
+
+# -------------------------------------------------------
+# Dependencies & build output
+# -------------------------------------------------------
+node_modules/
+build/
+dist/
+site/
+**/cache/
+
+# -------------------------------------------------------
+# Temp, logs, & working files
+# -------------------------------------------------------
+*.bak
+*.log
+.temp*
+.task/
+
+# -------------------------------------------------------
+# Repo-specific
+# -------------------------------------------------------
+.worktrees/
+*.*key
+*.pub
+.config.env
 /hugo/assets/jsconfig.json
 /hugo/public/
 /hugo/resources/
 /hugo/.hugo_build.lock
 /hugo/hugo_stats.json
-
-# Editors
-.vscode/
-*.profraw
-CLAUDE.md
-
-# Trash
-.DS_Store
-Thumbs.db
-
-# secrets
-*.*key
-*.pem
-*.pgp
-*.pub
-.config.env
-.decrypted~*
-# .decrypted~*.yaml
-.env
-.envrc
-
-# temp / working files & dirs
-*.bak
 *.iso
-*.log
 *.old
 *.zip
-.direnv/
 .logs/
-.task/
-.temp*
 TODO.md
-
-#extras
-.venv
-*pytest*
-*cache*
-node_modules/
-
-# ai
-docs/superpowers
 settings.local.json
+*.profraw
 
-# retain files
+# -------------------------------------------------------
+# Retain (must be last — negations override above)
+# -------------------------------------------------------
 !.gitkeep
 !.gitignore
+!.env.example
+!.env.sample
