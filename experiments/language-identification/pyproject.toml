@@ -20,6 +20,11 @@ dev = ["aiml[dev]"]
 lint = ["aiml[lint]"]
 test = ["aiml[test]"]
 
+[tool.uv]
+python-preference = "managed"
+exclude-newer = "3 days"
+exclude-newer-package = { torch = false, torchvision = false }
+
 [tool.uv.sources]
 aiml = { path = "../aiml", editable = true }
 
