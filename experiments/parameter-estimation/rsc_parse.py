@@ -165,6 +165,27 @@ def _key_tree(value: Any) -> Any:
     return type(value).__name__
 
 
+_MODEL_ARRAY_ANCHORS = ('"models":', '"data":', '"defaultData":')
+
+
+def _iter_model_records(payload: str) -> Iterable[dict[str, Any]]:
+    """Yield every model-shaped record across the supported anchor keys.
+
+    AA's older RSC payloads kept per-model metrics inside ``models[]``; the
+    current App Router pages put the same records under ``data[]`` (the
+    full table) and ``defaultData[]`` (top-N filtered subsets), with
+    snake_case field names rather than camelCase. We scan all anchors and
+    yield every record — extract_metric_points handles deduplication by
+    (model_name, metric value), so caller code can keep the first entry
+    that carries a non-null value.
+    """
+    for anchor in _MODEL_ARRAY_ANCHORS:
+        for arr in _extract_json_arrays(payload, anchor):
+            for model in arr:
+                if isinstance(model, dict):
+                    yield model
+
+
 def extract_model_key_tree(payloads: Iterable[str]) -> dict[str, Any]:
     """Build a merged key tree for model objects from RSC payloads.
 
@@ -176,11 +197,8 @@ def extract_model_key_tree(payloads: Iterable[str]) -> dict[str, Any]:
     """
     merged: dict[str, Any] = {}
     for payload in payloads:
-        for models in _extract_json_arrays(payload, '"models":'):
-            for model in models:
-                if not isinstance(model, dict):
-                    continue
-                _merge_key_tree(merged, _key_tree(model))
+        for model in _iter_model_records(payload):
+            _merge_key_tree(merged, _key_tree(model))
     return merged
 
 
@@ -197,17 +215,19 @@ def extract_metric_points(payloads: Iterable[str], metric_path: str) -> list[tup
     """
     points: list[tuple[str, float, dict[str, Any]]] = []
     for payload in payloads:
-        for models in _extract_json_arrays(payload, '"models":'):
-            for model in models:
-                if not isinstance(model, dict):
-                    continue
-                value = get_path(model, metric_path)
-                if not isinstance(value, (int, float)):
-                    continue
-                name = model.get("short_name") or model.get("name") or model.get("slug")
-                if not isinstance(name, str):
-                    continue
-                points.append((name, float(value), model))
+        for model in _iter_model_records(payload):
+            value = get_path(model, metric_path)
+            if not isinstance(value, (int, float)):
+                continue
+            name = (
+                model.get("shortName")
+                or model.get("short_name")
+                or model.get("name")
+                or model.get("slug")
+            )
+            if not isinstance(name, str):
+                continue
+            points.append((name, float(value), model))
     deduped: dict[str, tuple[str, float, dict[str, Any]]] = {}
     for name, value, raw in points:
         key = normalize_name(name)
@@ -240,18 +260,78 @@ def parse_metrics(values: list[str]) -> list[tuple[str, str]]:
     return parsed
 
 
+_NEXT_F_MARKER = "self.__next_f.push(["
+
+
+def _decode_next_f_chunks(text: str) -> str:
+    """Pull RSC payload out of inline ``self.__next_f.push([N, "..."])`` calls.
+
+    AA's App Router streams its server-component data inside ``__next_f.push``
+    JS calls in the page HTML. Each call's second argument is a JSON-escaped
+    string carrying one chunk of the payload. We concatenate the decoded
+    chunks so the existing array-extraction logic can run on plain text.
+
+    If the document does not contain any ``__next_f.push`` calls, returns the
+    text unchanged so legacy ``_rsc=`` payloads keep working.
+
+    Args:
+        text: Raw payload text (HTML for App Router pages, raw RSC otherwise).
+
+    Returns:
+        Concatenated decoded chunks, or the original text if none were found.
+    """
+    if _NEXT_F_MARKER not in text:
+        return text
+
+    decoded: list[str] = []
+    pos = 0
+    while True:
+        anchor = text.find(_NEXT_F_MARKER, pos)
+        if anchor == -1:
+            break
+        # Skip past the array prefix and the leading numeric tag, e.g. ``1,``.
+        cursor = anchor + len(_NEXT_F_MARKER)
+        comma = text.find(",", cursor)
+        if comma == -1:
+            break
+        # Find the JSON string that follows the comma.
+        quote_start = text.find('"', comma)
+        if quote_start == -1:
+            break
+        # Walk to the closing quote, respecting JSON-style backslash escapes.
+        i = quote_start + 1
+        while i < len(text):
+            ch = text[i]
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == '"':
+                break
+            i += 1
+        if i >= len(text):
+            break
+        literal = text[quote_start : i + 1]
+        try:
+            decoded.append(json.loads(literal))
+        except json.JSONDecodeError:
+            pass
+        pos = i + 1
+
+    return "".join(decoded) if decoded else text
+
+
 def load_payloads(paths: Iterable[Path]) -> list[str]:
-    """Read RSC payload files.
+    """Read RSC payload files and decode any inline ``__next_f.push`` chunks.
 
     Args:
         paths: Paths to RSC payload text files.
 
     Returns:
-        File contents in input order.
+        Decoded payload text per input path.
     """
     payloads: list[str] = []
     for path in paths:
-        payloads.append(path.read_text(encoding="utf-8"))
+        payloads.append(_decode_next_f_chunks(path.read_text(encoding="utf-8")))
     return payloads
 
 
