@@ -1,7 +1,10 @@
 # %%
 import logging
 from pathlib import Path
+import sys
 from typing import Literal
+
+import cloudpickle
 
 import numpy as np
 import pandas as pd
@@ -26,6 +29,8 @@ logger.setLevel(logging.DEBUG)
 REPO_DIR = get_repo_path(Path.cwd())
 LOCAL_DIR = REPO_DIR / "experiments" / "parameter-estimation"
 DATA_DIR = LOCAL_DIR / "data"
+MODELS_DIR = LOCAL_DIR / "models"
+PERSISTED_SPECS = ("mmlu_pro", "intelligenceIndex")
 
 # %%
 # convert params from string to numeric
@@ -177,6 +182,14 @@ print(df.head(10).to_markdown())
 
 
 # %%
+def _inv_log10(vals):
+    """Inverse of log10 for the regressor target transform.
+
+    Defined at module scope so fitted models can be pickled with joblib.
+    """
+    return np.power(10.0, vals)
+
+
 def _build_lm() -> TransformedTargetRegressor:
     lm = LinearRegression(positive=True)
     pipeline = Pipeline(
@@ -188,7 +201,7 @@ def _build_lm() -> TransformedTargetRegressor:
     return TransformedTargetRegressor(
         regressor=pipeline,
         func=np.log10,
-        inverse_func=lambda vals: np.power(10.0, vals),
+        inverse_func=_inv_log10,
         check_inverse=False,
     )
 
@@ -570,9 +583,9 @@ metrics_tall["metric"] = pd.Categorical(
     ordered=True,
 )
 metrics_tall["value_label"] = metrics_tall.apply(
-    lambda row: f"{row['value']:.2f}"
-    if row["metric"] == "r2_mean"
-    else (format_param_value(row["value"], decimals=2) or ""),
+    lambda row: (
+        f"{row['value']:.2f}" if row["metric"] == "r2_mean" else (format_param_value(row["value"], decimals=2) or "")
+    ),
     axis=1,
 )
 label_offset_fraction = 0.05
@@ -644,11 +657,44 @@ for spec_name in top3:
     fitted_models[spec_name] = model
 
 # %%
+# Persist regression models trained on stable benchmarks (mmlu_pro is no longer
+# updated by Artificial Analysis; intelligenceIndex still is) so they can be
+# loaded and reused without rerunning the full pipeline.
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
+for spec_name in PERSISTED_SPECS:
+    model = fitted_models.get(spec_name)
+    if model is None:
+        logger.warning("No fitted model for %s; skipping persistence.", spec_name)
+        continue
+    feature_cols = model_specs[spec_name]["feature_cols"]
+    n_train = df[feature_cols + [target_col]].dropna().shape[0]
+    artifact = {
+        "model": model,
+        "feature_cols": feature_cols,
+        "target_col": target_col,
+        "n_train": int(n_train),
+        "r2_mean": float(metrics_df.loc[spec_name, "r2_mean"]),
+        "mae_mean": float(metrics_df.loc[spec_name, "mae_mean"]),
+        "rmse_mean": float(metrics_df.loc[spec_name, "rmse_mean"]),
+    }
+    # cloudpickle serializes the inverse-transform function by value, so the
+    # artifact can be loaded without re-importing this script as ``__main__``.
+    artifact_path = MODELS_DIR / f"{spec_name}.pkl"
+    cloudpickle.register_pickle_by_value(sys.modules[__name__])
+    try:
+        with artifact_path.open("wb") as fh:
+            cloudpickle.dump(artifact, fh)
+    finally:
+        cloudpickle.unregister_pickle_by_value(sys.modules[__name__])
+    logger.info("Saved %s regression model to %s (n_train=%d)", spec_name, artifact_path, n_train)
+
+# %%
 LLMS = [
     "Claude 3.7 Sonnet",
     "Claude 4.5 Haiku",
     "Claude 4.5 Sonnet",
     "Claude Opus 4.5",
+    "Claude Opus 4.7",
     "Gemini 2.5 Flash",
     "Gemini 2.5 Pro",
     "Gemini 3 Flash",
@@ -660,6 +706,10 @@ LLMS = [
     "GPT-5 nano",
     "GPT-5.1",
     "GPT-5.2",
+    "GPT-5.5",
+    "Muse Spark",
+    "Qwen3.6 Max Preview",
+    "Qwen3.6 Plus",
 ]
 
 prediction_rows = []

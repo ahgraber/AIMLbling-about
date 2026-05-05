@@ -2,9 +2,9 @@
 """Fetch Next.js RSC payloads for a URL and write them to a text file.
 
 Usage:
-    uv run python experiments/parameter-estimation/rsc_fetch.py \
-        --url <URL> \
-        --output-dir "experiments/parameter-estimation/data/"
+uv run python experiments/parameter-estimation/rsc_fetch.py \
+--url <URL> \
+--output-dir "experiments/parameter-estimation/data/"
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ from aiml.utils import ensure_playwright_chromium
 
 # %%
 RSC_QUERY_MARKER = "_rsc="
+RSC_CONTENT_TYPES = ("text/x-component",)
 DEFAULT_TIMEOUT_MS = 60000
 
 
@@ -41,6 +42,23 @@ def _default_output_path(url: str, output_dir: Path) -> Path:
 
 
 # %%
+def _is_rsc_response(response) -> bool:
+    """Decide whether a response carries Next.js RSC data.
+
+    The App Router emits RSC content in three places:
+    - the navigation document itself (server-rendered HTML with inline
+      ``self.__next_f.push(...)`` chunks);
+    - subsequent ``?_rsc=`` requests when navigating client-side;
+    - direct ``text/x-component`` responses.
+    """
+    if RSC_QUERY_MARKER in response.url:
+        return True
+    if response.request.resource_type == "document":
+        return True
+    ctype = response.headers.get("content-type", "")
+    return any(ct in ctype for ct in RSC_CONTENT_TYPES)
+
+
 async def fetch_rsc_payloads(url: str, timeout_ms: int = DEFAULT_TIMEOUT_MS) -> list[str]:
     """Open a page and capture Next.js RSC responses.
 
@@ -58,13 +76,13 @@ async def fetch_rsc_payloads(url: str, timeout_ms: int = DEFAULT_TIMEOUT_MS) -> 
         tasks: list[asyncio.Task] = []
 
         def handle_response(response) -> None:
-            if RSC_QUERY_MARKER in response.url:
+            if _is_rsc_response(response):
                 tasks.append(asyncio.create_task(response.text()))
 
         page.on("response", handle_response)
         await page.goto(url, wait_until="networkidle", timeout=timeout_ms)
         try:
-            await page.wait_for_response(lambda response: RSC_QUERY_MARKER in response.url, timeout=timeout_ms)
+            await page.wait_for_response(_is_rsc_response, timeout=timeout_ms)
         except Exception:
             pass
         await page.wait_for_timeout(2000)
