@@ -65,6 +65,12 @@ _It reflects not merely the use of external assistance, but a relinquishing of c
 
 ## Pushing Back
 
+{{< figure
+src="images/pexels-freestockpro-12955678.jpg"
+alt="A hand strategically stops falling blue and red domino blocks on a table."
+caption="Photo by Atlantic Ambience from Pexels"
+link="https://www.pexels.com/photo/hand-stopping-domino-effect-12955678/" >}}
+
 Software developers, among the first to embrace AI assistance broadly in their day-to-day work, have also been among the first to recognize the problem [^cognitive-debt-velocity-comprehension] [^agentic-trap] [^cognitive-debt].
 Reactions vary, from "don't use AI" [^don't-use] [^no-longer], to "use AI less" [^agentic-trap], and "use AI the right way" [^don't-outsource-learning].
 Research and anecdotes align: **Delegating tasks to AI without an _active intent to practice_ the underlying skill will degrade an individual's capability.**
