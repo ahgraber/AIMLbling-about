@@ -1,5 +1,5 @@
 # https://sko.ai/blog/how-to-actually-build-hugo-containers/
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26-alpine3.23@sha256:6a30987ea545740117fce6cc7bf03cf9e01eb78725eb5dc095255cda01bcbecd AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26-alpine3.23@sha256:622e56dbc11a8cfe87cafa2331e9a201877271cbff918af53d3be315f3da88cc AS build
 
 # Set shell options for safety
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
