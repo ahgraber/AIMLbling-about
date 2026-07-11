@@ -187,3 +187,7 @@ uv run python <script.py>
 ```
 
 Do not install packages manually — if a required package is unavailable, alert the user.
+
+- Comments and docstrings describe what exists now (or the rationale for the current design), never what the code used to be.
+  No "previously…", "no longer…", "changed from…", or "renamed from…" — that history belongs in commit messages and changelogs.
+  When editing, delete stale historical asides you encounter rather than preserving them.
