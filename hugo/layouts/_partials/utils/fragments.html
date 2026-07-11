@@ -1,0 +1,120 @@
+{{- /*
+  fragments.html - Split page content into searchable fragments
+
+  This partial processes a Hugo page and splits its content into fragments based on headings,
+  creating a data structure suitable for search indexing. It supports different fragment types
+  and handles hierarchical heading structures (h1, h2).
+
+  Parameters:
+  - .context (Page): The Hugo page to process
+  - .type (string): Fragment type - "content" (default), "heading", "title", or "summary"
+
+  Returns:
+  - dict: Map of heading keys to content fragments
+
+  Example:
+  Input page with content:
+    # Introduction
+    This is the intro text.
+    ## Setup
+    Setup instructions here.
+    # Configuration
+    Config details here.
+
+  Output (type "content"):
+  {
+    "": "This is the intro text.",
+    "intro#Introduction": "This is the intro text. Setup instructions here.",
+    "setup#Setup": "Setup instructions here.",
+    "config#Configuration": "Config details here."
+  }
+
+  Fragment types:
+  - "content": Splits page content by headings (default)
+  - "heading": Returns heading keys with empty content
+  - "title": Returns empty content (title handled elsewhere)
+  - "summary": Returns page summary only
+*/ -}}
+
+{{- /*
+  Site override of the Hextra "utils/fragments.html" partial.
+
+  The theme's "content" branch splits the rendered page HTML on
+  `<hN>Title</hN>`-style heading-title tokens. That fails whenever a heading
+  is itself a markdown link (rendered as `<hN><a href=...>Title</a>...</hN>`),
+  since the literal title text never appears as a bare token in the HTML. One
+  failed split cascades: the unsplit heading swallows all remaining content,
+  and every heading above it in the split order ends up with empty content.
+
+  This override instead splits on the permalink-span token that Hextra's
+  heading render hook emits into every level>1 heading:
+  `<span class="hx:absolute hx:-mt-20" id="HEADING-ID"></span>`. We match on
+  the literal substring `id="HEADING-ID"></span>`, which is invariant to
+  heading content (link or plain text) and unique per page since heading IDs
+  are unique per page. Level-1 headings have no such anchor span; when the
+  marker is absent, the heading is indexed with empty content instead of
+  incorrectly consuming content that belongs to headings above it.
+*/ -}}
+
+{{- /* Extract page context and fragment type */ -}}
+{{- $page := .context -}}
+{{- $type := .type | default "content" -}}
+
+{{- /* Process all headings */ -}}
+{{- $s := newScratch -}}
+{{- $s.Set "keys" slice -}}
+{{- $s.Set "titles" slice -}}
+
+{{- partial "utils/extract-headings.html" (dict "target" $page.Fragments "scratch" $s) -}}
+
+{{- $headingKeys := $s.Get "keys" -}}
+{{- $headingTitles := $s.Get "titles" -}}
+
+{{- $content := $page.Content | htmlUnescape -}}
+{{- $len := len $headingKeys -}}
+{{- $data := dict -}}
+
+{{ if eq $type "content" }}
+  {{/* Include full content of the page */}}
+  {{ if eq $len 0 }}
+    {{ $data = $data | merge (dict "" ($page.Plain | htmlUnescape | strings.TrimSpace)) }}
+  {{ else }}
+    {{/* Split the raw content from bottom to top */}}
+    {{ range seq $len }}
+      {{ $i := sub $len . }}
+      {{ $headingKey := index $headingKeys $i }}
+      {{ $headingTitle := index $headingTitles $i }}
+
+      {{ if eq $i 0 }}
+        {{ $data = $data | merge (dict $headingKey ($content | plainify | htmlUnescape | strings.TrimSpace)) }}
+      {{ else }}
+        {{ $headingID := index (split $headingKey "#") 0 }}
+        {{ $marker := printf `id="%s"></span>` $headingID }}
+        {{ if strings.Contains $content $marker }}
+          {{ $parts := split $content $marker }}
+          {{ $lastPart := index $parts (sub (len $parts) 1) }}
+
+          {{ $data = $data | merge (dict $headingKey ($lastPart | plainify | htmlUnescape | strings.TrimSpace)) }}
+          {{ $content = strings.TrimSuffix $lastPart $content }}
+          {{ $content = strings.TrimSuffix $marker $content }}
+        {{ else }}
+          {{/* Heading has no anchor span in the rendered HTML (e.g. level-1). Index it with empty content rather than consuming content that belongs to headings above it. */}}
+          {{ $data = $data | merge (dict $headingKey "") }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ else if (eq $type "heading" ) }}
+  {{/* Put heading keys with empty content to the data object */}}
+  {{ $data = dict "" "" }}
+  {{ range $headingKeys }}
+    {{ $data = $data | merge (dict . "") }}
+  {{ end }}
+{{ else if (eq $type "title") }}
+  {{/* Use empty data object since title is included in search-data.json */}}
+  {{ $data = $data | merge (dict "" "") }}
+{{ else if (eq $type "summary" ) }}
+  {{ $data = $data | merge (dict "" ($page.Summary | plainify | htmlUnescape | strings.TrimSpace)) }}
+{{ end }}
+
+{{ return $data }}
