@@ -7,7 +7,13 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, devshell, flake-utils, nixpkgs }:
+  outputs =
+    {
+      self,
+      devshell,
+      flake-utils,
+      nixpkgs,
+    }:
     flake-utils.lib.eachDefaultSystem (system: {
       devShells.default =
         let
@@ -33,9 +39,10 @@
           #     podman machine start       # boots it (exposes a Docker-compat socket)
           #
           # Lazy bring-up: on darwin `podman` is a PATH shim so the FIRST command that needs
-          # the VM ensures its API socket is live — (re)starting the machine when the socket
-          # is missing, or offering to `init` one when no machine exists. Nothing touches the
-          # VM merely by entering the shell. macOS reaps the socket from /tmp after ~3 days
+          # the VM ensures its API is healthy — (re)starting the machine when the socket is
+          # missing or unresponsive, or offering to `init` one when no machine exists.
+          # Nothing touches the VM merely by entering the shell. macOS reaps the socket
+          # from /tmp after ~3 days
           # (leaving the VM "running" but unreachable), so the shim checks the socket itself,
           # not just `podman machine` state. A PATH shim (not a shellHook function) so the
           # lazy bring-up works in any login shell — direnv exports env vars to zsh, but not
@@ -46,8 +53,25 @@
           podmanShim = pkgs.writeShellScriptBin "podman" ''
             # Pass machine management straight through (no ensure, no recursion).
             if [ "''${1:-}" = "machine" ]; then exec ${podmanReal} "$@"; fi
+            podman_ready() {
+              ${pkgs.coreutils}/bin/timeout 2 ${podmanReal} info >/dev/null 2>&1
+            }
+            wait_for_podman() {
+              deadline="$((SECONDS + 30))"
+              while ! podman_ready; do
+                if [ "$SECONDS" -ge "$deadline" ]; then
+                  echo "aimlbling: podman machine did not become ready within 30 seconds" >&2
+                  return 1
+                fi
+                sleep 1
+              done
+            }
             sock="$(${podmanReal} machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}' 2>/dev/null || true)"
-            if [ -z "$sock" ] || [ ! -S "$sock" ]; then
+            healthy=false
+            if [ -n "$sock" ] && [ -S "$sock" ] && podman_ready; then
+              healthy=true
+            fi
+            if [ "$healthy" != true ]; then
               state="$(${podmanReal} machine inspect --format '{{.State}}' 2>/dev/null || true)"
               if [ -z "$state" ]; then
                 # No machine at all: offer to create one (init downloads a VM image, one-time).
@@ -73,6 +97,7 @@
                 [ "$state" = "running" ] && ${podmanReal} machine stop >/dev/null 2>&1
                 ${podmanReal} machine start >/dev/null 2>&1 || { echo "aimlbling: 'podman machine start' failed" >&2; exit 1; }
               fi
+              wait_for_podman || exit 1
             fi
             exec ${podmanReal} "$@"
           '';

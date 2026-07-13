@@ -52,7 +52,7 @@ clean:
     hugo --gc -s "{{hugo_dir}}"
 
 
-[doc('Build site image with podman (multi-arch by default; override e.g. platforms="linux/arm64")')]
+[doc('Build site image with podman (multi-arch by default; override e.g. `just hugo build linux/arm64`)')]
 build platforms="linux/amd64,linux/arm64":
     @command -v podman >/dev/null || { echo "Podman not found"; exit 1; }
     "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}" "{{platforms}}"

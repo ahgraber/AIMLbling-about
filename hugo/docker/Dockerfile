@@ -4,16 +4,7 @@ FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26-alpine3.23@sha256:6
 # Set shell options for safety
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-# Add build-time ARGs
-ARG BUILD_DATE
-ARG VCS_REF
-
-# Add build-time labels
-LABEL org.opencontainers.image.source="https://github.com/ahgraber/aimlbling-about"
-LABEL org.opencontainers.image.description="Generate AIMLbling-About static site with Hugo"
-LABEL org.opencontainers.image.version="1.1.0"
-LABEL org.opencontainers.image.created="${BUILD_DATE}"
-LABEL org.opencontainers.image.revision="${VCS_REF}"
+ARG BUILDARCH
 
 RUN  apk add --no-cache \
       git \
@@ -25,8 +16,13 @@ RUN  apk add --no-cache \
 # Set Dart Sass version
 ENV DART_SASS_VERSION=1.86.3
 
-# Download and install Dart Sass binary
-RUN curl -sSL https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64-musl.tar.gz \
+# Download the Dart Sass binary for the architecture that executes this build stage.
+RUN case "${BUILDARCH}" in \
+      amd64) sass_arch="x64" ;; \
+      arm64) sass_arch="arm64" ;; \
+      *) echo "unsupported build architecture for Dart Sass: ${BUILDARCH}" >&2; exit 1 ;; \
+    esac && \
+    curl -sSL https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-${sass_arch}-musl.tar.gz \
     | tar -xz -C /usr/local/bin --strip-components=1
 
 WORKDIR /src
