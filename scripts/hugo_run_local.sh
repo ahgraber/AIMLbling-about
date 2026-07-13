@@ -23,4 +23,4 @@ awk '/if \(\$forwarded_proto != '\''https'\''\) \{/ { skip=1; next } skip && /^[
 
 echo "Access site at http://127.0.0.1"
 echo "Press Ctrl+C to stop the container."
-docker run --rm -p 80:80 -v "${local_conf}:/etc/nginx/conf.d/default.conf:ro" "${image}"
+podman run --rm -p 80:80 -v "${local_conf}:/etc/nginx/conf.d/default.conf:ro" "${image}"
