@@ -14,7 +14,7 @@ def test_local_recipe_builds_corpus_then_gates_and_exports_served_artifacts() ->
     export = recipe.index("python -m site_search.build_index")
     assert first_hugo < gate < export
     assert '--search-data "{{hugo_dir}}/public/en.search-data.json"' in recipe
-    assert '--out "{{hugo_dir}}/static/search"' in recipe
+    assert '--out "{{hugo_dir}}/assets/search"' in recipe
     assert "Run `just hugo search-index` before `just hugo demo`" in justfile
 
 
@@ -27,7 +27,10 @@ def test_container_rebuilds_artifacts_from_its_first_hugo_pass_before_final_rend
     assert "COPY site-search/src ./site-search/src" in dockerfile
     assert "uv sync --frozen --package site-search --no-default-groups" in dockerfile
     copy_hugo = dockerfile.index("COPY hugo ./hugo")
-    clean = dockerfile.index("rm -rf ./hugo/public ./hugo/static/search")
+    # The clean sweeps the current artifact location (assets/search) and the
+    # pre-migration one (static/search), so a developer's stale plain-named
+    # artifacts from either can never survive the COPY into the shipped image.
+    clean = dockerfile.index("rm -rf ./hugo/public ./hugo/assets/search ./hugo/static/search")
     first_hugo = dockerfile.index("hugo -s ./hugo")
     gate = dockerfile.index("python -m site_search.gate")
     export = dockerfile.index("python -m site_search.build_index")
@@ -39,7 +42,7 @@ def test_container_rebuilds_artifacts_from_its_first_hugo_pass_before_final_rend
     # the image, so pin the order explicitly.
     assert copy_hugo < clean < first_hugo < gate < export < final_hugo
     assert "./hugo/public/en.search-data.json" in dockerfile
-    assert "./hugo/static/search" in dockerfile
+    assert "./hugo/assets/search" in dockerfile
 
 
 def test_search_pipeline_changes_trigger_container_publish() -> None:

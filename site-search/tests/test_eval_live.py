@@ -9,7 +9,7 @@ from site_search.eval import evaluate, keyword_documents_from_corpus, load_query
 
 REPO = Path(__file__).resolve().parents[2]
 CORPUS = REPO / "hugo" / "public" / "en.search-data.json"
-ARTIFACTS = REPO / "hugo" / "static" / "search"
+ARTIFACTS = REPO / "hugo" / "assets" / "search"
 QUERIES = Path(__file__).parent / "fixtures" / "eval-queries.json"
 _REQUIRED_ARTIFACTS = (
     "meta.json",

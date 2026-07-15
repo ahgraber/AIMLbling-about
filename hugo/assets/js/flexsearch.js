@@ -32,16 +32,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchDataURL = "{{ $searchData.RelPermalink }}"
   const resultsFoundTemplate = '{{ (T "resultsFound") | default "%d results found" }}'
   const semanticSearch = globalThis.SiteSemanticSearch
-  const semanticLoader = semanticSearch?.createSemanticArtifactLoader
-    ? semanticSearch.createSemanticArtifactLoader(fetch, {
-        "token-table.bin": '{{ "search/token-table.bin" | relURL }}',
-        "token-scales.bin": '{{ "search/token-scales.bin" | relURL }}',
-        "doc-vectors.bin": '{{ "search/doc-vectors.bin" | relURL }}',
-        "manifest.json": '{{ "search/manifest.json" | relURL }}',
-        "tokenizer-config.json": '{{ "search/tokenizer-config.json" | relURL }}',
-        "meta.json": '{{ "search/meta.json" | relURL }}',
+  // Fingerprinted, content-addressed artifact URLs resolved at build time. Hugo
+  // hashes each file (`resources.Get | fingerprint`) and bakes its immutable URL
+  // into this already-fingerprinted script, so every page references exactly one
+  // build's complete set — no runtime manifest, no cross-build cache mixing.
+  // When artifacts are absent each `with` yields an empty string, the loader
+  // constructor rejects it, and the catch leaves search in keyword-only mode.
+  let semanticLoader = { state: "failed", initialize: () => Promise.resolve(undefined) }
+  try {
+    if (semanticSearch?.createSemanticArtifactLoader) {
+      semanticLoader = semanticSearch.createSemanticArtifactLoader(fetch, {
+        "token-table.bin":
+          '{{ with resources.Get "search/token-table.bin" }}{{ (. | fingerprint).RelPermalink }}{{ end }}',
+        "token-scales.bin":
+          '{{ with resources.Get "search/token-scales.bin" }}{{ (. | fingerprint).RelPermalink }}{{ end }}',
+        "doc-vectors.bin":
+          '{{ with resources.Get "search/doc-vectors.bin" }}{{ (. | fingerprint).RelPermalink }}{{ end }}',
+        "manifest.json":
+          '{{ with resources.Get "search/manifest.json" }}{{ (. | fingerprint).RelPermalink }}{{ end }}',
+        "tokenizer-config.json":
+          '{{ with resources.Get "search/tokenizer-config.json" }}{{ (. | fingerprint).RelPermalink }}{{ end }}',
+        "meta.json": '{{ with resources.Get "search/meta.json" }}{{ (. | fingerprint).RelPermalink }}{{ end }}',
       })
-    : { state: "failed", initialize: () => Promise.resolve(undefined) }
+    }
+  } catch {
+    // Artifacts absent or misconfigured: keep the keyword-only fallback loader.
+  }
   const getHybridDisplayResults = semanticSearch?.getHybridDisplayResults ?? ((keywordResults) => keywordResults)
   // Shared with the semantic module so keyword page_ids/URLs match the Python
   // builder's route.rstrip("/") exactly; the identical inline fallback keeps

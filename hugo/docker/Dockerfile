@@ -54,12 +54,12 @@ RUN --mount=type=secret,id=treadmill_pat,required=false \
       treadmill_pat="$(cat /run/secrets/treadmill_pat)"; \
       git config --global url."https://${treadmill_pat}:x-oauth-basic@github.com/".insteadOf "https://github.com/"; \
     fi && \
-    rm -rf ./hugo/public ./hugo/static/search && \
+    rm -rf ./hugo/public ./hugo/assets/search ./hugo/static/search && \
     hugo -s ./hugo && \
     ./.venv/bin/python -m site_search.gate ./hugo/public/en.search-data.json && \
     ./.venv/bin/python -m site_search.build_index \
       --search-data ./hugo/public/en.search-data.json \
-      --out ./hugo/static/search && \
+      --out ./hugo/assets/search && \
     hugo --minify -s ./hugo
 
 FROM docker.io/nginxinc/nginx-unprivileged:1.31@sha256:0a7658b1a51df663ad17cfe82ab6edd7f56f82cfe7b49f282f83a30617f3f404

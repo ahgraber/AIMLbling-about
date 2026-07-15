@@ -9,7 +9,7 @@ from site_search.export import ARTIFACT_NAMES
 
 def test_every_generated_search_artifact_is_gitignored() -> None:
     root = Path(__file__).resolve().parents[2]
-    artifact_paths = [f"hugo/static/search/{name}" for name in ARTIFACT_NAMES]
+    artifact_paths = [f"hugo/assets/search/{name}" for name in ARTIFACT_NAMES]
     git = shutil.which("git")
     assert git is not None
 

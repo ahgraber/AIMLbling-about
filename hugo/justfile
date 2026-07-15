@@ -49,7 +49,7 @@ search-index:
     @command -v hugo >/dev/null || { echo "Hugo not found"; exit 1; }
     cd "{{root_dir}}" && hugo -s "{{hugo_dir}}"
     cd "{{root_dir}}" && uv run --package site-search python -m site_search.gate "{{hugo_dir}}/public/en.search-data.json"
-    cd "{{root_dir}}" && uv run --package site-search python -m site_search.build_index --search-data "{{hugo_dir}}/public/en.search-data.json" --out "{{hugo_dir}}/static/search"
+    cd "{{root_dir}}" && uv run --package site-search python -m site_search.build_index --search-data "{{hugo_dir}}/public/en.search-data.json" --out "{{hugo_dir}}/assets/search"
 
 
 [doc('Run all semantic-search tests (Python pipeline + client JS). Run `just hugo search-index` first to also exercise the corpus/artifact-dependent tests')]
