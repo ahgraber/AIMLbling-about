@@ -1,0 +1,242 @@
+[
+  {
+    "query": "RAGAS to Riches part 1 Ragas v0.2",
+    "subset": "exact-term",
+    "expected_page_id": "/blog/ragas-to-riches-1",
+    "expected_section_url": "/blog/ragas-to-riches-1#introducing-ragas-v02",
+    "rationale": "Series title, part number, library, and release uniquely identify the first post.",
+    "source_text": "Introducing Ragas v0.2; Ragas is a research-supported Python framework for evaluating RAG applications."
+  },
+  {
+    "query": "AI Tools Like GitHub Copilot Are Rewiring Coders' Brains",
+    "subset": "exact-term",
+    "expected_page_id": "/treadmill/2024/02/09",
+    "expected_section_url": "/treadmill/2024/02/09",
+    "rationale": "The exact article title appears once in the current treadmill corpus.",
+    "source_text": "AI Tools Like GitHub Copilot Are Rewiring Coders' Brains."
+  },
+  {
+    "query": "2402.18376 Tokenization Is More Than Compression",
+    "subset": "exact-term",
+    "expected_page_id": "/treadmill/2024/03/04",
+    "expected_section_url": "/treadmill/2024/03/04#papers",
+    "rationale": "Exact paper ID and title occur together in one papers section.",
+    "source_text": "2402.18376 - Tokenization Is More Than Compression."
+  },
+  {
+    "query": "2403.01590 Hidden Attention Mamba",
+    "subset": "exact-term",
+    "expected_page_id": "/treadmill/2024/03/18",
+    "expected_section_url": "/treadmill/2024/03/18#papers",
+    "rationale": "Exact paper ID plus distinctive Mamba title terms are unambiguous.",
+    "source_text": "2403.01590 - The Hidden Attention of Mamba Models."
+  },
+  {
+    "query": "2411.02959 HtmlRAG",
+    "subset": "exact-term",
+    "expected_page_id": "/treadmill/2024/11/08",
+    "expected_section_url": "/treadmill/2024/11/08#papers",
+    "rationale": "Exact paper ID and unique system name identify a treadmill papers entry.",
+    "source_text": "[2411.02959] HtmlRAG: HTML is Better Than Plain Text for Modeling Retrieved Knowledge in RAG Systems."
+  },
+  {
+    "query": "BloombergGPT 2303.17564",
+    "subset": "exact-term",
+    "expected_page_id": "/blog/on-the-viability-of-fine-tuning-slms",
+    "expected_section_url": "/blog/on-the-viability-of-fine-tuning-slms#references",
+    "rationale": "Model proper noun and arXiv ID occur together in this post's references.",
+    "source_text": "[2303.17564] BloombergGPT: A Large Language Model for Finance."
+  },
+  {
+    "query": "tinyBenchmarks version of MMLU standardized dataset",
+    "subset": "exact-term",
+    "expected_page_id": "/blog/typos-part-2",
+    "expected_section_url": "/blog/typos-part-2#design",
+    "rationale": "The exact benchmark phrase and standardized-dataset wording distinguish part two from later reuse.",
+    "source_text": "I've elected to use the tinyBenchmarks version of MMLU as a standardized dataset."
+  },
+  {
+    "query": "MMLU Massive Multitask Language Understanding",
+    "subset": "exact-term",
+    "expected_page_id": "/blog/typos-part-4",
+    "expected_section_url": "/blog/typos-part-4#mmlu-benchmark",
+    "rationale": "The acronym and expansion appear in the dedicated benchmark section.",
+    "source_text": "MMLU (Massive Multitask Language Understanding) is a popular benchmark."
+  },
+  {
+    "query": "Semantic Kernel C# Python Java",
+    "subset": "exact-term",
+    "expected_page_id": "/blog/semantic-kernel-panic",
+    "expected_section_url": "/blog/semantic-kernel-panic#overview",
+    "rationale": "Framework name and its three listed languages uniquely identify the overview.",
+    "source_text": "Semantic Kernel is a development kit for AI agents in C#, Python, or Java."
+  },
+  {
+    "query": "uv workspaces central dependency",
+    "subset": "exact-term",
+    "expected_page_id": "/blog/managing-project-dependencies-with-uv",
+    "expected_section_url": "/blog/managing-project-dependencies-with-uv#example---workspaces-with-central-dependency",
+    "rationale": "Package-manager name and section terminology identify the workspace example.",
+    "source_text": "Example - Workspaces with central dependency; configuration used for this blog."
+  },
+  {
+    "query": "why errors multiply across long AI conversations and agent chains",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/the-compounding-error-of-generative-models",
+    "expected_section_url": "/blog/the-compounding-error-of-generative-models#compounding-error-in-conversations-chains-agents",
+    "rationale": "Restates compounding generative-model error without using the post title.",
+    "source_text": "Compounding error in conversations, chains, agents."
+  },
+  {
+    "query": "small specialist coding models can match frontier systems",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/on-the-viability-of-fine-tuning-slms",
+    "expected_section_url": "/blog/on-the-viability-of-fine-tuning-slms#domain-optimized-models-match-frontier-model-performance",
+    "rationale": "Paraphrases the claim about domain-optimized small models and frontier performance.",
+    "source_text": "Specialized coding models match frontier coding performance while generating tokens faster."
+  },
+  {
+    "query": "synthetic training feedback loops forget the original data distribution",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/model-collapse",
+    "expected_section_url": "/blog/model-collapse#model-collapse-requires-recurrence-without-altering-the-data-mix",
+    "rationale": "Describes recursive synthetic-data degradation without naming model collapse.",
+    "source_text": "Generative models recursively train on data generated by previous generations."
+  },
+  {
+    "query": "blocking generative AI scrapers from reusing blog content",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/no-mo-robo",
+    "expected_section_url": "/blog/no-mo-robo#web-crawlers--generative-ai",
+    "rationale": "Expresses the crawler-control motivation without the post's title phrase.",
+    "source_text": "Web crawlers scrape webpages to build internet datasets such as Common Crawl and The Pile."
+  },
+  {
+    "query": "energy cost after training when language models answer requests",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/ai-is-the-new-hotness",
+    "expected_section_url": "/blog/ai-is-the-new-hotness#training-is-only-half-of-the-lifecycle",
+    "rationale": "Rephrases lifecycle inference energy concerns without copying the heading.",
+    "source_text": "Training reports omit information on energy use during LLM inference."
+  },
+  {
+    "query": "game theory of nations racing to weaponize artificial intelligence",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/maim-is-madness",
+    "expected_section_url": "/blog/maim-is-madness#game-2-playing-chicken-in-an-ai-arms-race",
+    "rationale": "Describes the AI arms-race game without using the MAIM/MAD title.",
+    "source_text": "Game 2: Playing Chicken in an AI Arms Race."
+  },
+  {
+    "query": "measure retrieval quality separately from answer quality",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/ragas-to-riches-1",
+    "expected_section_url": "/blog/ragas-to-riches-1#rag-evaluation",
+    "rationale": "Paraphrases the two-metric RAG evaluation requirement.",
+    "source_text": "RAG systems require metrics for retrieval and for the final answer."
+  },
+  {
+    "query": "replace an old language detector by comparing speed memory and accuracy",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/language-identification",
+    "expected_section_url": "/blog/language-identification#overall",
+    "rationale": "Summarizes the replacement experiment's three comparison dimensions.",
+    "source_text": "The post compares classification performance, runtime, memory, and supported languages."
+  },
+  {
+    "query": "company incentives change what open AI really means",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/for-some-definition-of-open",
+    "expected_section_url": "/blog/for-some-definition-of-open#business-models-and-missions-determine-open-ness",
+    "rationale": "Restates the business-model thesis without quoting the post title.",
+    "source_text": "Business Models and Missions Determine Open-ness."
+  },
+  {
+    "query": "people stop practicing reasoning when they trust chatbots too much",
+    "subset": "paraphrase",
+    "expected_page_id": "/blog/cognitive-surrender",
+    "expected_section_url": "/blog/cognitive-surrender#pushing-back",
+    "rationale": "Paraphrases the cognitive-debt argument using everyday wording.",
+    "source_text": "Pushing Back Against Cognitive Surrender discusses preserving human reasoning."
+  },
+  {
+    "query": "post about managing environments across a Python monorepo",
+    "subset": "navigational",
+    "expected_page_id": "/blog/managing-project-dependencies-with-uv",
+    "expected_section_url": "/blog/managing-project-dependencies-with-uv#monorepos--multiproject-repos",
+    "rationale": "Topic-seeking query for the dependency-management post without naming uv.",
+    "source_text": "Monorepos / Multiproject Repos and environment management are covered in the post."
+  },
+  {
+    "query": "first post in the series testing how spelling mistakes affect language models",
+    "subset": "navigational",
+    "expected_page_id": "/blog/typos-part-1",
+    "expected_section_url": "/blog/typos-part-1#typo-generation",
+    "rationale": "Navigates to the first experiment in the typo series by topic.",
+    "source_text": "The first typo post defines typo generation and tests LLM susceptibility."
+  },
+  {
+    "query": "the author's 2026 AI forecast with probability estimates",
+    "subset": "navigational",
+    "expected_page_id": "/blog/predictions-2026",
+    "expected_section_url": "/blog/predictions-2026",
+    "rationale": "Year and probability-estimate framing distinguish this forecast from the 2025 post.",
+    "source_text": "These are my predictions for AI in 2026 along with probability estimates."
+  },
+  {
+    "query": "setup notes for benchmarking a newly installed graphics card",
+    "subset": "navigational",
+    "expected_page_id": "/blog/gpu-testing",
+    "expected_section_url": "/blog/gpu-testing#3-install-aidatoolsollama-benchmark",
+    "rationale": "Topic-seeking request for the hardware benchmark walkthrough.",
+    "source_text": "Install aidatools/ollama-benchmark, then run tests on the new GPU."
+  },
+  {
+    "query": "overview of learning stages before and after foundation model training",
+    "subset": "navigational",
+    "expected_page_id": "/blog/reinforcement-learning",
+    "expected_section_url": "/blog/reinforcement-learning#pre-training",
+    "rationale": "Navigates to the reinforcement-learning overview by its training-stage structure.",
+    "source_text": "The post is organized around pre-training, mid-training, and post-training."
+  },
+  {
+    "query": "essay discussing Richard Sutton and scaling computation",
+    "subset": "navigational",
+    "expected_page_id": "/blog/the-bitter-lesson",
+    "expected_section_url": "/blog/the-bitter-lesson#the-bitter-lesson",
+    "rationale": "Uses author and thesis context to navigate to the reflective essay.",
+    "source_text": "Richard Sutton's lesson favors general methods that scale with computation."
+  },
+  {
+    "query": "retrospective on maintaining the curated AI news project",
+    "subset": "navigational",
+    "expected_page_id": "/blog/the-ai-treadmill-2024",
+    "expected_section_url": "/blog/the-ai-treadmill-2024#1-curation-is-time-consuming",
+    "rationale": "Navigates to the annual project retrospective by purpose and workflow.",
+    "source_text": "The AI Treadmill retrospective notes that curation is time consuming."
+  },
+  {
+    "query": "experiment estimating model parameter counts from leaderboard scores",
+    "subset": "navigational",
+    "expected_page_id": "/blog/benchmarks-predict-model-size",
+    "expected_section_url": "/blog/benchmarks-predict-model-size#modeling",
+    "rationale": "Describes the experiment goal without reproducing the title.",
+    "source_text": "The modeling experiment predicts LLM parameters using benchmark metrics."
+  },
+  {
+    "query": "complaints about an agent orchestration development framework",
+    "subset": "navigational",
+    "expected_page_id": "/blog/semantic-kernel-panic",
+    "expected_section_url": "/blog/semantic-kernel-panic#gotchas-and-potential-footguns",
+    "rationale": "Navigates by the post's critical purpose without naming the framework.",
+    "source_text": "Gotchas and Potential Footguns explains problems encountered in Semantic Kernel."
+  },
+  {
+    "query": "essay about answer engines copying creators without credit",
+    "subset": "navigational",
+    "expected_page_id": "/blog/the-plagiarism-problem",
+    "expected_section_url": "/blog/the-plagiarism-problem#the-solution-requires-source-attribution",
+    "rationale": "Navigates by the creator-economy and attribution thesis.",
+    "source_text": "Source attribution is presented as the key component resolving plagiarism concerns."
+  }
+]

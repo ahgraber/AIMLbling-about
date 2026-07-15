@@ -1,0 +1,72 @@
+{
+  "status": "passed",
+  "selected_dimensions": 256,
+  "recorded": "2026-07-12",
+  "labels_sha256": "6cd1e3275feef05ad15cc15a77627beb630b13e751cb5061feda798f05dd3e10",
+  "corpus_sha256": "c80a4f3aaaf2a154bedcf31965bd8dce25ecad192ade9e5dd8e7767581c6cd1d",
+  "keyword_baseline": "deterministic lexical reference: case-folded Unicode word tokens, summed query-term frequency, best section per page, input order for ties",
+  "candidates": {
+    "128": {
+      "meets_floors": false,
+      "chunk_count": 4458,
+      "excluded_chunk_count": 0,
+      "artifact_sizes": {
+        "token-table.bin": 3779584,
+        "token-scales.bin": 118112,
+        "doc-vectors.bin": 570624,
+        "manifest.json": 1455612,
+        "tokenizer-config.json": 446398,
+        "meta.json": 326,
+        "total": 6370656
+      },
+      "metrics": {
+        "keyword-only": {
+          "exact-term": { "queries": 10, "recall_at_1": 0.4, "recall_at_3": 0.5 },
+          "paraphrase": { "queries": 10, "recall_at_1": 0.2, "recall_at_3": 0.4 },
+          "navigational": { "queries": 10, "recall_at_1": 0.0, "recall_at_3": 0.1 }
+        },
+        "semantic-only": {
+          "exact-term": { "queries": 10, "recall_at_1": 0.3, "recall_at_3": 0.5 },
+          "paraphrase": { "queries": 10, "recall_at_1": 0.4, "recall_at_3": 0.6 },
+          "navigational": { "queries": 10, "recall_at_1": 0.4, "recall_at_3": 0.7 }
+        },
+        "hybrid": {
+          "exact-term": { "queries": 10, "recall_at_1": 0.3, "recall_at_3": 0.6 },
+          "paraphrase": { "queries": 10, "recall_at_1": 0.2, "recall_at_3": 0.7 },
+          "navigational": { "queries": 10, "recall_at_1": 0.5, "recall_at_3": 0.5 }
+        }
+      }
+    },
+    "256": {
+      "meets_floors": true,
+      "chunk_count": 4458,
+      "excluded_chunk_count": 0,
+      "artifact_sizes": {
+        "token-table.bin": 7559168,
+        "token-scales.bin": 118112,
+        "doc-vectors.bin": 1141248,
+        "manifest.json": 1455612,
+        "tokenizer-config.json": 446398,
+        "meta.json": 327,
+        "total": 10720865
+      },
+      "metrics": {
+        "keyword-only": {
+          "exact-term": { "queries": 10, "recall_at_1": 0.4, "recall_at_3": 0.5 },
+          "paraphrase": { "queries": 10, "recall_at_1": 0.2, "recall_at_3": 0.4 },
+          "navigational": { "queries": 10, "recall_at_1": 0.0, "recall_at_3": 0.1 }
+        },
+        "semantic-only": {
+          "exact-term": { "queries": 10, "recall_at_1": 0.4, "recall_at_3": 0.6 },
+          "paraphrase": { "queries": 10, "recall_at_1": 0.3, "recall_at_3": 0.8 },
+          "navigational": { "queries": 10, "recall_at_1": 0.6, "recall_at_3": 0.7 }
+        },
+        "hybrid": {
+          "exact-term": { "queries": 10, "recall_at_1": 0.4, "recall_at_3": 0.7 },
+          "paraphrase": { "queries": 10, "recall_at_1": 0.3, "recall_at_3": 0.8 },
+          "navigational": { "queries": 10, "recall_at_1": 0.4, "recall_at_3": 0.7 }
+        }
+      }
+    }
+  }
+}
