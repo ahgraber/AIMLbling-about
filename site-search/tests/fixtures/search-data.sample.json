@@ -1,0 +1,18 @@
+{
+  "/blog/example/": {
+    "title": "Example",
+    "data": {
+      "": "Introductory text.",
+      "plain-heading#Plain heading": "Plain body text.",
+      "heading-2#[1234.56789] Linked heading": "Linked body text.",
+      "heading-3#Title only": ""
+    }
+  },
+  "/treadmill/example/": {
+    "title": "Treadmill example",
+    "data": {
+      "": "",
+      "named-anchor#Unverified empty": ""
+    }
+  }
+}
