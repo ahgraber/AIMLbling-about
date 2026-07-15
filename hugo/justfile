@@ -44,6 +44,21 @@ demo:
     hugo server -D --disableFastRender -s "{{hugo_dir}}"
 
 
+[doc('Build semantic search artifacts for local development. Run `just hugo search-index` before `just hugo demo`')]
+search-index:
+    @command -v hugo >/dev/null || { echo "Hugo not found"; exit 1; }
+    cd "{{root_dir}}" && hugo -s "{{hugo_dir}}"
+    cd "{{root_dir}}" && uv run --package site-search python -m site_search.gate "{{hugo_dir}}/public/en.search-data.json"
+    cd "{{root_dir}}" && uv run --package site-search python -m site_search.build_index --search-data "{{hugo_dir}}/public/en.search-data.json" --out "{{hugo_dir}}/assets/search"
+
+
+[doc('Run all semantic-search tests (Python pipeline + client JS). Run `just hugo search-index` first to also exercise the corpus/artifact-dependent tests')]
+search-test:
+    @command -v node >/dev/null || { echo "Node not found"; exit 1; }
+    cd "{{root_dir}}" && uv run --package site-search pytest site-search/tests
+    cd "{{root_dir}}" && node --test hugo/assets/js/*.test.js
+
+
 [doc('Clean all rendered static site content')]
 clean:
     @command -v hugo >/dev/null || { echo "Hugo not found"; exit 1; }
@@ -52,16 +67,16 @@ clean:
     hugo --gc -s "{{hugo_dir}}"
 
 
-[doc('Build site with colima/docker')]
-build:
-    @command -v docker >/dev/null || { echo "Docker not found"; exit 1; }
-    "{{root_dir}}/scripts/with_colima.sh" "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}"
+[doc('Build site image with podman (multi-arch by default; override e.g. `just hugo build linux/arm64`)')]
+build platforms="linux/amd64,linux/arm64":
+    @command -v podman >/dev/null || { echo "Podman not found"; exit 1; }
+    "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}" "{{platforms}}"
 
 
-[doc('Run colima/docker container for local testing')]
-run:
-    @command -v docker >/dev/null || { echo "Docker not found"; exit 1; }
-    "{{root_dir}}/scripts/with_colima.sh" "{{root_dir}}/scripts/hugo_run_local.sh" "{{hugo_dir}}"
+[doc('Run site container locally with podman (override host port: `just hugo run port=9000`)')]
+run port="8080":
+    @command -v podman >/dev/null || { echo "Podman not found"; exit 1; }
+    "{{root_dir}}/scripts/hugo_run_local.sh" "{{hugo_dir}}" "{{port}}"
 
 
 [doc('Update treadmill data')]

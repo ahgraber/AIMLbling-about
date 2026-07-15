@@ -8,7 +8,7 @@ on: # yamllint disable-line rule:truthy
   #   paths: ["content/**", "assets/**", "config/**", "layouts/**", "static/**"]
   push: # Runs on pushes targeting the default branch; merged PRs result in pushes
     branches: ["main"]
-    paths: ["hugo/**"] #, "content/**", "assets/**", "config/**", "layouts/**", "static/**"]
+    paths: ["hugo/**", "site-search/**", "pyproject.toml", "uv.lock"]
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 # yamllint disable rule:colons

@@ -47,7 +47,8 @@ It contains two major areas:
 
 ## Nix Development Environment
 
-This repository uses a Nix flake to provide a consistent development environment with Hugo and related tools (dart-sass, docker, podman, colima, qemu).
+This repository uses a Nix flake to provide a consistent development environment with Hugo and related tools (dart-sass, podman).
+On macOS the flake installs a `podman` PATH shim that lazily brings up the applehv VM (via nixpkgs' bundled vfkit + gvproxy) on first use, so container builds work without Docker Desktop or Colima.
 
 ### Entering the Dev Shell
 
@@ -106,16 +107,16 @@ just experiments --list
 
 #### Hugo recipes (`just hugo <recipe>`)
 
-| Recipe                         | Description                                                  |
-| ------------------------------ | ------------------------------------------------------------ |
-| `just hugo new title="..."`    | Create a new draft post on a dedicated branch                |
-| `just hugo publish path="..."` | Set a draft to published (sets `draft: false`, updates date) |
-| `just hugo demo`               | Serve the site locally with drafts enabled                   |
-| `just hugo clean`              | Clean rendered static site content                           |
-| `just hugo build`              | Build the container image (requires colima/docker)           |
-| `just hugo run`                | Run the container locally                                    |
-| `just hugo treadmill`          | Update treadmill Hugo module data                            |
-| `just hugo catchup`            | Rebase feature branch onto main                              |
+| Recipe                         | Description                                                   |
+| ------------------------------ | ------------------------------------------------------------- |
+| `just hugo new title="..."`    | Create a new draft post on a dedicated branch                 |
+| `just hugo publish path="..."` | Set a draft to published (sets `draft: false`, updates date)  |
+| `just hugo demo`               | Serve the site locally with drafts enabled                    |
+| `just hugo clean`              | Clean rendered static site content                            |
+| `just hugo build`              | Build the container image with podman (multi-arch by default) |
+| `just hugo run`                | Run the container locally                                     |
+| `just hugo treadmill`          | Update treadmill Hugo module data                             |
+| `just hugo catchup`            | Rebase feature branch onto main                               |
 
 #### Experiment recipes (`just experiments <recipe>`)
 

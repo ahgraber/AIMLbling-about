@@ -1,0 +1,141 @@
+# Delta for client-hybrid-search
+
+## ADDED Requirements
+
+### Requirement: KeywordFallback
+
+Whenever semantic search is unavailable for a query — artifacts absent or failed to load, artifacts not yet loaded, or the query yielding no known tokens — search SHALL return keyword-only results identical to those produced with no semantic search present, with no user-facing error.
+
+Serves: search-never-breaks
+
+#### Scenario: Artifact fetch failure degrades to keyword
+
+- **GIVEN** the search artifacts fail to load (missing file, network error, or parse error)
+- **WHEN** the user searches
+- **THEN** results equal today's keyword-only results and no error is surfaced to the user
+
+#### Scenario: Query during artifact loading degrades to keyword
+
+- **GIVEN** the artifact fetch has started but not completed
+- **WHEN** the user submits a query
+- **THEN** keyword-only results are returned without waiting on the fetch
+
+#### Scenario: Fully out-of-vocabulary query degrades to keyword
+
+- **GIVEN** artifacts are loaded and a query tokenizes to zero known tokens
+- **WHEN** the user searches
+- **THEN** keyword-only results are returned and no degenerate (zero or NaN) semantic scores are produced
+
+### Requirement: HybridRanking
+
+When semantic search is available, results for any query SHALL be ordered by combined relevance from both the keyword and semantic signals, such that a result ranked highly by both signals outranks a result ranked highly by only one, other contributions being equal.
+
+Serves: find-by-meaning, no-regressions
+
+#### Scenario: Paraphrase query finds unmatched-keyword content
+
+- **GIVEN** a query that paraphrases a post's content using words absent from its text
+- **WHEN** the user searches with semantic search available
+- **THEN** the relevant page appears in the results despite matching no keywords
+
+#### Scenario: Exact-term query keeps its keyword hit on top
+
+- **GIVEN** a query that exactly matches a distinctive term (library name, paper ID) in one page
+- **WHEN** the user searches with semantic search available
+- **THEN** that page still ranks at the top of the results
+
+#### Scenario: Agreement outranks single-signal results
+
+- **GIVEN** one result ranked well by both signals, one ranked well only by keyword, and one ranked well only by semantic
+- **WHEN** the results are fused
+- **THEN** the both-signal result ranks above both single-signal results
+
+### Requirement: ClientEmbeddingParity
+
+For any query text, the client-side embedding SHALL be equivalent to the build-time reference pipeline's embedding of the same text — an identical token sequence and a matching vector within the design's fidelity tolerance.
+
+Serves: find-by-meaning
+
+#### Scenario: Plain text embeds identically
+
+- **GIVEN** a query of common in-vocabulary words
+- **WHEN** embedded by the client and by the reference pipeline
+- **THEN** token sequences are identical and vectors match within tolerance
+
+#### Scenario: Accented text embeds identically
+
+- **GIVEN** a query containing accented characters
+- **WHEN** embedded by the client and by the reference pipeline
+- **THEN** both sides apply the same effective accent normalization and produce identical token sequences
+
+#### Scenario: Partially out-of-vocabulary text embeds identically
+
+- **GIVEN** a query mixing known terms with out-of-vocabulary terms
+- **WHEN** embedded by the client and by the reference pipeline
+- **THEN** both sides drop the same pieces and the resulting vectors match within tolerance
+
+### Requirement: ScoringCorrectness
+
+Semantic similarity scores computed by the client SHALL equal the mathematically exact similarity of the corresponding vectors, within floating-point tolerance, for every indexed chunk.
+
+Serves: find-by-meaning
+
+#### Scenario: Ordinary vectors score exactly
+
+- **GIVEN** a query vector and chunk vectors of typical magnitude
+- **WHEN** the client scores them
+- **THEN** each score equals the reference-computed similarity within floating-point tolerance
+
+#### Scenario: High-magnitude accumulation stays exact
+
+- **GIVEN** vectors whose similarity accumulation exceeds the range of small fixed-width integers
+- **WHEN** the client scores them
+- **THEN** the score equals the reference value rather than a wrapped-around (overflowed) value
+
+### Requirement: PageDeduplication
+
+For any query matching multiple chunks of the same page, results SHALL present that page at most once, represented by its best-matching section.
+
+Serves: find-by-meaning
+
+#### Scenario: Single matching chunk
+
+- **GIVEN** a query matching exactly one chunk of a page
+- **WHEN** results are presented
+- **THEN** the page appears once, showing that section
+
+#### Scenario: Multiple chunks of one page
+
+- **GIVEN** a query matching several chunks of the same page
+- **WHEN** results are presented
+- **THEN** the page appears exactly once, represented by its best-matching section
+
+### Requirement: DeferredSearchPayload
+
+The site SHALL NOT fetch any semantic-search artifact before the user first engages the search input, and after first engagement SHALL fetch each artifact at most once per page visit.
+
+Serves: zero-cost-until-used
+
+#### Scenario: Page load fetches nothing
+
+- **GIVEN** a fresh page load
+- **WHEN** the user reads without engaging search
+- **THEN** no semantic-search artifact requests occur
+
+#### Scenario: First engagement fetches once
+
+- **GIVEN** a user engaging the search input for the first time and then performing several searches
+- **WHEN** network activity is observed
+- **THEN** each artifact is fetched exactly once
+
+### Requirement: PresentationPreserved
+
+Search result presentation — match highlighting, keyboard navigation, and assistive-technology announcements — SHALL behave as it does for keyword-only search.
+
+Serves: no-regressions
+
+#### Scenario: Hybrid results render through existing presentation
+
+- **GIVEN** hybrid results for a query
+- **WHEN** the user navigates results by keyboard and inspects highlighting and screen-reader announcements
+- **THEN** all presentation behaviors match today's keyword-only search
