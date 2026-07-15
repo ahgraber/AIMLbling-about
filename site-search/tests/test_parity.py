@@ -25,6 +25,11 @@ PARITY_CASES = (
     "StaticModel HTTPResponse tokenizer_config",
     "semantic xyzzyplugh☃",
     "☃☃☃",
+    # Control/whitespace edge cases: vertical tab and form feed are control
+    # chars BERT removes (not spacing); NBSP is a Zs separator it collapses to a
+    # space; tab/newline are BERT whitespace. Guards the clean_text ordering.
+    "vertical\x0btab and\x0cform feed",
+    "non breaking\tspace\nlines",
 )
 CJK = re.compile("[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\u3040-\u30ff\uac00-\ud7a3]")
 

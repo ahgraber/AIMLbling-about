@@ -208,11 +208,23 @@ function cleanAndSpace(text, normalizer) {
     const codePoint = character.codePointAt(0)
     if (normalizer.clean_text) {
       if (codePoint === 0 || codePoint === 0xfffd) continue
-      if (/\s/u.test(character)) {
+      // Match BertNormalizer._clean_text ordering exactly: control/format chars
+      // (Cc/Cf) are removed first — except tab/newline/CR — so vertical tab and
+      // form feed are dropped, not turned into spaces. Only then is BERT's
+      // whitespace set (space, tab, newline, CR, and Unicode Zs separators)
+      // collapsed to a space. Using JS `\s` here would misclassify \v, \f, and
+      // other Unicode whitespace that BERT does not treat as spacing.
+      if (character !== "\t" && character !== "\n" && character !== "\r" && /[\p{Cc}\p{Cf}]/u.test(character)) continue
+      if (
+        character === " " ||
+        character === "\t" ||
+        character === "\n" ||
+        character === "\r" ||
+        /\p{Zs}/u.test(character)
+      ) {
         output += " "
         continue
       }
-      if (/[\p{Cc}\p{Cf}]/u.test(character)) continue
     }
     if (normalizer.handle_chinese_chars && isChinese(codePoint)) {
       output += ` ${character} `
