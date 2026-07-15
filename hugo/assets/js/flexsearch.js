@@ -31,6 +31,24 @@ document.addEventListener("DOMContentLoaded", () => {
 ;(() => {
   const searchDataURL = "{{ $searchData.RelPermalink }}"
   const resultsFoundTemplate = '{{ (T "resultsFound") | default "%d results found" }}'
+  const semanticSearch = globalThis.SiteSemanticSearch
+  const semanticLoader = semanticSearch?.createSemanticArtifactLoader
+    ? semanticSearch.createSemanticArtifactLoader(fetch, {
+        "token-table.bin": '{{ "search/token-table.bin" | relURL }}',
+        "token-scales.bin": '{{ "search/token-scales.bin" | relURL }}',
+        "doc-vectors.bin": '{{ "search/doc-vectors.bin" | relURL }}',
+        "manifest.json": '{{ "search/manifest.json" | relURL }}',
+        "tokenizer-config.json": '{{ "search/tokenizer-config.json" | relURL }}',
+        "meta.json": '{{ "search/meta.json" | relURL }}',
+      })
+    : { state: "failed", initialize: () => Promise.resolve(undefined) }
+  const getHybridDisplayResults = semanticSearch?.getHybridDisplayResults ?? ((keywordResults) => keywordResults)
+  // Shared with the semantic module so keyword page_ids/URLs match the Python
+  // builder's route.rstrip("/") exactly; the identical inline fallback keeps
+  // keyword-only search working when the semantic module fails to load.
+  const canonicalizeRoute =
+    semanticSearch?.canonicalizeRoute ?? ((route) => (route === "/" ? route : route.replace(/\/+$/, "")))
+  let initialization
 
   const inputElements = document.querySelectorAll(".hextra-search-input")
   for (const el of inputElements) {
@@ -74,13 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!inputElement) return
 
     const activeElement = document.activeElement
-    const tagName = activeElement && activeElement.tagName
-    if (
-      inputElement === activeElement ||
-      !tagName ||
-      INPUTS.includes(tagName) ||
-      (activeElement && activeElement.isContentEditable)
-    )
+    const tagName = activeElement?.tagName
+    if (inputElement === activeElement || !tagName || INPUTS.includes(tagName) || activeElement?.isContentEditable)
       return
 
     if (e.key === "/" || (e.key === "k" && (e.metaKey /* for Mac */ || /* for non-Mac */ e.ctrlKey))) {
@@ -119,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!resultsElement) return
 
     const { result: activeResult } = getActiveResult()
-    activeResult && activeResult.classList.remove("hextra-search-active")
+    activeResult?.classList.remove("hextra-search-active")
     const result = resultsElement.querySelector(`[data-index="${index}"]`)
     if (result) {
       result.classList.add("hextra-search-active")
@@ -188,8 +201,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initializes the search.
   function init(e) {
     e.target.removeEventListener("focus", init)
-    if (!(window.pageIndex && window.sectionIndex)) {
-      preloadIndex()
+    if (!initialization) {
+      const keywordInitialization = window.pageIndex && window.sectionIndex ? Promise.resolve() : preloadIndex()
+      initialization = Promise.allSettled([keywordInitialization, semanticLoader.initialize()]).then((results) => {
+        // Semantic failures degrade silently by design; a keyword-index load
+        // failure is a real breakage that should surface rather than be swallowed.
+        if (results[0].status === "rejected") {
+          console.error("search keyword index failed to load", results[0].reason)
+        }
+        return results
+      })
     }
   }
 
@@ -204,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const regex =
       /[\u{4E00}-\u{9FFF}\u{3040}-\u{309F}\u{30A0}-\u{30FF}\u{AC00}-\u{D7A3}\u{3400}-\u{4DBF}\u{20000}-\u{2A6DF}\u{2A700}-\u{2B73F}\u{2B740}-\u{2B81F}\u{2B820}-\u{2CEAF}\u{2CEB0}-\u{2EBEF}\u{30000}-\u{3134F}\u{31350}-\u{323AF}\u{2EBF0}-\u{2EE5F}\u{F900}-\u{FAFF}\u{2F800}-\u{2FA1F}]|[0-9A-Za-zа-я\u00C0-\u017F\u0400-\u04FF\u0600-\u06FF\u0980-\u09FF\u1E00-\u1EFF\u0590-\u05FF]+/gmu
     const encode = (str) => {
-      return ("" + str).toLowerCase().match(regex) ?? []
+      return `${str}`.toLowerCase().match(regex) ?? []
     }
 
     window.pageIndex = new FlexSearch.Document({
@@ -213,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cache: 100,
       document: {
         id: "id",
-        store: ["title", "crumb"],
+        store: ["title", "crumb", "pageId"],
         index: "content",
       },
     })
@@ -240,13 +261,14 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const route in data) {
       let pageContent = ""
       ++pageId
+      const canonicalPageId = canonicalizeRoute(route)
       const urlParts = route.split("/").filter((x) => x !== "" && !x.startsWith("#"))
 
       let crumb = ""
       let searchUrl = "/"
       for (let i = 0; i < urlParts.length; i++) {
         const urlPart = urlParts[i]
-        searchUrl += urlPart + "/"
+        searchUrl += `${urlPart}/`
 
         const crumbData = data[searchUrl]
         if (!crumbData) {
@@ -274,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const sepIndex = heading.indexOf("#")
         const hash = sepIndex === -1 ? heading : heading.slice(0, sepIndex)
         const text = sepIndex === -1 ? "" : heading.slice(sepIndex + 1)
-        const url = route.trimEnd("/") + (hash ? "#" + hash : "")
+        const url = canonicalizeRoute(route) + (hash ? `#${hash}` : "")
         const title = text || data[route].title
 
         const content = data[route].data[heading] || ""
@@ -306,6 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       window.pageIndex.add({
         id: pageId,
+        pageId: canonicalPageId,
         title: data[route].title,
         crumb,
         content: pageContent,
@@ -359,11 +382,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const { url, title } = doc
         const content = doc.display || doc.content
 
-        if (occurred[url + "@" + content]) continue
-        occurred[url + "@" + content] = true
+        if (occurred[`${url}@${content}`]) continue
+        occurred[`${url}@${content}`] = true
         results.push({
           _page_rk: i,
           _section_rk: j,
+          _page_id: result.doc.pageId,
+          _page_title: result.doc.title,
+          _crumb: result.doc.crumb,
           route: url,
           prefix: isFirstItemOfPage ? result.doc.crumb : undefined,
           children: { title, content },
@@ -371,24 +397,47 @@ document.addEventListener("DOMContentLoaded", () => {
         isFirstItemOfPage = false
       }
     }
-    const sortedResults = results
-      .sort((a, b) => {
-        // Sort by number of matches in the title.
-        if (a._page_rk === b._page_rk) {
-          return a._section_rk - b._section_rk
-        }
-        if (pageTitleMatches[a._page_rk] !== pageTitleMatches[b._page_rk]) {
-          return pageTitleMatches[b._page_rk] - pageTitleMatches[a._page_rk]
-        }
-        return a._page_rk - b._page_rk
+    const sortedKeywordRows = results.sort((a, b) => {
+      // Sort by number of matches in the title.
+      if (a._page_rk === b._page_rk) {
+        return a._section_rk - b._section_rk
+      }
+      if (pageTitleMatches[a._page_rk] !== pageTitleMatches[b._page_rk]) {
+        return pageTitleMatches[b._page_rk] - pageTitleMatches[a._page_rk]
+      }
+      return a._page_rk - b._page_rk
+    })
+    const keywordCandidates = []
+    const seenKeywordPages = new Set()
+    for (const row of sortedKeywordRows) {
+      if (seenKeywordPages.has(row._page_id)) continue
+      seenKeywordPages.add(row._page_id)
+      keywordCandidates.push({
+        pageId: row._page_id,
+        route: row.route,
+        title: row._page_title,
+        heading: row.children.title,
+        crumb: row._crumb,
+        prefix: row.prefix ?? row._crumb,
+        keywordRoute: row.route,
+        content: row.children.content,
+        source: "keyword",
       })
-      .map((res) => ({
-        id: `${res._page_rk}_${res._section_rk}`,
-        route: res.route,
-        prefix: res.prefix,
-        children: res.children,
-      }))
-    displayResults(sortedResults, query)
+    }
+    const sortedResults = sortedKeywordRows.map((res) => ({
+      id: `${res._page_rk}_${res._section_rk}`,
+      route: res.route,
+      prefix: res.prefix,
+      children: res.children,
+    }))
+    const displayReadyResults = getHybridDisplayResults(
+      sortedResults,
+      keywordCandidates,
+      query,
+      semanticLoader,
+      maxPageResults,
+    )
+    displayResults(displayReadyResults, query)
   }
 
   /**
