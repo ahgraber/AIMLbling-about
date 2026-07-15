@@ -69,6 +69,7 @@ site/
 /hugo/resources/
 /hugo/.hugo_build.lock
 /hugo/hugo_stats.json
+/hugo/static/search/
 *.iso
 *.old
 *.zip

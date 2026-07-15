@@ -1,0 +1,39 @@
+---
+# Runs the semantic-search pipeline (Python) and client (JS) test suites so the
+# tokenizer parity gate, retrieval floors, and unit tests are enforced in CI
+# rather than only when the author remembers to run them locally.
+name: site-search tests
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    branches: ["main"]
+    paths: ["hugo/assets/js/**", "site-search/**", "pyproject.toml", "uv.lock"]
+  push:
+    branches: ["main"]
+    paths: ["hugo/assets/js/**", "site-search/**", "pyproject.toml", "uv.lock"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repo 🛒
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          submodules: false
+
+      - name: Install uv 📦
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Sync site-search environment 🔁
+        run: ~/.local/bin/uv sync --package site-search
+
+      # Corpus/artifact-dependent tests self-skip without a Hugo build; the
+      # tokenizer parity gate builds its own probe artifacts and runs here.
+      - name: Python pipeline tests 🐍
+        run: ~/.local/bin/uv run --package site-search pytest site-search/tests
+
+      - name: Client JS tests 🟨
+        run: node --test hugo/assets/js/*.test.js
