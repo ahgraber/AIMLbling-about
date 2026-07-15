@@ -29,7 +29,7 @@ exclude-newer = "3 days"
 exclude-newer-package = { torch = false, torchvision = false }
 
 [tool.uv.workspace]
-members = ["experiments/*"]
+members = ["experiments/*", "site-search"]
 exclude = ["experiments/language-identification"]
 
 [tool.uv.sources]

@@ -129,7 +129,7 @@ force-to-top = ["src", "torch"]
 # forced-separate = ["scipy", "sklearn", "statsmodels", "torch"]
 relative-imports-order = "closest-to-furthest"
 
-known-first-party = ["aiml"]
+known-first-party = ["aiml", "site_search"]
 known-local-folder = ["src"] # for relative imports
 section-order = ["future", "standard-library", "third-party", "torch", "llm", "web", "sci","plot", "first-party", "local-folder"]
 
