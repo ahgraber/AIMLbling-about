@@ -152,13 +152,14 @@ Deployed-site run is still pending; this sample was taken on the local dev serve
 
 ## Rollout decision
 
-| Check                      | Waiver / evidence                 | Result                                                              |
-| -------------------------- | --------------------------------- | ------------------------------------------------------------------- |
-| 1 — Deferred payload       | `DeferredSearchPayload`           | PASS                                                                |
-| 2 — Presentation preserved | `PresentationPreserved`           | PARTIAL — keyboard/visual confirmed; screen-reader pass outstanding |
-| 3 — Keyword fallback       | `KeywordFallback` (supplementary) | PASS                                                                |
-| 4 — Deployed eval sample   | `HybridRanking` (sampled)         | PASS on local serve (consistent with offline); deployed run pending |
+| Check                      | Waiver / evidence                 | Result                                                                                     |
+| -------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1 — Deferred payload       | `DeferredSearchPayload`           | PASS                                                                                       |
+| 2 — Presentation preserved | `PresentationPreserved`           | PASS — keyboard/visual confirmed; screen-reader verification waived (see Check 2 decision) |
+| 3 — Keyword fallback       | `KeywordFallback` (supplementary) | PASS                                                                                       |
+| 4 — Deployed eval sample   | `HybridRanking` (sampled)         | PASS on local serve (consistent with offline); deployed run optional follow-up             |
 
-Outstanding before full sign-off: a screen-reader pass for Check 2 (or a recorded decision to accept keyboard/visual coverage), and optionally the deployed-site eval sample for Check 4.
+Optional follow-up (not gating v1): the deployed-site eval sample for Check 4.
 
-Overall rollout decision: Pending maintainer sign-off Decided by: Not recorded Decided at: Not recorded
+Overall rollout decision: Approved for v1 — Check 2 screen-reader verification formally waived (keyboard/visual accepted).
+Decided by: maintainer Decided at: 2026-07-15

@@ -10,6 +10,10 @@ Defines the offline quality gates for search: the retrieval-quality floors hybri
 
 On the labeled evaluation query set, hybrid search recall@1 SHALL be at least keyword-only recall@1 on the exact-term subset and at least semantic-only recall@1 on the paraphrase subset.
 
+The `semantic-only` and `hybrid` conditions run the **shipped** client logic (`semantic-search.js` executed under Node), so those measurements reflect production.
+The `keyword-only` condition is a **deterministic lexical reference** (case-folded term-frequency scoring), not the shipped FlexSearch engine, chosen for reproducibility without a browser.
+The floor is therefore evidence against that reference baseline, not a certification of production FlexSearch ranking; treat exact-term parity as exploratory rather than a production keyword-ranking guarantee.
+
 #### Scenario: Exact-term subset does not regress
 
 - **GIVEN** the labeled exact-term queries (distinctive library names, paper IDs, proper nouns from the real corpus)
