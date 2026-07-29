@@ -20,7 +20,8 @@ It contains two major areas:
 ├── justfile              # Top-level just recipes (task runner)
 ├── pyproject.toml        # Root Python project config (uv workspace root)
 ├── docs/                 # Human-readable documentation (nix, containerization, etc.)
-├── scripts/              # Utility shell scripts (git ops, hugo build/publish)
+├── scripts/              # Utility scripts (git ops, hugo build/publish)
+├── site-search/          # Python package that builds the static semantic-search index for the site
 ├── hugo/                 # Hugo static site
 │   ├── justfile          # Hugo just module
 │   ├── config/           # Hugo configuration
@@ -112,6 +113,8 @@ just experiments --list
 | `just hugo new title="..."`    | Create a new draft post on a dedicated branch                 |
 | `just hugo publish path="..."` | Set a draft to published (sets `draft: false`, updates date)  |
 | `just hugo demo`               | Serve the site locally with drafts enabled                    |
+| `just hugo search-index`       | Build semantic search artifacts (run before `just hugo demo`) |
+| `just hugo search-test`        | Run semantic-search tests (Python pipeline + client JS)       |
 | `just hugo clean`              | Clean rendered static site content                            |
 | `just hugo build`              | Build the container image with podman (multi-arch by default) |
 | `just hugo run`                | Run the container locally                                     |
@@ -149,9 +152,11 @@ nix develop -c hugo server -D --disableFastRender -s hugo
 ## Python Environment
 
 - **Package manager**: `uv` (defined in `pyproject.toml`).
-- **Workspace**: The root `pyproject.toml` defines a uv workspace with all experiments as members.
+- **Workspace**: The root `pyproject.toml` defines a uv workspace with all experiments and `site-search/` as members.
   A single `uv.lock` at the root resolves dependencies for all workspace members.
 - **Shared package**: `experiments/aiml/` provides shared utilities and optional dependency groups (ds, plot, nlp, torch, etc.) used by experiments.
+- **Site search**: `site-search/` builds and evaluates the static semantic-search index used by the Hugo site.
+  Build artifacts with `just hugo search-index`; run its tests with `just hugo search-test`.
 - **Excluded member**: `experiments/language-identification/` is excluded from the workspace due to conflicting constraints (`numpy<2`).
   It has its own `uv.lock` and is managed independently.
 

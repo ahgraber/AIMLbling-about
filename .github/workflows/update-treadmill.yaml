@@ -21,6 +21,9 @@ jobs:
         with:
           token: ${{ secrets.TREADMILL_PAT }}
           fetch-depth: 0
+          # create-pull-request configures its own push auth from its `token`
+          # input; no step here uses the checkout credential.
+          persist-credentials: false
 
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
@@ -31,7 +34,7 @@ jobs:
 
       - name: Set up Homebrew
         id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@1f8e202ffddf94def7f42f6fa3a482e821489f9c # 2026.07.10.1
 
       - name: Install Hugo with Homebrew
         run: brew install hugo

@@ -9,6 +9,9 @@ on: # yamllint disable-line rule:truthy
 env:
   WORKFLOW_ISSUE_TITLE: "Link Checker Dashboard 🔗"
 
+permissions:
+  contents: read
+
 jobs:
   link-check:
     name: Link Check
@@ -20,11 +23,14 @@ jobs:
         with:
           client-id: "${{ secrets.BOT_APP_CLIENT_ID }}"
           private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+          permission-contents: read
+          permission-issues: write
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: "${{ steps.app-token.outputs.token }}"
+          persist-credentials: false
 
       - name: Restore lychee cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -34,7 +40,7 @@ jobs:
           restore-keys: cache-lychee-
 
       - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@1f8e202ffddf94def7f42f6fa3a482e821489f9c # 2026.07.10.1
 
       - name: Setup Workflow Tools
         shell: bash

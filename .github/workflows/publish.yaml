@@ -40,6 +40,9 @@ jobs:
         with:
           submodules: true
           token: ${{ secrets.GITHUB_TOKEN }}
+          # The docker build context deliberately includes .git/ (Dockerfile
+          # copies it for Hugo); never leave a credential reachable from it.
+          persist-credentials: false
 
       - name: Set up QEMU 🦤
         uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
@@ -100,10 +103,15 @@ jobs:
 
       - name: Inspect image digest 🔬
         shell: bash
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          echo "IMAGE DIGEST: ${{ steps.build.outputs.digest }}"
+          echo "IMAGE DIGEST: ${DIGEST}"
 
       - name: Inspect new image 🔬
         shell: bash
+        env:
+          IMAGE_TAG: ${{ fromJson(steps.meta.outputs.json).tags[0] }}
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          docker pull ${{ fromJson(steps.meta.outputs.json).tags[0] }}@${{ steps.build.outputs.digest }}
+          docker pull "${IMAGE_TAG}@${DIGEST}"
