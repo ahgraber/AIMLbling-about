@@ -304,8 +304,7 @@ explicit = true
 {{< /tab >}}
 {{< tab name="main" >}}
 
-This is the `experiments\aiml\pyproject.toml` for the "main" codebase; we assume this local package will be available in all other workspaces
-and declare a standardized set of dependencies for the project that can be used per-workspace
+This is the `experiments\aiml\pyproject.toml` for the "main" codebase; we assume this local package will be available in all other workspaces and declare a standardized set of dependencies for the project that can be used per-workspace
 
 ```toml
 [project]
@@ -401,7 +400,6 @@ langchain = [
   "langchain-voyageai>=0.1.3",
 ]
 llm = [
-  # "aisuite[all]>=0.1.3",
   "bert-score>=0.3.13",
   "bm25s>=0.2.5",
   "dspy-ai>=2.5",

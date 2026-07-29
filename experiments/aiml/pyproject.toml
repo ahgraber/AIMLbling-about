@@ -97,8 +97,7 @@ langchain = [
   "langchain-voyageai>=0.1.3",
 ]
 llm = [
-  # "aisuite[all]>=0.1.6",
-  "anthropic",                     #>=0.30",
+  "anthropic",
   "bert-score>=0.3.13",
   "bm25s>=0.2.5",
   "dspy-ai>=2.5",
