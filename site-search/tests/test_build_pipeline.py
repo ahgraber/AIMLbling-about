@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -88,10 +89,12 @@ def test_container_uses_build_arch_sass_and_managed_wheel_only_python() -> None:
     build_stage = dockerfile[: dockerfile.index("FROM docker.io/nginxinc")]
 
     assert "python3" not in dockerfile
-    assert (
-        "FROM --platform=$BUILDPLATFORM "
-        "ghcr.io/astral-sh/uv:0.11.26@sha256:3d868e555f8f1dbc324afa005066cd11e1053fc4743b9808ca8025283e65efa5 AS uv"
-        in dockerfile
+    # The uv version and digest are Renovate-managed; assert the structural
+    # invariant (build-platform stage, digest-pinned) rather than the exact pin.
+    assert re.search(
+        r"FROM --platform=\$BUILDPLATFORM "
+        r"ghcr\.io/astral-sh/uv:\d+\.\d+\.\d+@sha256:[0-9a-f]{64} AS uv",
+        dockerfile,
     )
     assert "COPY --from=uv /uv /uvx /bin/" in dockerfile
     assert "ARG BUILDARCH" in dockerfile

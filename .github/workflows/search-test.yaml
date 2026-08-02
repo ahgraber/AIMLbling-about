@@ -25,11 +25,17 @@ jobs:
           submodules: false
           persist-credentials: false
 
-      # Pin uv to the same version the Dockerfile uses (ghcr.io/astral-sh/uv:0.11.26)
-      # via the version-scoped installer, so CI never pulls an unexpected uv
-      # release. Prefer the SHA-pinned `astral-sh/setup-uv` action if adopting one.
+      # Install the same uv version the Dockerfile's build stage uses, parsed
+      # from the Dockerfile so Renovate bumps to its image pin propagate here
+      # automatically instead of drifting.
       - name: Install uv 📦
-        run: curl -LsSf https://astral.sh/uv/0.11.26/install.sh | sh
+        run: |
+          UV_VERSION="$(sed -nE 's|.*ghcr\.io/astral-sh/uv:([0-9.]+)@.*|\1|p' hugo/docker/Dockerfile)"
+          if [ -z "${UV_VERSION}" ]; then
+            echo "Could not parse uv version from hugo/docker/Dockerfile" >&2
+            exit 1
+          fi
+          curl -LsSf "https://astral.sh/uv/${UV_VERSION}/install.sh" | sh
 
       - name: Sync site-search environment 🔁
         run: ~/.local/bin/uv sync --package site-search
