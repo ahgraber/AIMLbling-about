@@ -106,7 +106,7 @@ repos:
   #   rev: "v1.1.0"
   # renovate: datasource=github-tags depName=python-jsonschema/check-jsonschema
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.37.4"
+    rev: "0.38.0"
     hooks:
       - id: check-github-workflows
       # check-github-workflows does not cover composite actions
@@ -119,6 +119,8 @@ repos:
     rev: "v1.29.0"
     hooks:
       - id: zizmor
+        stages: [pre-commit]
+        args: ["--no-online-audits"]
   # renovate: datasource=github-tags depName=stefmolin/exif-stripper
   - repo: https://github.com/stefmolin/exif-stripper
     rev: 1.2.0
@@ -132,11 +134,10 @@ repos:
     hooks:
       - id: commitizen
         language: python
-        stages:
-          - commit-msg
+        stages: [commit-msg]
   # renovate: datasource=github-tags depName=editorconfig-checker/editorconfig-checker.python
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: "3.6.1"
+    rev: "3.8.0"
     hooks:
       - id: editorconfig-checker
         name: Check editorconfig compliance
@@ -192,7 +193,7 @@ repos:
         stages: [pre-commit]
   # renovate: datasource=github-tags depName=AleksaC/hadolint-py
   - repo: https://github.com/AleksaC/hadolint-py
-    rev: "v2.14.0"
+    rev: "v2.15.1"
     hooks:
       - id: hadolint
         name: Lint Dockerfiles
@@ -242,7 +243,7 @@ repos:
   ### In this case, comment out this block until ".typos.toml" has been committed successfully
   # renovate: datasource=github-tags depName=crate-ci/typos
   - repo: https://github.com/crate-ci/typos
-    rev: "v1.48.0"
+    rev: "v1.49.0"
     hooks:
       - id: typos
         name: Spellcheck with Typos
