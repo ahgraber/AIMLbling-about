@@ -62,7 +62,7 @@ RUN --mount=type=secret,id=treadmill_pat,required=false \
       --out ./hugo/assets/search && \
     hugo --minify -s ./hugo
 
-FROM docker.io/nginxinc/nginx-unprivileged:1.31@sha256:0371d6f99f3901459481eb69b272c53b74381d4d678fc59935930fe2fbb6cb71
+FROM docker.io/nginxinc/nginx-unprivileged:1.31@sha256:1ab63ed666197d757cd3ce0ad84c5136f18f774465345785f33423bd1bba4353
 
 # Add build-time ARGs
 ARG BUILD_DATE
