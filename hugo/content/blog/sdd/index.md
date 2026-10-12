@@ -1,6 +1,6 @@
 ---
 title: Spec-Driven Development
-date: 2026-10-12T11:05:07-04:00
+date: 2026-10-12
 authors:
   - name: ahgraber
     link: https://github.com/ahgraber
@@ -19,7 +19,7 @@ layout: single
 toc: true
 math: false
 plotly: false
-draft: true
+draft: false
 ---
 
 Spec-Driven Development (SDD) is a method to drive AI coding assistants over clearly defined changes.
