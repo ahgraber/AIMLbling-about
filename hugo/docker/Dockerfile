@@ -1,7 +1,7 @@
 # https://sko.ai/blog/how-to-actually-build-hugo-containers/
 FROM --platform=$BUILDPLATFORM ghcr.io/astral-sh/uv:0.13.0@sha256:cdc6093146eb3ff6a40107b38f008b789e050e77ad87865e381d9917da55a168 AS uv
 
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26-alpine3.23@sha256:a07f231c19b03e6106cf442f02a5bcf262147e744d15b7b5e4b6d81d420c70a0 AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26-alpine3.23@sha256:107301490755aa2ea1b0b43788b6e62cff2faae45a538028b193becc06aaffba AS build
 
 COPY --from=uv /uv /uvx /bin/
 
