@@ -446,12 +446,22 @@ function rankHybridResults(keywordPages, semanticChunks, semanticState) {
     .map(({ firstSeen: _, ...candidate }) => candidate)
 }
 
-function getHybridDisplayResults(keywordDisplayResults, keywordCandidates, query, semanticLoader, maxPageResults) {
-  if (semanticLoader?.state !== "ready") return keywordDisplayResults
+// Takes and returns page groups in the shape Hextra's search dialog renders:
+// `{ route, title, breadcrumbs, matches: [{ route, title, content? }] }`.
+// Keyword groups also carry the canonical `pageId` that fusion joins on.
+// `pageBreadcrumbs` maps a canonical pageId to its breadcrumb trail, so
+// semantic-only pages render the same trail as keyword hits.
+// When semantic search is ready, returns at most maxPageResults groups with one
+// match each; otherwise (not ready, out-of-vocabulary query, or any error)
+// returns keywordGroups unchanged.
+function getHybridDisplayResults(keywordGroups, query, semanticLoader, maxPageResults, pageBreadcrumbs) {
+  if (semanticLoader?.state !== "ready") return keywordGroups
   try {
     const { tokenTable, tokenScales, documentVectors, manifest, tokenizerConfig, meta } = semanticLoader.artifacts
     const queryVector = embedQuery(query, tokenizerConfig, tokenTable, tokenScales, meta.dimensions)
-    if (queryVector === null) return keywordDisplayResults
+    if (queryVector === null) return keywordGroups
+
+    const keywordCandidates = keywordGroups.map((group) => ({ pageId: group.pageId, group, source: "keyword" }))
 
     const scores = scoreDocuments(queryVector, documentVectors, meta.dimensions)
     const semanticCandidates = manifest.map((row, index) => ({
@@ -465,17 +475,22 @@ function getHybridDisplayResults(keywordDisplayResults, keywordCandidates, query
     }))
     return rankHybridResults(keywordCandidates, semanticCandidates, "ready")
       .slice(0, maxPageResults)
-      .map((candidate, index) => ({
-        id: `hybrid_${index}`,
-        route: candidate.route,
-        prefix: candidate.prefix ?? candidate.crumb,
-        children: {
-          title: candidate.heading,
-          ...(candidate.keywordRoute === candidate.route && candidate.content && { content: candidate.content }),
-        },
-      }))
+      .map((candidate) => {
+        // One section per page: a keyword-matched page keeps its top keyword
+        // section and excerpt; a semantic-only page shows its best chunk's section.
+        if (candidate.source === "keyword") {
+          const { route, title, breadcrumbs, matches } = candidate.group
+          return { route, title, breadcrumbs, matches: matches.slice(0, 1) }
+        }
+        return {
+          route: candidate.route.split("#")[0],
+          title: candidate.title,
+          breadcrumbs: pageBreadcrumbs.get(candidate.pageId) ?? [],
+          matches: [{ route: candidate.route, title: candidate.heading }],
+        }
+      })
   } catch {
-    return keywordDisplayResults
+    return keywordGroups
   }
 }
 

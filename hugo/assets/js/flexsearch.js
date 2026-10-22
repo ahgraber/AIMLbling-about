@@ -1,41 +1,28 @@
-// Search functionality using FlexSearch.
-
-// Site override of the Hextra "assets/js/flexsearch.js" asset.
+// FlexSearch data plane with hybrid semantic ranking.
 //
-// Section keys emitted by the search index are of the form `id#title`.
-// Hextra's preloadIndex() parses them with `heading.split('#')`, which
-// silently breaks whenever the title itself contains a `#` (e.g. a GitHub
-// issue title like "Fix #123: ..."), because split() with no limit produces
-// more than two parts and the destructured `text` only captures the second
-// one, dropping everything after the second `#`. This override splits each
-// `id#title` key at only the first `#`, so titles may contain `#` freely.
+// Site override of the Hextra "assets/js/flexsearch.js" asset. Hextra's
+// search-dialog.js owns the UI and consumes `window.hextraSearch`
+// ({ preload, search }); this file keeps that contract and returns the same
+// page groups, `{ id, route, title, breadcrumbs, matches: [{ id, route, title, content }] }`.
+// It differs from the theme's version:
+//   - Routes are canonicalized (trailing slash removed) to match the page_ids
+//     and URLs that the Python index builder writes to the semantic manifest.
+//   - preload() also starts loading the semantic artifacts. search() never
+//     waits for them; until they are ready, results are keyword-only.
+//   - When the artifacts are ready, page groups are reordered and extended by
+//     weighted reciprocal rank fusion (see semantic-search.js).
 
-// Change shortcut key to cmd+k on Mac, iPad or iPhone.
-document.addEventListener("DOMContentLoaded", () => {
-  if (/iPad|iPhone|Macintosh/.test(navigator.userAgent)) {
-    // select the kbd element under the .hextra-search-wrapper class
-    const keys = document.querySelectorAll(".hextra-search-wrapper kbd")
-    keys.forEach((key) => {
-      key.innerHTML = '<span class="hx:text-xs">⌘</span>K'
-    })
-  }
-})
-
-// Render the search data as JSON.
+// The search data is not fingerprinted: the Docker build and `just hugo search-index`
+// read public/en.search-data.json by that fixed name.
 // {{ $searchDataFile := printf "%s.search-data.json" .Language.Lang }}
 // {{ $searchData := resources.Get "json/search-data.json" | resources.ExecuteAsTemplate $searchDataFile . }}
-// {{ if hugo.IsProduction }}
-//   {{ $searchData := $searchData | minify | fingerprint }}
-// {{ end }}
-// {{ $noResultsFound := (T "noResultsFound") | default "No results found." }}
 ;(() => {
   const searchDataURL = "{{ $searchData.RelPermalink }}"
-  const resultsFoundTemplate = '{{ (T "resultsFound") | default "%d results found" }}'
   const semanticSearch = globalThis.SiteSemanticSearch
   // Fingerprinted, content-addressed artifact URLs resolved at build time. Hugo
   // hashes each file (`resources.Get | fingerprint`) and bakes its immutable URL
-  // into this already-fingerprinted script, so every page references exactly one
-  // build's complete set — no runtime manifest, no cross-build cache mixing.
+  // into this script, so every page references exactly one build's complete
+  // set — no runtime URL lookup, no cross-build cache mixing.
   // When artifacts are absent each `with` yields an empty string, the loader
   // constructor rejects it, and the catch leaves search in keyword-only mode.
   let semanticLoader = { state: "failed", initialize: () => Promise.resolve(undefined) }
@@ -58,324 +45,169 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch {
     // Artifacts absent or misconfigured: keep the keyword-only fallback loader.
   }
-  const getHybridDisplayResults = semanticSearch?.getHybridDisplayResults ?? ((keywordResults) => keywordResults)
+  const getHybridDisplayResults = semanticSearch?.getHybridDisplayResults ?? ((keywordGroups) => keywordGroups)
   // Shared with the semantic module so keyword page_ids/URLs match the Python
   // builder's route.rstrip("/") exactly; the identical inline fallback keeps
   // keyword-only search working when the semantic module fails to load.
   const canonicalizeRoute =
     semanticSearch?.canonicalizeRoute ?? ((route) => (route === "/" ? route : route.replace(/\/+$/, "")))
-  let initialization
 
-  const inputElements = document.querySelectorAll(".hextra-search-input")
-  for (const el of inputElements) {
-    el.addEventListener("focus", init)
-    el.addEventListener("keyup", search)
-    el.addEventListener("keydown", handleKeyDown)
-    el.addEventListener("input", handleInputChange)
-  }
-
-  const shortcutElements = document.querySelectorAll(".hextra-search-wrapper kbd")
-
-  function setShortcutElementsOpacity(opacity) {
-    shortcutElements.forEach((el) => {
-      el.style.opacity = opacity
-    })
-  }
-
-  function handleInputChange(e) {
-    const opacity = e.target.value.length > 0 ? 0 : 100
-    setShortcutElementsOpacity(opacity)
-  }
-
-  // Get the search wrapper, input, and results elements.
-  function getActiveSearchElement() {
-    const inputs = Array.from(document.querySelectorAll(".hextra-search-wrapper")).filter((el) => el.clientHeight > 0)
-    if (inputs.length === 1) {
-      return {
-        wrapper: inputs[0],
-        inputElement: inputs[0].querySelector(".hextra-search-input"),
-        resultsElement: inputs[0].querySelector(".hextra-search-results"),
-      }
-    }
-    return undefined
-  }
-
-  const INPUTS = ["input", "select", "button", "textarea"]
-
-  // Focus the search input when pressing ctrl+k/cmd+k or /.
-  document.addEventListener("keydown", (e) => {
-    const { inputElement } = getActiveSearchElement()
-    if (!inputElement) return
-
-    const activeElement = document.activeElement
-    const tagName = activeElement?.tagName
-    if (inputElement === activeElement || !tagName || INPUTS.includes(tagName) || activeElement?.isContentEditable)
-      return
-
-    if (e.key === "/" || (e.key === "k" && (e.metaKey /* for Mac */ || /* for non-Mac */ e.ctrlKey))) {
-      e.preventDefault()
-      inputElement.focus()
-    } else if (e.key === "Escape" && inputElement.value) {
-      inputElement.blur()
-    }
-  })
-
-  // Dismiss the search results when clicking outside the search box.
-  document.addEventListener("mousedown", (e) => {
-    const { inputElement, resultsElement } = getActiveSearchElement()
-    if (!inputElement || !resultsElement) return
-    if (e.target !== inputElement && e.target !== resultsElement && !resultsElement.contains(e.target)) {
-      setShortcutElementsOpacity(100)
-      hideSearchResults()
-    }
-  })
-
-  // Get the currently active result and its index.
-  function getActiveResult() {
-    const { resultsElement } = getActiveSearchElement()
-    if (!resultsElement) return { result: undefined, index: -1 }
-
-    const result = resultsElement.querySelector(".hextra-search-active")
-    if (!result) return { result: undefined, index: -1 }
-
-    const index = parseInt(result.dataset.index, 10)
-    return { result, index }
-  }
-
-  // Set the active result by index.
-  function setActiveResult(index) {
-    const { resultsElement } = getActiveSearchElement()
-    if (!resultsElement) return
-
-    const { result: activeResult } = getActiveResult()
-    activeResult?.classList.remove("hextra-search-active")
-    const result = resultsElement.querySelector(`[data-index="${index}"]`)
-    if (result) {
-      result.classList.add("hextra-search-active")
-      result.focus()
-    }
-  }
-
-  // Get the number of search results from the DOM.
-  function getResultsLength() {
-    const { resultsElement } = getActiveSearchElement()
-    if (!resultsElement) return 0
-    return resultsElement.dataset.count
-  }
-
-  // Finish the search by hiding the results and clearing the input.
-  function finishSearch() {
-    const { inputElement } = getActiveSearchElement()
-    if (!inputElement) return
-    hideSearchResults()
-    inputElement.value = ""
-    inputElement.blur()
-  }
-
-  function hideSearchResults() {
-    const { resultsElement } = getActiveSearchElement()
-    if (!resultsElement) return
-    resultsElement.classList.add("hx:hidden")
-  }
-
-  // Handle keyboard events.
-  function handleKeyDown(e) {
-    const { inputElement } = getActiveSearchElement()
-    if (!inputElement) return
-
-    const resultsLength = getResultsLength()
-    const { result: activeResult, index: activeIndex } = getActiveResult()
-
-    switch (e.key) {
-      case "ArrowUp":
-        e.preventDefault()
-        if (activeIndex > 0) setActiveResult(activeIndex - 1)
-        break
-      case "ArrowDown":
-        e.preventDefault()
-        if (activeIndex + 1 < resultsLength) setActiveResult(activeIndex + 1)
-        break
-      // biome-ignore lint/suspicious/noFallthroughSwitchClause: Enter falls through to Escape so its cleanup also dispatches the input event that restores the shortcut-key hint.
-      case "Enter":
-        e.preventDefault()
-        if (activeResult) {
-          activeResult.click()
-        }
-        finishSearch()
-      case "Escape":
-        e.preventDefault()
-        hideSearchResults()
-        // Clear the input when pressing escape
-        inputElement.value = ""
-        inputElement.dispatchEvent(new Event("input"))
-        // Remove focus from the input
-        inputElement.blur()
-        break
-    }
-  }
-
-  // Initializes the search.
-  function init(e) {
-    e.target.removeEventListener("focus", init)
-    if (!initialization) {
-      const keywordInitialization = window.pageIndex && window.sectionIndex ? Promise.resolve() : preloadIndex()
-      initialization = Promise.allSettled([keywordInitialization, semanticLoader.initialize()]).then((results) => {
-        // Semantic failures degrade silently by design; a keyword-index load
-        // failure is a real breakage that should surface rather than be swallowed.
-        if (results[0].status === "rejected") {
-          console.error("search keyword index failed to load", results[0].reason)
-        }
-        return results
-      })
-    }
-  }
+  let pageIndex
+  let sectionIndex
+  let indexPromise = null
+  // Canonical pageId -> breadcrumb trail, for semantic-only results.
+  const pageBreadcrumbs = new Map()
 
   /**
-   * Preloads the search index by fetching data and adding it to the FlexSearch index.
-   * @returns {Promise<void>} A promise that resolves when the index is preloaded.
+   * Starts loading the semantic artifacts and builds the keyword index on first use.
+   * @returns {Promise<void>} Resolves when the keyword index is ready; rejects if the
+   *   search data fails to load, and a later call retries.
    */
-  async function preloadIndex() {
-    const tokenize = '{{- site.Params.search.flexsearch.tokenize | default  "forward" -}}'
+  function preloadIndex() {
+    // Semantic failures degrade silently by design; the loader is idempotent.
+    semanticLoader.initialize()
+    if (indexPromise) return indexPromise
+    const attempt = (async () => {
+      const tokenize = '{{- site.Params.search.flexsearch.tokenize | default  "forward" -}}'
 
-    // https://github.com/TryGhost/Ghost/pull/21148
-    const regex =
-      /[\u{4E00}-\u{9FFF}\u{3040}-\u{309F}\u{30A0}-\u{30FF}\u{AC00}-\u{D7A3}\u{3400}-\u{4DBF}\u{20000}-\u{2A6DF}\u{2A700}-\u{2B73F}\u{2B740}-\u{2B81F}\u{2B820}-\u{2CEAF}\u{2CEB0}-\u{2EBEF}\u{30000}-\u{3134F}\u{31350}-\u{323AF}\u{2EBF0}-\u{2EE5F}\u{F900}-\u{FAFF}\u{2F800}-\u{2FA1F}]|[0-9A-Za-zа-я\u00C0-\u017F\u0400-\u04FF\u0600-\u06FF\u0980-\u09FF\u1E00-\u1EFF\u0590-\u05FF]+/gmu
-    const encode = (str) => {
-      return `${str}`.toLowerCase().match(regex) ?? []
-    }
-
-    window.pageIndex = new FlexSearch.Document({
-      tokenize,
-      encode,
-      cache: 100,
-      document: {
-        id: "id",
-        store: ["title", "crumb", "pageId"],
-        index: "content",
-      },
-    })
-
-    window.sectionIndex = new FlexSearch.Document({
-      tokenize,
-      encode,
-      cache: 100,
-      document: {
-        id: "id",
-        store: ["title", "content", "url", "display", "crumb"],
-        index: "content",
-        tag: [
-          {
-            field: "pageId",
-          },
-        ],
-      },
-    })
-
-    const resp = await fetch(searchDataURL)
-    const data = await resp.json()
-    let pageId = 0
-    for (const route in data) {
-      let pageContent = ""
-      ++pageId
-      const canonicalPageId = canonicalizeRoute(route)
-      const urlParts = route.split("/").filter((x) => x !== "" && !x.startsWith("#"))
-
-      let crumb = ""
-      let searchUrl = "/"
-      for (let i = 0; i < urlParts.length; i++) {
-        const urlPart = urlParts[i]
-        searchUrl += `${urlPart}/`
-
-        const crumbData = data[searchUrl]
-        if (!crumbData) {
-          console.warn("Excluded page", searchUrl, "- will not be included for search result breadcrumb for", route)
-          continue
-        }
-
-        let title = data[searchUrl].title
-        if (title === "_index") {
-          title = urlPart
-            .split("-")
-            .map((x) => x)
-            .join(" ")
-        }
-        crumb += title
-
-        if (i < urlParts.length - 1) {
-          crumb += " > "
-        }
+      // https://github.com/TryGhost/Ghost/pull/21148
+      const regex =
+        /[\u{4E00}-\u{9FFF}\u{3040}-\u{309F}\u{30A0}-\u{30FF}\u{AC00}-\u{D7A3}\u{3400}-\u{4DBF}\u{20000}-\u{2A6DF}\u{2A700}-\u{2B73F}\u{2B740}-\u{2B81F}\u{2B820}-\u{2CEAF}\u{2CEB0}-\u{2EBEF}\u{30000}-\u{3134F}\u{31350}-\u{323AF}\u{2EBF0}-\u{2EE5F}\u{F900}-\u{FAFF}\u{2F800}-\u{2FA1F}]|[0-9A-Za-zа-яÀ-ſЀ-ӿ؀-ۿঀ-৿Ḁ-ỿ֐-׿]+/gmu
+      const encode = (str) => {
+        return `${str}`.toLowerCase().match(regex) ?? []
       }
 
-      for (const heading in data[route].data) {
-        // Split on the first '#' only: keys are `id#title` and the title
-        // portion may itself contain '#' characters.
-        const sepIndex = heading.indexOf("#")
-        const hash = sepIndex === -1 ? heading : heading.slice(0, sepIndex)
-        const text = sepIndex === -1 ? "" : heading.slice(sepIndex + 1)
-        const url = canonicalizeRoute(route) + (hash ? `#${hash}` : "")
-        const title = text || data[route].title
+      pageIndex = new FlexSearch.Document({
+        tokenize,
+        encode,
+        cache: 100,
+        document: {
+          id: "id",
+          store: ["title", "breadcrumbs", "pageId"],
+          index: "content",
+        },
+      })
 
-        const content = data[route].data[heading] || ""
-        const paragraphs = content.split("\n").filter(Boolean)
+      sectionIndex = new FlexSearch.Document({
+        tokenize,
+        encode,
+        cache: 100,
+        document: {
+          id: "id",
+          store: ["title", "content", "url", "display", "crumb"],
+          index: "content",
+          tag: [
+            {
+              field: "pageId",
+            },
+          ],
+        },
+      })
 
-        sectionIndex.add({
-          id: url,
-          url,
-          title,
-          crumb,
-          pageId: `page_${pageId}`,
-          content: title,
-          ...(paragraphs[0] && { display: paragraphs[0] }),
-        })
+      const resp = await fetch(searchDataURL)
+      const data = await resp.json()
+      let pageId = 0
+      for (const route in data) {
+        let pageContent = ""
+        ++pageId
+        const canonicalPageId = canonicalizeRoute(route)
+        const urlParts = route.split("/").filter((x) => x !== "" && !x.startsWith("#"))
 
-        for (let i = 0; i < paragraphs.length; i++) {
+        let crumb = ""
+        const crumbParts = []
+        let searchUrl = "/"
+        for (let i = 0; i < urlParts.length; i++) {
+          const urlPart = urlParts[i]
+          searchUrl += `${urlPart}/`
+
+          const crumbData = data[searchUrl]
+          if (!crumbData) {
+            console.debug("Excluded page", searchUrl, "- will not be included for search result breadcrumb for", route)
+            continue
+          }
+
+          let title = data[searchUrl].title
+          if (title === "_index") {
+            title = urlPart
+              .split("-")
+              .map((x) => x)
+              .join(" ")
+          }
+          crumbParts.push(title)
+          crumb += title
+
+          if (i < urlParts.length - 1) {
+            crumb += " > "
+          }
+        }
+        const breadcrumbs = crumbParts.slice(0, -1)
+        pageBreadcrumbs.set(canonicalPageId, breadcrumbs)
+
+        for (const heading in data[route].data) {
+          const separator = heading.indexOf("#")
+          const hash = separator === -1 ? heading : heading.slice(0, separator)
+          const text = separator === -1 ? "" : heading.slice(separator + 1)
+          const url = canonicalPageId + (hash ? `#${hash}` : "")
+          const title = text || data[route].title
+
+          const content = data[route].data[heading] || ""
+          const paragraphs = content.split("\n").filter(Boolean)
+
           sectionIndex.add({
-            id: `${url}_${i}`,
+            id: url,
             url,
             title,
             crumb,
             pageId: `page_${pageId}`,
-            content: paragraphs[i],
+            content: title,
+            ...(paragraphs[0] && { display: paragraphs[0] }),
           })
+
+          for (let i = 0; i < paragraphs.length; i++) {
+            sectionIndex.add({
+              id: `${url}_${i}`,
+              url,
+              title,
+              crumb,
+              pageId: `page_${pageId}`,
+              content: paragraphs[i],
+            })
+          }
+
+          pageContent += ` ${title} ${content}`
         }
 
-        pageContent += ` ${title} ${content}`
+        pageIndex.add({
+          id: pageId,
+          pageId: canonicalPageId,
+          title: data[route].title,
+          breadcrumbs,
+          content: pageContent,
+        })
       }
-
-      window.pageIndex.add({
-        id: pageId,
-        pageId: canonicalPageId,
-        title: data[route].title,
-        crumb,
-        content: pageContent,
-      })
-    }
+    })()
+    // Clear the cached promise on failure so the next call retries instead of
+    // returning the rejection forever.
+    const wrapped = attempt.catch((err) => {
+      if (indexPromise === wrapped) indexPromise = null
+      pageIndex = undefined
+      sectionIndex = undefined
+      throw err
+    })
+    indexPromise = wrapped
+    return indexPromise
   }
 
   /**
-   * Performs a search based on the provided query and displays the results.
-   * @param {Event} e - The event object.
+   * Returns keyword page groups ordered by title-match count, then FlexSearch page
+   * rank, with duplicate sections removed. Call only after preloadIndex() resolves.
+   * Each group carries the canonical `pageId` that hybrid fusion joins on.
    */
-  function search(e) {
-    const query = e.target.value
-    if (!e.target.value) {
-      hideSearchResults()
-      return
-    }
-
-    const { resultsElement } = getActiveSearchElement()
-    while (resultsElement.firstChild) {
-      resultsElement.removeChild(resultsElement.firstChild)
-    }
-    resultsElement.classList.remove("hx:hidden")
-
-    // Configurable search limits with sensible defaults
-    const maxPageResults = parseInt("{{- site.Params.search.flexsearch.maxPageResults | default 20 -}}", 10)
+  function performKeywordSearch(query, maxPageResults) {
     const maxSectionResults = parseInt("{{- site.Params.search.flexsearch.maxSectionResults | default 10 -}}", 10)
-    const pageResults =
-      window.pageIndex.search(query, maxPageResults, { enrich: true, suggest: true })[0]?.result || []
+    const pageResults = pageIndex.search(query, maxPageResults, { enrich: true, suggest: true })[0]?.result || []
 
-    const results = []
+    const groups = []
     const pageTitleMatches = {}
 
     for (let i = 0; i < pageResults.length; i++) {
@@ -383,10 +215,17 @@ document.addEventListener("DOMContentLoaded", () => {
       pageTitleMatches[i] = 0
 
       const sectionResults =
-        window.sectionIndex.search(query, { enrich: true, suggest: true, tag: { "pageId": `page_${result.id}` } })[0]
-          ?.result || []
-      let isFirstItemOfPage = true
+        sectionIndex.search(query, { enrich: true, suggest: true, tag: { pageId: `page_${result.id}` } })[0]?.result ||
+        []
       const occurred = {}
+      const group = {
+        _page_rk: i,
+        pageId: result.doc.pageId,
+        route: "",
+        title: result.doc.title,
+        breadcrumbs: result.doc.breadcrumbs || [],
+        matches: [],
+      }
 
       const nResults = Math.min(sectionResults.length, maxSectionResults)
       for (let j = 0; j < nResults; j++) {
@@ -400,173 +239,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (occurred[`${url}@${content}`]) continue
         occurred[`${url}@${content}`] = true
-        results.push({
-          _page_rk: i,
-          _section_rk: j,
-          _page_id: result.doc.pageId,
-          _page_title: result.doc.title,
-          _crumb: result.doc.crumb,
-          route: url,
-          prefix: isFirstItemOfPage ? result.doc.crumb : undefined,
-          children: { title, content },
-        })
-        isFirstItemOfPage = false
+        if (!group.route) group.route = url.split("#")[0]
+        group.matches.push({ route: url, title, content })
       }
+
+      if (group.matches.length) groups.push(group)
     }
-    const sortedKeywordRows = results.sort((a, b) => {
-      // Sort by number of matches in the title.
-      if (a._page_rk === b._page_rk) {
-        return a._section_rk - b._section_rk
-      }
-      if (pageTitleMatches[a._page_rk] !== pageTitleMatches[b._page_rk]) {
-        return pageTitleMatches[b._page_rk] - pageTitleMatches[a._page_rk]
-      }
-      return a._page_rk - b._page_rk
-    })
-    const keywordCandidates = []
-    const seenKeywordPages = new Set()
-    for (const row of sortedKeywordRows) {
-      if (seenKeywordPages.has(row._page_id)) continue
-      seenKeywordPages.add(row._page_id)
-      keywordCandidates.push({
-        pageId: row._page_id,
-        route: row.route,
-        title: row._page_title,
-        heading: row.children.title,
-        crumb: row._crumb,
-        prefix: row.prefix ?? row._crumb,
-        keywordRoute: row.route,
-        content: row.children.content,
-        source: "keyword",
+
+    return groups
+      .sort((a, b) => {
+        if (pageTitleMatches[a._page_rk] !== pageTitleMatches[b._page_rk]) {
+          return pageTitleMatches[b._page_rk] - pageTitleMatches[a._page_rk]
+        }
+        return a._page_rk - b._page_rk
       })
-    }
-    const sortedResults = sortedKeywordRows.map((res) => ({
-      id: `${res._page_rk}_${res._section_rk}`,
-      route: res.route,
-      prefix: res.prefix,
-      children: res.children,
-    }))
-    const displayReadyResults = getHybridDisplayResults(
-      sortedResults,
-      keywordCandidates,
-      query,
-      semanticLoader,
-      maxPageResults,
-    )
-    displayResults(displayReadyResults, query)
+      .map(({ _page_rk: _, ...group }) => group)
   }
 
-  /**
-   * Displays the search results on the page.
-   *
-   * @param {Array} results - The array of search results.
-   * @param {string} query - The search query.
-   */
-  function displayResults(results, query) {
-    const { resultsElement } = getActiveSearchElement()
-    if (!resultsElement) return
+  // Assigns the unique option ids the dialog uses for keyboard navigation.
+  function withOptionIds(groups) {
+    let optionId = 0
+    return groups.map((group) => ({
+      id: `hextra-search-opt-${optionId++}`,
+      route: group.route,
+      title: group.title,
+      breadcrumbs: group.breadcrumbs,
+      matches: group.matches.map((match) => ({
+        id: `hextra-search-opt-${optionId++}`,
+        route: match.route,
+        title: match.title,
+        content: match.content,
+      })),
+    }))
+  }
 
-    if (!results.length) {
-      resultsElement.innerHTML = `<span class="hextra-search-no-result">{{ $noResultsFound | safeHTML }}</span>`
-      // Announce no results to screen readers
-      const wrapper = resultsElement.closest(".hextra-search-wrapper")
-      const statusEl = wrapper ? wrapper.querySelector(".hextra-search-status") : null
-      if (statusEl) {
-        statusEl.textContent = "{{ $noResultsFound | safeHTML }}"
-      }
-      return
-    }
-
-    // Append text with highlighted matches using safe text nodes.
-    function appendHighlightedText(container, text, query) {
-      if (!text) return
-      if (!query) {
-        container.textContent = text
-        return
-      }
-
-      const escapedQuery = query.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
-      if (!escapedQuery) {
-        container.textContent = text
-        return
-      }
-
-      const regex = new RegExp(escapedQuery, "gi")
-      let lastIndex = 0
-      let match
-      // biome-ignore lint/suspicious/noAssignInExpressions: idiomatic regex.exec() iteration loop.
-      while ((match = regex.exec(text)) !== null) {
-        if (match.index > lastIndex) {
-          container.appendChild(document.createTextNode(text.slice(lastIndex, match.index)))
-        }
-        const span = document.createElement("span")
-        span.className = "hextra-search-match"
-        span.textContent = match[0]
-        container.appendChild(span)
-        lastIndex = match.index + match[0].length
-      }
-      if (lastIndex < text.length) {
-        container.appendChild(document.createTextNode(text.slice(lastIndex)))
-      }
-    }
-
-    function handleMouseMove(e) {
-      const target = e.target.closest("a")
-      if (target) {
-        const active = resultsElement.querySelector("a.hextra-search-active")
-        if (active) {
-          active.classList.remove("hextra-search-active")
-        }
-        target.classList.add("hextra-search-active")
-      }
-    }
-
-    const fragment = document.createDocumentFragment()
-    for (let i = 0; i < results.length; i++) {
-      const result = results[i]
-      if (result.prefix) {
-        const prefix = document.createElement("div")
-        prefix.className = "hextra-search-prefix"
-        prefix.textContent = result.prefix
-        fragment.appendChild(prefix)
-      }
-      const li = document.createElement("li")
-      const link = document.createElement("a")
-      link.dataset.index = i
-      link.href = result.route
-      if (i === 0) {
-        link.classList.add("hextra-search-active")
-      }
-
-      const title = document.createElement("div")
-      title.className = "hextra-search-title"
-      appendHighlightedText(title, result.children.title, query)
-      link.appendChild(title)
-
-      if (result.children.content) {
-        const excerpt = document.createElement("div")
-        excerpt.className = "hextra-search-excerpt"
-        appendHighlightedText(excerpt, result.children.content, query)
-        link.appendChild(excerpt)
-      }
-
-      li.appendChild(link)
-      li.addEventListener("mousemove", handleMouseMove)
-      li.addEventListener("keydown", handleKeyDown)
-      link.addEventListener("click", finishSearch)
-      fragment.appendChild(li)
-    }
-    resultsElement.appendChild(fragment)
-    resultsElement.dataset.count = results.length
-
-    // Announce results count to screen readers
-    const wrapper = resultsElement.closest(".hextra-search-wrapper")
-    const statusEl = wrapper ? wrapper.querySelector(".hextra-search-status") : null
-    if (statusEl) {
-      statusEl.textContent =
-        results.length > 0
-          ? resultsFoundTemplate.replace("%d", results.length.toString())
-          : "{{ $noResultsFound | safeHTML }}"
-    }
+  window.hextraSearch = {
+    preload: preloadIndex,
+    async search(query) {
+      await preloadIndex()
+      const maxPageResults = parseInt("{{- site.Params.search.flexsearch.maxPageResults | default 20 -}}", 10)
+      const keywordGroups = performKeywordSearch(query, maxPageResults)
+      return withOptionIds(
+        getHybridDisplayResults(keywordGroups, query, semanticLoader, maxPageResults, pageBreadcrumbs),
+      )
+    },
   }
 })()
