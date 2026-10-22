@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 import sys
+from typing import TYPE_CHECKING
 
 from site_search.chunking import partition_body
 from site_search.embedding import StaticEmbedding, load_embedding_model
@@ -14,9 +14,13 @@ from site_search.gate import (
     EmptyKind,
     GateResult,
     evaluate_corpus,
+    find_title_only_sections,
     render_report,
 )
 from site_search.loader import SearchDataStructureError, SearchRecord, load_search_corpus
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Mapping, Sequence
 
 
 class CorpusRejectedError(RuntimeError):
@@ -98,7 +102,12 @@ def build_index(
     """Validate a Hugo corpus and publish a semantic artifact set."""
     corpus = load_search_corpus(search_data)
     records = corpus.records
-    gate_result = evaluate_corpus(records, suspicious_rate_limit=suspicious_rate_limit)
+    gate_result = evaluate_corpus(
+        records,
+        # Hugo writes the corpus at the root of the rendered site.
+        title_only_sections=find_title_only_sections(search_data.parent, records),
+        suspicious_rate_limit=suspicious_rate_limit,
+    )
     if not gate_result.passed:
         raise CorpusRejectedError(render_report(gate_result))
 

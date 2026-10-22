@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-from pytest import CaptureFixture
+import pytest
 
 from tokenizers import Tokenizer, normalizers, pre_tokenizers
 from tokenizers.models import WordPiece
@@ -14,6 +13,10 @@ import numpy.typing as npt
 
 from site_search.build_index import BuildSummary, CorpusRejectedError, build_index, main
 from site_search.embedding import embed_token_ids
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
 
 
 class FakeEmbeddingModel:
@@ -75,16 +78,28 @@ def test_rejected_corpus_does_not_modify_artifact_output(tmp_path: Path) -> None
         model_loaded = True
         return FakeEmbeddingModel()
 
-    try:
+    with pytest.raises(CorpusRejectedError, match=r"gate: FAIL"):
         build_index(search_data, output, model_factory=model_factory)
-    except CorpusRejectedError as exc:
-        assert "gate: FAIL" in str(exc)
-    else:
-        raise AssertionError("suspicious corpus unexpectedly built")
 
     assert model_loaded is False
     assert [path.name for path in output.iterdir()] == ["meta.json"]
     assert (output / "meta.json").read_text() == '{"complete":true}'
+
+
+def test_builder_accepts_title_only_section_shown_by_rendered_html(tmp_path: Path) -> None:
+    search_data = tmp_path / "search-data.json"
+    data = {"plain#Plain": "plain body", "parent#Parent": "", **{f"s{i}#Known {i}": "known body" for i in range(9)}}
+    _write_corpus(search_data, data)
+    page = tmp_path / "blog" / "example" / "index.html"
+    page.parent.mkdir(parents=True)
+    page.write_text(
+        '<h2 data-hextra-search-id="parent">Parent</h2>\n<h3 data-hextra-search-id="s0">Known 0</h3><p>known body</p>',
+        encoding="utf-8",
+    )
+
+    summary = build_index(search_data, tmp_path / "artifacts", model_factory=FakeEmbeddingModel)
+
+    assert summary.gate_result.passed
 
 
 def test_builder_embeds_heading_isolated_context_in_order(tmp_path: Path) -> None:
@@ -137,7 +152,9 @@ def test_builder_derives_intro_page_identity_and_nested_breadcrumbs_from_corpus(
     ]
 
 
-def test_cli_uses_arguments_and_reports_exact_artifact_sizes(tmp_path: Path, capsys: CaptureFixture[str]) -> None:
+def test_cli_uses_arguments_and_reports_exact_artifact_sizes(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     search_data = tmp_path / "search-data.json"
     _write_corpus(search_data, {"plain#Plain": "plain body"})
     output = tmp_path / "artifacts"

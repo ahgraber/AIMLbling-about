@@ -6,21 +6,33 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 import re
-from typing import Sequence
+from typing import TYPE_CHECKING
 
 from site_search.loader import SearchDataStructureError, SearchRecord, load_search_data
 
+if TYPE_CHECKING:
+    from collections.abc import Collection, Sequence
+
 DEFAULT_SUSPICIOUS_RATE_LIMIT = 0.01
-# A title-only section under a synthetic `heading-N` anchor is legitimately
-# empty, but so is a link-heading section that a theme/format regression has
-# stripped of its body — the two are indistinguishable per section in the
-# flattened corpus. The suspicious-rate gate therefore cannot see a mass
-# re-emptying (the 75%-empty failure this gate exists to catch), because those
-# empties are classified legitimate. This ceiling is the tripwire for that
-# class: a healthy corpus sits well under 1% legitimate-empty, so a spike far
-# above it signals a regression regardless of per-section classification.
+# An empty section under a synthetic `heading-N` anchor is classified
+# legitimate, but a link-heading section that a theme/format regression has
+# stripped of its body looks the same in the flattened corpus. The
+# suspicious-rate gate therefore cannot see a mass re-emptying of those
+# sections (the 75%-empty failure this gate exists to catch). This ceiling is
+# the tripwire for that class: a healthy corpus sits at a few percent
+# legitimate-empty, mostly parent headings followed directly by a sub-heading,
+# so a spike far above it signals a regression regardless of per-section
+# classification.
 DEFAULT_LEGITIMATE_RATE_LIMIT = 0.10
 _SYNTHETIC_HEADING = re.compile(r"heading-\d+#")
+# A heading as Hextra's render hook emits it (`data-hextra-search-id` holds the
+# anchor), followed by only whitespace and then the next heading. The body never
+# crosses the heading's own closing tag, and the lookahead leaves the next
+# heading unconsumed so runs of consecutive headings all match.
+_TITLE_ONLY_HEADING = re.compile(
+    r'<h([1-6]) data-hextra-search-id="([^"]+)"(?:(?!</h\1>).)*</h\1>(?=\s*<h[1-6][\s>])',
+    re.DOTALL,
+)
 
 
 class EmptyKind(str, Enum):
@@ -88,29 +100,63 @@ def _source(route: str) -> str:
     return "blog"
 
 
-def _classify(record: SearchRecord) -> EmptyKind:
+def _classify(record: SearchRecord, title_only_sections: Collection[tuple[str, str]]) -> EmptyKind:
     if record.fragment_text.strip():
         return EmptyKind.NON_EMPTY
     if record.heading_key == "" or record.heading_key.startswith("#"):
         return EmptyKind.LEGITIMATE
     if _SYNTHETIC_HEADING.fullmatch(record.heading_key.split("#", 1)[0] + "#"):
         return EmptyKind.LEGITIMATE
+    if (record.route, record.heading_key) in title_only_sections:
+        return EmptyKind.LEGITIMATE
     return EmptyKind.SUSPICIOUS
+
+
+def find_title_only_sections(public_dir: Path, records: Sequence[SearchRecord]) -> frozenset[tuple[str, str]]:
+    """Return the empty sections whose rendered heading is followed directly by another heading.
+
+    Reads ``public_dir/<route>/index.html`` for each route that has otherwise
+    suspicious empty sections. A route without that file contributes no
+    exemptions, so its empty sections stay suspicious.
+
+    Returns:
+        ``(route, heading_key)`` pairs.
+    """
+    candidates: dict[str, list[SearchRecord]] = {}
+    for record in records:
+        if _classify(record, frozenset()) is EmptyKind.SUSPICIOUS:
+            candidates.setdefault(record.route, []).append(record)
+
+    found: set[tuple[str, str]] = set()
+    for route, page_records in candidates.items():
+        page = public_dir / route.strip("/") / "index.html"
+        if not page.is_file():
+            continue
+        anchors = {match.group(2) for match in _TITLE_ONLY_HEADING.finditer(page.read_text(encoding="utf-8"))}
+        found.update(
+            (route, record.heading_key) for record in page_records if record.heading_key.split("#", 1)[0] in anchors
+        )
+    return frozenset(found)
 
 
 def evaluate_corpus(
     records: Sequence[SearchRecord],
     *,
+    title_only_sections: Collection[tuple[str, str]] = frozenset(),
     suspicious_rate_limit: float = DEFAULT_SUSPICIOUS_RATE_LIMIT,
     legitimate_rate_limit: float = DEFAULT_LEGITIMATE_RATE_LIMIT,
 ) -> GateResult:
-    """Classify validated records and apply the suspicious- and legitimate-empty limits."""
+    """Classify validated records and apply the suspicious- and legitimate-empty limits.
+
+    ``title_only_sections`` lists ``(route, heading_key)`` pairs from
+    `find_title_only_sections`; empty sections in it are legitimate.
+    """
     if not 0.0 <= suspicious_rate_limit <= 1.0:
         raise ValueError("suspicious_rate_limit must be between 0 and 1")
     if not 0.0 <= legitimate_rate_limit <= 1.0:
         raise ValueError("legitimate_rate_limit must be between 0 and 1")
     return GateResult(
-        tuple(ClassifiedRecord(record, _classify(record)) for record in records),
+        tuple(ClassifiedRecord(record, _classify(record, title_only_sections)) for record in records),
         suspicious_rate_limit,
         legitimate_rate_limit,
     )
@@ -133,9 +179,11 @@ def render_report(result: GateResult) -> str:
         f"suspicious_rate={result.suspicious_rate:.3%} limit={result.suspicious_rate_limit:.3%} "
         f"legitimate_rate={result.legitimate_rate:.3%} legit_limit={result.legitimate_rate_limit:.3%}"
     )
-    for item in result.records:
-        if item.kind is EmptyKind.SUSPICIOUS:
-            lines.append(f"suspicious: {item.record.route} {item.record.heading_key!r}")
+    lines.extend(
+        f"suspicious: {item.record.route} {item.record.heading_key!r}"
+        for item in result.records
+        if item.kind is EmptyKind.SUSPICIOUS
+    )
     lines.append("gate: PASS" if result.passed else "gate: FAIL")
     return "\n".join(lines)
 
@@ -148,8 +196,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--legitimate-rate-limit", type=float, default=DEFAULT_LEGITIMATE_RATE_LIMIT)
     args = parser.parse_args(argv)
     try:
+        records = load_search_data(args.path)
         result = evaluate_corpus(
-            load_search_data(args.path),
+            records,
+            # Hugo writes the corpus at the root of the rendered site.
+            title_only_sections=find_title_only_sections(args.path.parent, records),
             suspicious_rate_limit=args.suspicious_rate_limit,
             legitimate_rate_limit=args.legitimate_rate_limit,
         )

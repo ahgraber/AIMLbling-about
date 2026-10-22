@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from site_search.gate import EmptyKind, evaluate_corpus, render_report
+from site_search.gate import EmptyKind, evaluate_corpus, find_title_only_sections, main as gate_main, render_report
 from site_search.loader import SearchDataStructureError, SearchRecord, load_search_data
 
 FIXTURE = Path(__file__).parent / "fixtures" / "search-data.sample.json"
@@ -26,14 +26,14 @@ def test_section_content_completeness() -> None:
 
 
 def test_markdown_link_headings_carry_body_in_real_corpus() -> None:
-    """Guard the fragments.html attribution against the corpus-emptying regression.
+    """Guard the theme's section attribution against the corpus-emptying regression.
 
     The hand-authored fixture in test_section_content_completeness assumes correct
     upstream attribution; it cannot catch a theme-template regression. This checks
     the *actual* rendered corpus: arxiv-style markdown-link headings (`[id] title`,
-    the treadmill's heaviest structure) must carry their body text. The pre-fix
-    bug emptied ~75% of these sections, so a low empty-rate ceiling trips on a
-    regression without pinning to volatile treadmill page URLs. Skips on a fresh
+    the treadmill's heaviest structure) must carry their body text. A low
+    empty-rate ceiling trips on a regression without pinning to volatile
+    treadmill page URLs. Skips on a fresh
     checkout / CI without a Hugo build.
     """
     if not REAL_CORPUS.exists():
@@ -51,7 +51,7 @@ def test_markdown_link_headings_carry_body_in_real_corpus() -> None:
     empty_rate = len(empty) / len(link_headings)
     assert empty_rate < 0.15, (
         f"{empty_rate:.1%} of markdown-link headings are empty ({len(empty)}/{len(link_headings)}) — "
-        "possible fragments.html heading-link attribution regression"
+        "possible theme heading-link attribution regression"
     )
 
 
@@ -83,6 +83,69 @@ def test_legitimate_empty_spike_fails_gate() -> None:
     assert "gate: FAIL" in render_report(result)
 
 
+def _write_page(public_dir: Path, route: str, html: str) -> None:
+    page = public_dir / route.strip("/") / "index.html"
+    page.parent.mkdir(parents=True, exist_ok=True)
+    page.write_text(html, encoding="utf-8")
+
+
+def _heading(level: int, anchor: str, title: str) -> str:
+    """Render a heading the way Hextra's heading render hook does."""
+    return (
+        f'<h{level} data-hextra-search-id="{anchor}">{title}'
+        f'<span class="hx:absolute hx:-mt-20" id="{anchor}"></span>'
+        f'<a href="#{anchor}" class="subheading-anchor" aria-label="Permalink for this section"></a></h{level}>'
+    )
+
+
+def test_heading_followed_directly_by_heading_is_legitimately_empty(tmp_path: Path) -> None:
+    _write_page(
+        tmp_path,
+        "/blog/p/",
+        f"{_heading(2, 'parent', 'Parent')}\n{_heading(3, 'child', 'Child')}\n<p>Body</p>",
+    )
+    records = [
+        SearchRecord("/blog/p/", "parent#Parent", "P", ""),
+        SearchRecord("/blog/p/", "child#Child", "P", "Body"),
+    ]
+
+    result = evaluate_corpus(records, title_only_sections=find_title_only_sections(tmp_path, records))
+
+    assert result.kind_for("/blog/p/", "parent#Parent") is EmptyKind.LEGITIMATE
+
+
+def test_empty_section_whose_html_has_body_text_stays_suspicious(tmp_path: Path) -> None:
+    _write_page(tmp_path, "/blog/p/", f"{_heading(2, 'lost', 'Lost')}\n<p>Body the corpus dropped</p>")
+    records = [SearchRecord("/blog/p/", "lost#Lost", "P", "")]
+
+    result = evaluate_corpus(records, title_only_sections=find_title_only_sections(tmp_path, records))
+
+    assert result.kind_for("/blog/p/", "lost#Lost") is EmptyKind.SUSPICIOUS
+
+
+def test_empty_section_without_rendered_page_stays_suspicious(tmp_path: Path) -> None:
+    records = [SearchRecord("/blog/missing/", "parent#Parent", "P", "")]
+
+    result = evaluate_corpus(records, title_only_sections=find_title_only_sections(tmp_path, records))
+
+    assert result.kind_for("/blog/missing/", "parent#Parent") is EmptyKind.SUSPICIOUS
+
+
+def test_gate_cli_exempts_title_only_sections_from_rendered_html(tmp_path: Path) -> None:
+    _write_page(
+        tmp_path,
+        "/blog/p/",
+        f"{_heading(2, 'parent', 'Parent')}\n{_heading(3, 'child', 'Child')}\n<p>Body</p>",
+    )
+    corpus = tmp_path / "en.search-data.json"
+    corpus.write_text(
+        '{"/blog/p/":{"title":"P","data":{"parent#Parent":"","child#Child":"Body"}}}',
+        encoding="utf-8",
+    )
+
+    assert gate_main([str(corpus), "--legitimate-rate-limit", "1.0"]) == 0
+
+
 def test_whitespace_only_named_section_is_suspicious() -> None:
     result = evaluate_corpus([SearchRecord("/blog/example/", "named#Named", "Example", " \n\t")])
 
@@ -91,7 +154,7 @@ def test_whitespace_only_named_section_is_suspicious() -> None:
 
 
 def test_format_canary() -> None:
-    with pytest.raises(SearchDataStructureError, match="data.*object"):
+    with pytest.raises(SearchDataStructureError, match=r"data.*object"):
         load_search_data(MALFORMED_FIXTURE)
 
 

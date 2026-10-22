@@ -75,3 +75,5 @@ Every gate run SHALL report total section count and empty-section counts classif
 
 - **Implementation**: `site-search/src/site_search/loader.py`, `gate.py`, `build_index.py`
 - **Dependencies**: none (foundation capability)
+- **Title-only detection**: the flattened corpus has no heading order, so the gate reads each page's rendered HTML beside the corpus (`public/<route>/index.html`) and treats an empty section as title-only when its heading (matched by Hextra's `data-hextra-search-id` attribute) is followed directly by another heading.
+  A page without rendered HTML gets no exemption.
