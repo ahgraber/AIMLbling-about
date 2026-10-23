@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_lexical_keyword_reference_is_stable_and_page_deduplicated() -> None:
@@ -61,7 +64,7 @@ def test_missing_label_page_has_query_and_page_diagnostic() -> None:
 
     labels = (QueryLabel("find the missing essay", "navigational", "/missing", None, "fixture"),)
 
-    with pytest.raises(EvaluationDataError, match="find the missing essay.*?/missing"):
+    with pytest.raises(EvaluationDataError, match=r"find the missing essay.*?/missing"):
         validate_label_pages(labels, {"/present"})
 
 
@@ -89,8 +92,8 @@ def test_node_bridge_executes_shipped_semantic_rollup_and_hybrid_fusion(tmp_path
         },
     }
     manifest = [
-        {"chunk_id": "a", "page_id": "/a", "url": "/a", "title": "A", "heading": "A", "crumb": "A"},
-        {"chunk_id": "b", "page_id": "/b", "url": "/b", "title": "B", "heading": "B", "crumb": "B"},
+        {"chunk_id": "a", "page_id": "/a", "url": "/a", "title": "A", "heading": "A"},
+        {"chunk_id": "b", "page_id": "/b", "url": "/b", "title": "B", "heading": "B"},
     ]
     (tmp_path / "token-table.bin").write_bytes(
         np.asarray([[0, 0], [10, 0], [0, 10], [10, 10]], dtype=np.int8).tobytes()

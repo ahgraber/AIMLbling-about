@@ -29,7 +29,7 @@ PARITY_CASES = (
     # chars BERT removes (not spacing); NBSP is a Zs separator it collapses to a
     # space; tab/newline are BERT whitespace. Guards the clean_text ordering.
     "vertical\x0btab and\x0cform feed",
-    "non breaking\tspace\nlines",
+    "non\u00a0breaking\tspace\nlines",
 )
 CJK = re.compile("[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\u3040-\u30ff\uac00-\ud7a3]")
 
@@ -41,7 +41,7 @@ def parity_result(
     model = load_embedding_model(source=potion_model_path, dimensions=128)
     artifact_dir = tmp_path_factory.mktemp("parity-artifacts")
     export_artifacts(
-        [Chunk("probe", "/probe", "/probe", "Probe", "Probe", "Probe", "semantic search")],
+        [Chunk("probe", "/probe", "/probe", "Probe", "Probe", "semantic search")],
         model,
         artifact_dir,
     )
@@ -70,9 +70,9 @@ def _bridge_output(
     parity_result: tuple[StaticEmbeddingModel, dict[str, Any], subprocess.CompletedProcess[str]],
 ) -> tuple[StaticEmbeddingModel, dict[str, Any]]:
     model, _, completed = parity_result
-    assert (
-        completed.returncode == 0
-    ), f"Node parity bridge failed with exit {completed.returncode}: stderr={completed.stderr!r} stdout={completed.stdout!r}"
+    assert completed.returncode == 0, (
+        f"Node parity bridge failed with exit {completed.returncode}: stderr={completed.stderr!r} stdout={completed.stdout!r}"
+    )
     return model, json.loads(completed.stdout)
 
 
@@ -87,12 +87,12 @@ def test_token_sequences_match_exported_config_and_python_reference(
         python_ids = model.tokenize([text])[0]
         exported_ids = tokenize_from_config(text, config)
         javascript_ids = result["token_ids"]
-        assert (
-            exported_ids == python_ids
-        ), f"exported tokenizer mismatch for {text!r}: python={python_ids!r}, exported={exported_ids!r}"
-        assert (
-            javascript_ids == python_ids
-        ), f"token mismatch for {text!r}: python={python_ids!r}, javascript={javascript_ids!r}"
+        assert exported_ids == python_ids, (
+            f"exported tokenizer mismatch for {text!r}: python={python_ids!r}, exported={exported_ids!r}"
+        )
+        assert javascript_ids == python_ids, (
+            f"token mismatch for {text!r}: python={python_ids!r}, javascript={javascript_ids!r}"
+        )
 
 
 def test_embedding_vectors(
@@ -104,10 +104,12 @@ def test_embedding_vectors(
     for text, python_vector, result in zip(PARITY_CASES, python_vectors, javascript["results"], strict=True):
         javascript_vector = result["vector"]
         if not result["token_ids"]:
-            assert javascript_vector is None and np.count_nonzero(python_vector) == 0, (
+            mismatch = (
                 f"OOV vector mismatch for {text!r}: python={python_vector.tolist()!r}, "
                 f"javascript={javascript_vector!r}"
             )
+            assert javascript_vector is None, mismatch
+            assert np.count_nonzero(python_vector) == 0, mismatch
             continue
         client_vector = np.asarray(javascript_vector, dtype=np.float32)
         cosine = float(np.dot(python_vector, client_vector))
@@ -122,6 +124,6 @@ def test_real_corpus_has_no_cjk_case_and_keeps_cjk_parity_explicitly_na() -> Non
         pytest.skip("rendered corpus is required; run `just hugo search-index` first")
     corpus_text = CORPUS.read_text(encoding="utf-8")
 
-    assert (
-        CJK.search(corpus_text) is None
-    ), "CJK is now present in the real corpus; replace this N/A canary with a representative CJK parity case"
+    assert CJK.search(corpus_text) is None, (
+        "CJK is now present in the real corpus; replace this N/A canary with a representative CJK parity case"
+    )

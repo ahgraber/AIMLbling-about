@@ -18,8 +18,8 @@ function validPayloads() {
     "token-scales.bin": new Float32Array([0.5, 0.25]).buffer,
     "doc-vectors.bin": new Int8Array([5, 6, 7, 8]).buffer,
     "manifest.json": [
-      { chunk_id: "one", page_id: "/one", url: "/one", title: "One", heading: "One", crumb: "One" },
-      { chunk_id: "two", page_id: "/two", url: "/two#part", title: "Two", heading: "Part", crumb: "Two" },
+      { chunk_id: "one", page_id: "/one", url: "/one", title: "One", heading: "One" },
+      { chunk_id: "two", page_id: "/two", url: "/two#part", title: "Two", heading: "Part" },
     ],
     "tokenizer-config.json": {
       version: 1,

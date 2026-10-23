@@ -7,15 +7,19 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
-from typing import Any, Mapping, Sequence
+from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
 from tokenizers import Tokenizer
 
 import numpy as np
 
-from site_search.embedding import StaticEmbedding
 from site_search.quantize import quantize_global, quantize_rows
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+    from site_search.embedding import StaticEmbedding
 
 ARTIFACT_NAMES = (
     "token-table.bin",
@@ -34,7 +38,6 @@ class Chunk:
     url: str
     title: str
     heading: str
-    crumb: str
     text: str
 
 
@@ -143,7 +146,6 @@ def export_artifacts(
             "url": chunk.url,
             "title": chunk.title,
             "heading": chunk.heading,
-            "crumb": chunk.crumb,
         }
         for chunk in included_chunks
     ]

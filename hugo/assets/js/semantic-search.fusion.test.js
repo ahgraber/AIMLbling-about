@@ -9,8 +9,6 @@ function keyword(pageId, route) {
     route,
     title: `keyword ${pageId}`,
     heading: `keyword ${pageId}`,
-    crumb: `keyword crumb ${pageId}`,
-    prefix: `keyword prefix ${pageId}`,
     untouched: `keyword untouched ${pageId}`,
     source: "keyword",
   }
@@ -22,7 +20,6 @@ function semantic(pageId, route, score) {
     route,
     title: `semantic ${pageId}`,
     heading: `semantic ${pageId}`,
-    crumb: `semantic crumb ${pageId}`,
     score,
     source: "semantic",
   }
@@ -40,8 +37,6 @@ test("agreement across both engines outranks either single-signal page and keeps
   assert.equal(ranked[0].route, "/both-keyword")
   assert.equal(ranked[0].title, "keyword both")
   assert.equal(ranked[0].heading, "keyword both")
-  assert.equal(ranked[0].crumb, "keyword crumb both")
-  assert.equal(ranked[0].prefix, "keyword prefix both")
   assert.equal(ranked[0].untouched, "keyword untouched both")
   assert.equal(ranked[0].source, "keyword")
   assert.equal(ranked[0].keywordRank, 2)
@@ -61,8 +56,7 @@ test("semantic-only pages join the union and semantic weight resolves single-sig
     ranked.map((result) => result.pageId),
     ["semantic-only", "keyword-only"],
   )
-  assert.equal(ranked[0].crumb, "semantic crumb semantic-only")
-  assert.equal(ranked[0].prefix, undefined)
+  assert.equal(ranked[0].heading, "semantic semantic-only")
 })
 
 test("fusion independently truncates keyword pages and rolled-up semantic pages to ten", () => {

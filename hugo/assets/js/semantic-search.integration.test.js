@@ -39,7 +39,6 @@ function readyLoader(bestRoute = "/both#semantic") {
           url: bestRoute,
           title: "Both semantic",
           heading: "Semantic section",
-          crumb: "Semantic > Both",
         },
         {
           chunk_id: "semantic-only",
@@ -47,7 +46,6 @@ function readyLoader(bestRoute = "/both#semantic") {
           url: "/semantic-only#best",
           title: "Semantic only",
           heading: "Best section",
-          crumb: "Semantic > Only",
         },
       ],
       tokenizerConfig: {
