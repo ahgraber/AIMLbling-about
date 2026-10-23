@@ -3,7 +3,6 @@ from __future__ import annotations
 import base64
 import json
 from pathlib import Path
-import re
 import shutil
 import subprocess
 from typing import Any
@@ -17,7 +16,6 @@ from site_search.export import Chunk, export_artifacts, tokenize_from_config
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RUNNER = REPO_ROOT / "site-search" / "tests" / "js" / "semantic-search-parity.js"
-CORPUS = REPO_ROOT / "hugo" / "public" / "en.search-data.json"
 FIDELITY_TOLERANCE = 0.999
 PARITY_CASES = (
     "semantic search",
@@ -30,8 +28,12 @@ PARITY_CASES = (
     # space; tab/newline are BERT whitespace. Guards the clean_text ordering.
     "vertical\x0btab and\x0cform feed",
     "non\u00a0breaking\tspace\nlines",
+    # CJK: BERT splits each CJK character into its own token (handle_chinese_chars);
+    # the model's vocabulary has none, so both sides must drop them identically.
+    # The real corpus quotes one ("Real" (\u5b9e), treadmill 2026-07-21).
+    "comes down to a single word: Real (\u5b9e)",
+    "\u5b9e\u65f6 semantic search",
 )
-CJK = re.compile("[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\u3040-\u30ff\uac00-\ud7a3]")
 
 
 @pytest.fixture(scope="module")
@@ -117,13 +119,3 @@ def test_embedding_vectors(
             f"embedding mismatch for {text!r}: cosine={cosine}, python={python_vector.tolist()!r}, "
             f"javascript={javascript_vector!r}"
         )
-
-
-def test_real_corpus_has_no_cjk_case_and_keeps_cjk_parity_explicitly_na() -> None:
-    if not CORPUS.exists():
-        pytest.skip("rendered corpus is required; run `just hugo search-index` first")
-    corpus_text = CORPUS.read_text(encoding="utf-8")
-
-    assert CJK.search(corpus_text) is None, (
-        "CJK is now present in the real corpus; replace this N/A canary with a representative CJK parity case"
-    )
