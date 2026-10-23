@@ -75,20 +75,15 @@ def test_rejected_corpus_does_not_modify_artifact_output(tmp_path: Path) -> None
     assert (output / "meta.json").read_text() == '{"complete":true}'
 
 
-def test_builder_accepts_title_only_section_shown_by_rendered_html(tmp_path: Path) -> None:
+def test_builder_records_section_and_empty_counts_in_metadata(tmp_path: Path) -> None:
     search_data = tmp_path / "search-data.json"
-    data = {"plain#Plain": "plain body", "parent#Parent": "", **{f"s{i}#Known {i}": "known body" for i in range(9)}}
-    _write_corpus(search_data, data)
-    page = tmp_path / "blog" / "example" / "index.html"
-    page.parent.mkdir(parents=True)
-    page.write_text(
-        '<h2 data-hextra-search-id="parent">Parent</h2>\n<h3 data-hextra-search-id="s0">Known 0</h3><p>known body</p>',
-        encoding="utf-8",
-    )
+    _write_corpus(search_data, {"plain#Plain": "plain body", "known#Known": "known body", "parent#Parent": ""})
+    output = tmp_path / "artifacts"
 
-    summary = build_index(search_data, tmp_path / "artifacts", model_factory=FakeEmbeddingModel)
+    build_index(search_data, output, model_factory=FakeEmbeddingModel)
 
-    assert summary.gate_result.passed
+    meta = json.loads((output / "meta.json").read_text())
+    assert meta["corpus_stats"] == {"section_count": 3, "empty_count": 1}
 
 
 def test_builder_embeds_heading_isolated_context_in_order(tmp_path: Path) -> None:

@@ -9,14 +9,7 @@ from typing import TYPE_CHECKING
 from site_search.chunking import partition_body
 from site_search.embedding import StaticEmbedding, load_embedding_model
 from site_search.export import Chunk, export_artifacts
-from site_search.gate import (
-    DEFAULT_SUSPICIOUS_RATE_LIMIT,
-    EmptyKind,
-    GateResult,
-    evaluate_corpus,
-    find_title_only_sections,
-    render_report,
-)
+from site_search.gate import DEFAULT_EMPTY_RATE_LIMIT, GateResult, evaluate_corpus, render_report
 from site_search.loader import SearchDataStructureError, SearchRecord, load_search_data, section_location
 
 if TYPE_CHECKING:
@@ -65,26 +58,17 @@ def build_index(
     output: Path,
     *,
     model_factory: Callable[[], StaticEmbedding] = load_embedding_model,
-    suspicious_rate_limit: float = DEFAULT_SUSPICIOUS_RATE_LIMIT,
+    empty_rate_limit: float = DEFAULT_EMPTY_RATE_LIMIT,
 ) -> BuildSummary:
     """Validate a Hugo corpus and publish a semantic artifact set."""
     records = load_search_data(search_data)
-    gate_result = evaluate_corpus(
-        records,
-        # Hugo writes the corpus at the root of the rendered site.
-        title_only_sections=find_title_only_sections(search_data.parent, records),
-        suspicious_rate_limit=suspicious_rate_limit,
-    )
+    gate_result = evaluate_corpus(records, empty_rate_limit=empty_rate_limit)
     if not gate_result.passed:
         raise CorpusRejectedError(render_report(gate_result))
 
     model = model_factory()
     chunks = _chunks(records, model)
-    corpus_stats = {
-        "section_count": len(records),
-        "legitimate_empty_count": sum(item.kind is EmptyKind.LEGITIMATE for item in gate_result.records),
-        "suspicious_empty_count": gate_result.suspicious_count,
-    }
+    corpus_stats = {"section_count": len(records), "empty_count": gate_result.empty_count}
     export_result = export_artifacts(chunks, model, output, corpus_stats=corpus_stats)
     return BuildSummary(
         gate_result=gate_result,
