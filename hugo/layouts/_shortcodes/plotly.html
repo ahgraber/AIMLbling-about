@@ -15,13 +15,17 @@
 </figure>
 
 <script>
-fetch("{{ $json }}")  // Ensure the JSON URL is correctly referenced
-    .then(response => {
-        if (!response.ok) throw new Error("chart data request failed: " + response.status);
-        return response.json();
-    })
-    .then(fig => {
-        Plotly.newPlot("{{ $chartID }}", fig.data, fig.layout, {responsive: true});
-    })
-    .catch(error => console.error("Error loading Plotly JSON:", error));
+// The Plotly library loads at the end of <body> (scripts.html), after this script;
+// DOMContentLoaded waits for it.
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("{{ $json }}")  // Ensure the JSON URL is correctly referenced
+        .then(response => {
+            if (!response.ok) throw new Error("chart data request failed: " + response.status);
+            return response.json();
+        })
+        .then(fig => {
+            Plotly.newPlot("{{ $chartID }}", fig.data, fig.layout, {responsive: true});
+        })
+        .catch(error => console.error("Error loading Plotly JSON:", error));
+});
 </script>
