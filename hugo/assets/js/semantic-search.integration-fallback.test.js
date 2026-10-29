@@ -77,19 +77,21 @@ function okResponse(body = {}) {
   }
 }
 
-// `artifactResponse` decides how semantic artifact requests settle; the search
-// data request always succeeds with `searchData`.
+// `artifactResponse` decides how semantic artifact requests settle;
+// `searchDataResponse` decides the search data request, which by default
+// succeeds with `searchData`.
 function loadFlexsearch({
   withSemanticModule,
   searchData = {},
   artifactResponse = () => Promise.resolve(okResponse()),
+  searchDataResponse = () => Promise.resolve(okResponse(searchData)),
 }) {
   const requests = []
   const sandbox = {
     console: { debug: () => {} },
     fetch: (url) => {
       requests.push(url)
-      return url === SEARCH_DATA_URL ? Promise.resolve(okResponse(searchData)) : artifactResponse(url)
+      return url === SEARCH_DATA_URL ? searchDataResponse() : artifactResponse(url)
     },
     FlexSearch: { Document: FakeDocument },
     Promise,
@@ -230,4 +232,19 @@ test("search returns keyword results without waiting for pending semantic artifa
 
   // `results` comes from the sandbox realm, so compare by length, not deepEqual.
   assert.equal(results.length, 0)
+})
+
+test("an HTTP error for the search data rejects preload, and the next search retries", async () => {
+  // A JSON error body would otherwise parse as an empty corpus and be cached.
+  const responses = [{ ok: false, status: 503, json: () => Promise.resolve({}) }, okResponse(WIDGET_CORPUS)]
+  const { sandbox, requests } = loadFlexsearch({
+    withSemanticModule: false,
+    searchDataResponse: () => Promise.resolve(responses.shift()),
+  })
+
+  await assert.rejects(sandbox.hextraSearch.preload(), /503/)
+  const results = await sandbox.hextraSearch.search("widgets")
+
+  assert.deepEqual(plain(results), WIDGET_GROUPS)
+  assert.equal(requests.filter((url) => url === SEARCH_DATA_URL).length, 2)
 })

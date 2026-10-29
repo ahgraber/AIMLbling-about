@@ -105,6 +105,7 @@
       })
 
       const resp = await fetch(searchDataURL)
+      if (!resp.ok) throw new Error(`search data request failed: ${resp.status}`)
       const data = await resp.json()
       let pageId = 0
       for (const route in data) {

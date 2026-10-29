@@ -16,7 +16,10 @@
 
 <script>
 fetch("{{ $json }}")  // Ensure the JSON URL is correctly referenced
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error("chart data request failed: " + response.status);
+        return response.json();
+    })
     .then(fig => {
         Plotly.newPlot("{{ $chartID }}", fig.data, fig.layout, {responsive: true});
     })
