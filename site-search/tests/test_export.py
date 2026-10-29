@@ -4,6 +4,7 @@ import json
 from typing import TYPE_CHECKING, Any
 
 from model2vec import StaticModel
+import pytest
 
 import numpy as np
 
@@ -11,7 +12,10 @@ from site_search.embedding import StaticEmbeddingModel
 from site_search.export import Chunk, export_artifacts
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from pathlib import Path
+
+    import numpy.typing as npt
 
 
 def _real_model(path: Path) -> StaticEmbeddingModel:
@@ -89,6 +93,29 @@ def test_empty_chunk_exclusion(tmp_path: Path, potion_model_path: Path) -> None:
     assert result.excluded_chunk_ids == ("empty",)
     assert np.all(np.linalg.norm(values.astype(np.float32), axis=1) > 0)
     assert np.isfinite(values).all()
+
+
+class _ShortEmbeddingModel(StaticEmbeddingModel):
+    """Returns one vector fewer than the texts it embeds."""
+
+    def embed(self, texts: Sequence[str]) -> npt.NDArray[np.float32]:
+        return super().embed(texts)[:-1]
+
+
+def test_export__provider_returns_fewer_vectors_than_chunks__rejects_and_preserves_existing_set(
+    tmp_path: Path, potion_model_path: Path
+) -> None:
+    out = tmp_path / "search"
+    out.mkdir()
+    (out / "meta.json").write_text('{"complete":true}')
+    short_model = _ShortEmbeddingModel(
+        StaticModel.from_pretrained(potion_model_path, dimensionality=128), model_id="potion"
+    )
+
+    with pytest.raises(ValueError, match="one document vector per chunk"):
+        export_artifacts(_chunks(), short_model, out)
+
+    assert [path.name for path in out.iterdir()] == ["meta.json"]
 
 
 def test_failed_export_preserves_existing_set(tmp_path: Path, potion_model_path: Path) -> None:

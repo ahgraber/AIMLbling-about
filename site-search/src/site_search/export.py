@@ -134,7 +134,9 @@ def export_artifacts(
 
     included_chunks = [chunk for chunk, _ in included]
     vectors = model.embed([chunk.text for chunk in included_chunks])
-    if vectors.ndim != 2 or not np.isfinite(vectors).all() or np.any(np.linalg.norm(vectors, axis=1) == 0):
+    if vectors.ndim != 2 or vectors.shape[0] != len(included_chunks):
+        raise ValueError("the embedding model must return one document vector per chunk")
+    if not np.isfinite(vectors).all() or np.any(np.linalg.norm(vectors, axis=1) == 0):
         raise ValueError("document vectors must be finite and non-zero")
 
     token_values, token_scales = quantize_rows(model.token_vectors)
