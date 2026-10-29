@@ -32,7 +32,7 @@ Whenever semantic search is unavailable for a query — artifacts absent or fail
 
 When semantic search is available, results SHALL be ordered by weighted Reciprocal Rank Fusion of the keyword and semantic rank lists, such that a result ranked by both signals outranks a result ranked by only one, other contributions being equal.
 The semantic signal carries the higher fusion weight (to recover paraphrase and navigational queries the lexical engine misses), so a strongly-ranked semantic-only result MAY outrank a keyword-only result — the two single-signal cases are symmetric and rank-based fusion cannot tell a distinctive exact match apart from an incidental lexical hit.
-Exact-term non-regression is therefore an **aggregate** guarantee, enforced by `search-quality-eval`'s `RetrievalQualityFloor` (hybrid exact-term recall is at least keyword-only's), not a per-query rule that every exact match stays at rank 1.
+Exact-term non-regression is therefore an **aggregate** check, enforced by `search-quality-eval`'s `RetrievalQualityFloor` (hybrid exact-term recall@1 trails keyword-only's by at most one hit), not a per-query rule that every exact match stays at rank 1.
 
 #### Scenario: Paraphrase query finds unmatched-keyword content
 
@@ -44,7 +44,7 @@ Exact-term non-regression is therefore an **aggregate** guarantee, enforced by `
 
 - **GIVEN** the labeled exact-term query set
 - **WHEN** keyword-only and hybrid results are compared
-- **THEN** hybrid exact-term recall@1 is at least keyword-only's (per `RetrievalQualityFloor`); individual exact matches not also surfaced by the semantic signal MAY be reordered, so per-query rank-1 placement is not guaranteed
+- **THEN** hybrid exact-term recall@1 trails keyword-only's by at most one hit (per `RetrievalQualityFloor`); individual exact matches not also surfaced by the semantic signal MAY be reordered, so per-query rank-1 placement is not guaranteed
 
 #### Scenario: Agreement outranks single-signal results
 

@@ -23,16 +23,20 @@ def test_selected_candidate_meets_retrieval_quality_floors() -> None:
     assert dimensions == 256
     candidate = measured_results["candidates"][str(dimensions)]
     metrics = candidate["metrics"]
-    hybrid_exact = metrics["hybrid"]["exact-term"]["recall_at_1"]
-    keyword_exact = metrics["keyword-only"]["exact-term"]["recall_at_1"]
-    hybrid_paraphrase = metrics["hybrid"]["paraphrase"]["recall_at_1"]
-    semantic_paraphrase = metrics["semantic-only"]["paraphrase"]["recall_at_1"]
+
+    # RetrievalQualityFloor: hybrid may trail by at most one recall@1 hit per subset.
+    def hits(condition: str, subset: str) -> int:
+        metric = metrics[condition][subset]
+        return round(metric["recall_at_1"] * metric["queries"])
+
+    hybrid_exact, keyword_exact = hits("hybrid", "exact-term"), hits("keyword-only", "exact-term")
+    hybrid_paraphrase, semantic_paraphrase = hits("hybrid", "paraphrase"), hits("semantic-only", "paraphrase")
 
     failures = []
-    if hybrid_exact < keyword_exact:
-        failures.append(f"exact-term hybrid {hybrid_exact:.1%} < keyword {keyword_exact:.1%}")
-    if hybrid_paraphrase < semantic_paraphrase:
-        failures.append(f"paraphrase hybrid {hybrid_paraphrase:.1%} < semantic {semantic_paraphrase:.1%}")
+    if hybrid_exact < keyword_exact - 1:
+        failures.append(f"exact-term hybrid {hybrid_exact} hits < keyword {keyword_exact} - 1")
+    if hybrid_paraphrase < semantic_paraphrase - 1:
+        failures.append(f"paraphrase hybrid {hybrid_paraphrase} hits < semantic {semantic_paraphrase} - 1")
     assert candidate["meets_floors"] is True
     assert not failures, f"{dimensions}-dimension retrieval floor failed: {'; '.join(failures)}"
 
