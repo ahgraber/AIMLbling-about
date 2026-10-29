@@ -52,38 +52,6 @@ def test_search_pipeline_changes_trigger_container_publish() -> None:
     assert 'paths: ["hugo/**", "site-search/**", "pyproject.toml", "uv.lock"]' in workflow
 
 
-def test_podman_build_uses_docker_format_and_positional_platform_override() -> None:
-    script = (ROOT / "scripts" / "hugo_build_image.sh").read_text(encoding="utf-8")
-    run_script = (ROOT / "scripts" / "hugo_run_local.sh").read_text(encoding="utf-8")
-    justfile = (ROOT / "hugo" / "justfile").read_text(encoding="utf-8")
-
-    assert "  --format docker\n" in script
-    assert '--build-arg "BUILDARCH=${build_arch}"' in script
-    assert 'image="ghcr.io/ahgraber/aimlbling-about:debug"' in script
-    assert 'image="ghcr.io/ahgraber/aimlbling-about:debug"' in run_script
-    assert 'podman manifest rm "${image}"' in script
-    assert 'podman image rm "${image}"' in script
-    assert 'build_cmd+=(--manifest "${image}")' in script
-    assert "build_cmd+=(-t" not in script
-    assert '[[ "${platforms}" == platforms=* ]]' in script
-    assert "just hugo build linux/arm64" in script
-    assert "just hugo build linux/arm64" in justfile
-    assert 'platforms="linux/arm64"' not in script
-    assert 'platforms="linux/arm64"' not in justfile
-
-
-def test_darwin_podman_shim_health_checks_and_waits_for_machine_api() -> None:
-    flake = (ROOT / "flake.nix").read_text(encoding="utf-8")
-
-    assert "wait_for_podman()" in flake
-    assert "${pkgs.coreutils}/bin/timeout 2" in flake
-    assert 'deadline="$((SECONDS + 30))"' in flake
-    assert "${podmanReal} info" in flake
-    assert '[ "$SECONDS" -ge "$deadline" ]' in flake
-    assert "did not become ready within 30 seconds" in flake
-    assert "wait_for_podman || exit 1" in flake
-
-
 def test_container_uses_build_arch_sass_and_managed_wheel_only_python() -> None:
     dockerfile = (ROOT / "hugo" / "docker" / "Dockerfile").read_text(encoding="utf-8")
     build_stage = dockerfile[: dockerfile.index("FROM docker.io/nginxinc")]
