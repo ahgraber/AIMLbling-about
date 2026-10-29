@@ -2,7 +2,8 @@ const fs = require("node:fs")
 const path = require("node:path")
 
 const semanticSearchPath = path.resolve(__dirname, "../../../hugo/assets/js/semantic-search.js")
-const { embedQuery, rankHybridResults, rollupSemanticChunks, scoreDocuments } = require(semanticSearchPath)
+const { embedQuery, rankHybridResults, rollupSemanticChunks, scoreDocuments, semanticCandidates } =
+  require(semanticSearchPath)
 
 const MAX_INPUT_BYTES = 16 * 1024 * 1024
 const MAX_QUERIES = 100
@@ -80,14 +81,7 @@ function main() {
       return { query: query.query, "semantic-only": [], hybrid: query.keyword_page_ids }
     }
     const scores = scoreDocuments(vector, documentVectors, request.dimensions)
-    const semanticChunks = request.manifest.map((row, index) => ({
-      pageId: row.page_id,
-      route: row.url,
-      title: row.title,
-      heading: row.heading,
-      crumb: row.crumb,
-      score: scores[index] * request.document_global_scale,
-    }))
+    const semanticChunks = semanticCandidates(request.manifest, scores, request.document_global_scale)
     const semanticPages = rollupSemanticChunks(semanticChunks)
     const keywordPages = query.keyword_page_ids.map((pageId) => ({ pageId }))
     return {

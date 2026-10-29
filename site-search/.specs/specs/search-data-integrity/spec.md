@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Guarantees the generated search corpus faithfully carries every section's body text and fails the build loudly on structural regressions or unexplained empties.
+Guarantees the generated search corpus faithfully carries every section's body text and fails the build loudly on structural regressions or a mass loss of section text.
 It is the trust floor and theme-format canary that every downstream search capability depends on.
 
 ## Requirements
@@ -23,11 +23,11 @@ The generated search corpus SHALL contain, for every content section whose sourc
 - **WHEN** the search corpus is generated
 - **THEN** the corpus entry for that heading contains the section's body text, and no other heading's entry absorbs it
 
-#### Scenario: Title-only entry legitimately empty
+#### Scenario: Title-only entry is empty
 
 - **GIVEN** a heading immediately followed by the next heading, with no body text between them
 - **WHEN** the search corpus is generated
-- **THEN** the corpus entry for that heading exists with empty content and is classified as legitimately empty
+- **THEN** the corpus entry for that heading exists with empty content, and no child heading's title or text is copied into it
 
 #### Scenario: Pre-first-heading intro indexed
 
@@ -35,25 +35,25 @@ The generated search corpus SHALL contain, for every content section whose sourc
 - **WHEN** the search corpus is generated
 - **THEN** the corpus's intro slot for that page contains the introductory text
 
-### Requirement: CorpusGateBlocksSuspiciousCorpus
+### Requirement: CorpusGateBlocksMassEmptying
 
-For any corpus in which the proportion of suspicious-empty sections (empty without a legitimate structural reason) exceeds the acceptance threshold, the index build SHALL fail without producing artifacts.
+For any corpus in which the proportion of empty sections (no body text, whatever the reason) exceeds the acceptance threshold, or which has no sections, the index build SHALL fail without producing artifacts.
 
 #### Scenario: Healthy corpus passes the gate
 
-- **GIVEN** a corpus whose suspicious-empty rate is below the acceptance threshold
+- **GIVEN** a corpus whose empty-section rate is at or below the acceptance threshold
 - **WHEN** the gate runs
 - **THEN** the gate passes and index building may proceed
 
-#### Scenario: Regressed corpus is rejected
+#### Scenario: Mass-emptied corpus is rejected
 
-- **GIVEN** a corpus whose suspicious-empty rate exceeds the acceptance threshold
+- **GIVEN** a corpus whose empty-section rate exceeds the acceptance threshold
 - **WHEN** the gate runs
-- **THEN** the build fails with a diagnostic identifying the suspicious sections, and no artifacts are written
+- **THEN** the build fails with the empty-section report, and no artifacts are written
 
 ### Requirement: FormatCanary
 
-Given a search corpus that does not conform to the expected structure, the gate SHALL fail with a structural diagnostic rather than classify or embed it.
+Given a search corpus that does not conform to the expected structure, the gate SHALL fail with a structural diagnostic rather than evaluate or embed it.
 
 #### Scenario: Malformed corpus rejected
 
@@ -61,17 +61,20 @@ Given a search corpus that does not conform to the expected structure, the gate 
 - **WHEN** the gate runs
 - **THEN** the gate fails, reporting the structural mismatch, and no downstream index work occurs
 
-### Requirement: EmptyClassificationReport
+### Requirement: EmptySectionReport
 
-Every gate run SHALL report total section count and empty-section counts classified as legitimate or suspicious, broken down by content source.
+Every gate run SHALL report the total and empty section counts for each content source, the overall empty-section rate, the acceptance threshold, and the verdict.
 
-#### Scenario: Gate run produces classified report
+#### Scenario: Gate run produces report
 
-- **GIVEN** a well-formed corpus containing blog and treadmill sections, some legitimately empty
+- **GIVEN** a well-formed corpus containing blog and treadmill sections, some empty
 - **WHEN** the gate runs
-- **THEN** the report states totals and legitimate/suspicious empty counts for each content source
+- **THEN** the report states totals and empty counts for each content source, the overall rate against the threshold, and pass or fail
 
 ## Technical Notes
 
 - **Implementation**: `site-search/src/site_search/loader.py`, `gate.py`, `build_index.py`
 - **Dependencies**: none (foundation capability)
+- **Threshold**: 35% empty sections (`DEFAULT_EMPTY_RATE_LIMIT`).
+  A healthy full build measured 19.5% on 2026-10-22, mostly treadmill category headings with no text of their own; the theme bug this gate was built for left 75% empty.
+  The gate does not tell intended empties from lost text per section, so it misses small regressions by design.

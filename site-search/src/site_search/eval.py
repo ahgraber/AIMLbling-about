@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import base64
 from collections import Counter
-from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -11,9 +10,12 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
-from site_search.loader import SearchDataStructureError, load_search_corpus
+from site_search.loader import SearchDataStructureError, load_search_data, section_location
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 Subset = Literal["exact-term", "paraphrase", "navigational"]
 Condition = Literal["keyword-only", "semantic-only", "hybrid"]
@@ -266,22 +268,17 @@ def format_report(report: EvaluationReport) -> str:
 def keyword_documents_from_corpus(path: Path) -> tuple[KeywordDocument, ...]:
     """Build the lexical reference documents from the canonical validated corpus.
 
-    Uses the single shared loader (the same parser the gate's FormatCanary relies
-    on) so the eval and the build agree on the search-data contract rather than
-    forking a second, divergent parser.
+    Applies the same search-data validation as the build and the gate
+    (`load_search_data`); raises `EvaluationDataError` when the corpus violates it.
     """
     try:
-        corpus = load_search_corpus(path)
+        records = load_search_data(path)
     except SearchDataStructureError as exc:
         raise EvaluationDataError(str(exc)) from exc
     documents: list[KeywordDocument] = []
-    for record in corpus.records:
-        page_id = record.route if record.route == "/" else record.route.rstrip("/")
-        anchor, _, heading = record.heading_key.partition("#")
-        url = page_id + (f"#{anchor}" if anchor else "")
-        documents.append(
-            KeywordDocument(page_id, url, f"{record.title}\n{heading or record.title}\n{record.fragment_text}")
-        )
+    for record in records:
+        page_id, url, heading = section_location(record)
+        documents.append(KeywordDocument(page_id, url, f"{record.title}\n{heading}\n{record.fragment_text}"))
     return tuple(documents)
 
 

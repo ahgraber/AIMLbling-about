@@ -48,8 +48,8 @@ It contains two major areas:
 
 ## Nix Development Environment
 
-This repository uses a Nix flake to provide a consistent development environment with Hugo and related tools (dart-sass, podman).
-On macOS the flake installs a `podman` PATH shim that lazily brings up the applehv VM (via nixpkgs' bundled vfkit + gvproxy) on first use, so container builds work without Docker Desktop or Colima.
+This repository uses a Nix flake to provide a consistent development environment with Hugo and related tools (dart-sass).
+The flake provides no container tools: container recipes use the host's `docker` CLI, else `podman` (set `AIMLBLING_ENGINE` to choose; see `docs/containerize.md`).
 
 ### Entering the Dev Shell
 
@@ -116,7 +116,8 @@ just experiments --list
 | `just hugo search-index`       | Build semantic search artifacts (run before `just hugo demo`) |
 | `just hugo search-test`        | Run semantic-search tests (Python pipeline + client JS)       |
 | `just hugo clean`              | Clean rendered static site content                            |
-| `just hugo build`              | Build the container image with podman (multi-arch by default) |
+| `just hugo build`              | Build the container image for the native platform             |
+| `just hugo push`               | Build linux/amd64 + linux/arm64 and push the `:debug` image   |
 | `just hugo run`                | Run the container locally                                     |
 | `just hugo treadmill`          | Update treadmill Hugo module data                             |
 | `just hugo catchup`            | Rebase feature branch onto main                               |

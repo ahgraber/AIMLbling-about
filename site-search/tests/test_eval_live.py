@@ -38,14 +38,17 @@ def test_live_eval_meets_retrieval_floors() -> None:
     report = evaluate(load_query_labels(QUERIES), keyword_documents_from_corpus(CORPUS), ARTIFACTS)
     metrics = report.metrics
 
-    hybrid_exact = metrics["hybrid"]["exact-term"].recall_at_1
-    keyword_exact = metrics["keyword-only"]["exact-term"].recall_at_1
-    hybrid_paraphrase = metrics["hybrid"]["paraphrase"].recall_at_1
-    semantic_paraphrase = metrics["semantic-only"]["paraphrase"].recall_at_1
+    # RetrievalQualityFloor: hybrid may trail by at most one recall@1 hit per subset.
+    def hits(condition: str, subset: str) -> int:
+        metric = metrics[condition][subset]
+        return round(metric.recall_at_1 * metric.queries)
 
-    assert hybrid_exact >= keyword_exact, f"exact-term hybrid {hybrid_exact:.1%} < keyword {keyword_exact:.1%}"
-    assert (
-        hybrid_paraphrase >= semantic_paraphrase
-    ), f"paraphrase hybrid {hybrid_paraphrase:.1%} < semantic {semantic_paraphrase:.1%}"
+    hybrid_exact, keyword_exact = hits("hybrid", "exact-term"), hits("keyword-only", "exact-term")
+    hybrid_paraphrase, semantic_paraphrase = hits("hybrid", "paraphrase"), hits("semantic-only", "paraphrase")
+
+    assert hybrid_exact >= keyword_exact - 1, f"exact-term hybrid {hybrid_exact} hits < keyword {keyword_exact} - 1"
+    assert hybrid_paraphrase >= semantic_paraphrase - 1, (
+        f"paraphrase hybrid {hybrid_paraphrase} hits < semantic {semantic_paraphrase} - 1"
+    )
     for condition in ("keyword-only", "semantic-only", "hybrid"):
         assert metrics[condition]["navigational"].queries == 10

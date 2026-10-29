@@ -1,15 +1,21 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from model2vec import StaticModel
+import pytest
 
 import numpy as np
 
 from site_search.embedding import StaticEmbeddingModel
 from site_search.export import Chunk, export_artifacts
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
+
+    import numpy.typing as npt
 
 
 def _real_model(path: Path) -> StaticEmbeddingModel:
@@ -18,8 +24,8 @@ def _real_model(path: Path) -> StaticEmbeddingModel:
 
 def _chunks() -> list[Chunk]:
     return [
-        Chunk("first", "/first", "/first/", "First", "Intro", "Root > First", "semantic search"),
-        Chunk("second", "/second", "/second/", "Second", "Details", "Root > Second", "exact library term"),
+        Chunk("first", "/first", "/first/", "First", "Intro", "semantic search"),
+        Chunk("second", "/second", "/second/", "Second", "Details", "exact library term"),
     ]
 
 
@@ -45,7 +51,6 @@ def test_artifact_set_complete(tmp_path: Path, potion_model_path: Path) -> None:
             "url": "/first/",
             "title": "First",
             "heading": "Intro",
-            "crumb": "Root > First",
         },
         {
             "chunk_id": "second",
@@ -53,7 +58,6 @@ def test_artifact_set_complete(tmp_path: Path, potion_model_path: Path) -> None:
             "url": "/second/",
             "title": "Second",
             "heading": "Details",
-            "crumb": "Root > Second",
         },
     ]
     assert (out / "doc-vectors.bin").stat().st_size == len(manifest) * meta["dimensions"]
@@ -64,7 +68,7 @@ def test_artifact_set_complete(tmp_path: Path, potion_model_path: Path) -> None:
 def test_correspondence_after_exclusion(tmp_path: Path, potion_model_path: Path) -> None:
     chunks = [
         *_chunks()[:1],
-        Chunk("empty", "/empty", "/empty/", "Empty", "", "Empty", "☃☃☃"),
+        Chunk("empty", "/empty", "/empty/", "Empty", "", "☃☃☃"),
         *_chunks()[1:],
     ]
     out = tmp_path / "search"
@@ -80,7 +84,7 @@ def test_correspondence_after_exclusion(tmp_path: Path, potion_model_path: Path)
 
 def test_empty_chunk_exclusion(tmp_path: Path, potion_model_path: Path) -> None:
     out = tmp_path / "search"
-    chunks = [Chunk("empty", "/empty", "/empty/", "Empty", "", "Empty", "☃☃☃"), *_chunks()]
+    chunks = [Chunk("empty", "/empty", "/empty/", "Empty", "", "☃☃☃"), *_chunks()]
 
     result = export_artifacts(chunks, _real_model(potion_model_path), out)
 
@@ -91,11 +95,34 @@ def test_empty_chunk_exclusion(tmp_path: Path, potion_model_path: Path) -> None:
     assert np.isfinite(values).all()
 
 
+class _ShortEmbeddingModel(StaticEmbeddingModel):
+    """Returns one vector fewer than the texts it embeds."""
+
+    def embed(self, texts: Sequence[str]) -> npt.NDArray[np.float32]:
+        return super().embed(texts)[:-1]
+
+
+def test_export__provider_returns_fewer_vectors_than_chunks__rejects_and_preserves_existing_set(
+    tmp_path: Path, potion_model_path: Path
+) -> None:
+    out = tmp_path / "search"
+    out.mkdir()
+    (out / "meta.json").write_text('{"complete":true}')
+    short_model = _ShortEmbeddingModel(
+        StaticModel.from_pretrained(potion_model_path, dimensionality=128), model_id="potion"
+    )
+
+    with pytest.raises(ValueError, match="one document vector per chunk"):
+        export_artifacts(_chunks(), short_model, out)
+
+    assert [path.name for path in out.iterdir()] == ["meta.json"]
+
+
 def test_failed_export_preserves_existing_set(tmp_path: Path, potion_model_path: Path) -> None:
     out = tmp_path / "search"
     out.mkdir()
     (out / "meta.json").write_text('{"complete":true}')
-    invalid = Chunk("bad", "/bad", "/bad/", "Bad", "", "Bad", "semantic search")
+    invalid = Chunk("bad", "/bad", "/bad/", "Bad", "", "semantic search")
     invalid_metadata: dict[str, Any] = {"not_json": object()}
 
     try:

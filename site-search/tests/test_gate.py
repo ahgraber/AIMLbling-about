@@ -4,12 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from site_search.gate import EmptyKind, evaluate_corpus, render_report
+from site_search.gate import DEFAULT_EMPTY_RATE_LIMIT, evaluate_corpus, main as gate_main, render_report
 from site_search.loader import SearchDataStructureError, SearchRecord, load_search_data
 
 FIXTURE = Path(__file__).parent / "fixtures" / "search-data.sample.json"
 MALFORMED_FIXTURE = Path(__file__).parent / "fixtures" / "search-data.malformed.json"
 REAL_CORPUS = Path(__file__).resolve().parents[2] / "hugo" / "public" / "en.search-data.json"
+
+
+def _corpus(empty: int, total: int, route: str = "/blog/p/") -> list[SearchRecord]:
+    return [SearchRecord(route, f"s{i}#S{i}", "P", "" if i < empty else "body") for i in range(total)]
 
 
 def test_section_content_completeness() -> None:
@@ -21,20 +25,16 @@ def test_section_content_completeness() -> None:
     assert by_section[("/blog/example/", "heading-3#Title only")].fragment_text == ""
     assert by_section[("/blog/example/", "")].fragment_text == "Introductory text."
 
-    result = evaluate_corpus(records)
-    assert result.kind_for("/blog/example/", "heading-3#Title only") is EmptyKind.LEGITIMATE
-
 
 def test_markdown_link_headings_carry_body_in_real_corpus() -> None:
-    """Guard the fragments.html attribution against the corpus-emptying regression.
+    """Guard the theme's section attribution against the corpus-emptying regression.
 
     The hand-authored fixture in test_section_content_completeness assumes correct
     upstream attribution; it cannot catch a theme-template regression. This checks
     the *actual* rendered corpus: arxiv-style markdown-link headings (`[id] title`,
-    the treadmill's heaviest structure) must carry their body text. The pre-fix
-    bug emptied ~75% of these sections, so a low empty-rate ceiling trips on a
-    regression without pinning to volatile treadmill page URLs. Skips on a fresh
-    checkout / CI without a Hugo build.
+    the treadmill's heaviest structure) must carry their body text. A low
+    empty-rate ceiling trips on a regression without pinning to volatile
+    treadmill page URLs. Skips on a fresh checkout / CI without a Hugo build.
     """
     if not REAL_CORPUS.exists():
         pytest.skip("rendered corpus required; run `just hugo search-index` (or `hugo -s hugo`) first")
@@ -51,52 +51,66 @@ def test_markdown_link_headings_carry_body_in_real_corpus() -> None:
     empty_rate = len(empty) / len(link_headings)
     assert empty_rate < 0.15, (
         f"{empty_rate:.1%} of markdown-link headings are empty ({len(empty)}/{len(link_headings)}) — "
-        "possible fragments.html heading-link attribution regression"
+        "possible theme heading-link attribution regression"
     )
 
 
-def test_gate_threshold() -> None:
-    # The tiny fixture is a classification corpus, not a rate corpus (2/6 empties
-    # are legitimate), so the legitimate ceiling is relaxed to isolate the
-    # suspicious-rate behavior under test.
-    healthy = evaluate_corpus(load_search_data(FIXTURE), suspicious_rate_limit=0.5, legitimate_rate_limit=0.5)
-    regressed = evaluate_corpus(load_search_data(FIXTURE), suspicious_rate_limit=0.1, legitimate_rate_limit=0.5)
-
-    assert healthy.passed
-    assert not regressed.passed
-    assert "named-anchor#Unverified empty" in render_report(regressed)
+def test_gate_default_limit_is_35_percent() -> None:
+    assert DEFAULT_EMPTY_RATE_LIMIT == 0.35
 
 
-def test_legitimate_empty_spike_fails_gate() -> None:
-    # A theme/format regression that re-empties link-heading sections presents as
-    # legitimately-classified `heading-N` title-only entries. None are suspicious,
-    # but the legitimate-empty rate ceiling still trips the gate — closing the
-    # blind spot where a mass re-emptying could hide inside the legitimate class.
-    records = [SearchRecord("/treadmill/x/", f"heading-{i}#[{i}] Entry", "Roundup", "") for i in range(9)]
-    records.append(SearchRecord("/treadmill/x/", "heading-9#[9] Kept", "Roundup", "Body text."))
+def test_gate_passes_at_the_limit() -> None:
+    assert evaluate_corpus(_corpus(empty=35, total=100)).passed
 
-    result = evaluate_corpus(records)
 
-    assert result.suspicious_count == 0
-    assert result.legitimate_rate > result.legitimate_rate_limit
+def test_gate_fails_above_the_limit() -> None:
+    result = evaluate_corpus(_corpus(empty=36, total=100))
+
     assert not result.passed
-    assert "gate: FAIL" in render_report(result)
+    assert result.empty_count == 36
+    assert result.empty_rate == pytest.approx(0.36)
 
 
-def test_whitespace_only_named_section_is_suspicious() -> None:
-    result = evaluate_corpus([SearchRecord("/blog/example/", "named#Named", "Example", " \n\t")])
+def test_whitespace_only_section_counts_as_empty() -> None:
+    result = evaluate_corpus([SearchRecord("/blog/p/", "s#S", "P", " \n\t")])
 
-    assert result.kind_for("/blog/example/", "named#Named") is EmptyKind.SUSPICIOUS
+    assert result.empty_count == 1
     assert not result.passed
+
+
+def test_empty_corpus_fails() -> None:
+    assert not evaluate_corpus([]).passed
+
+
+def test_limit_must_be_a_fraction() -> None:
+    with pytest.raises(ValueError, match="empty_rate_limit"):
+        evaluate_corpus(_corpus(empty=0, total=1), empty_rate_limit=1.5)
+
+
+def test_report_states_counts_per_source_and_the_verdict() -> None:
+    report = render_report(evaluate_corpus(load_search_data(FIXTURE)))
+
+    assert "blog: total=4 empty=1" in report
+    assert "treadmill: total=2 empty=2" in report
+    assert "total: total=6 empty=3 empty_rate=50.000% limit=35.000%" in report
+    assert report.endswith("gate: FAIL")
+
+
+def test_gate_cli_exit_code_follows_the_verdict(tmp_path: Path) -> None:
+    corpus = tmp_path / "en.search-data.json"
+    corpus.write_text('{"/blog/p/":{"title":"P","data":{"a#A":"","b#B":"Body"}}}', encoding="utf-8")
+
+    assert gate_main([str(corpus)]) == 1
+    assert gate_main([str(corpus), "--empty-rate-limit", "0.5"]) == 0
 
 
 def test_format_canary() -> None:
-    with pytest.raises(SearchDataStructureError, match="data.*object"):
+    with pytest.raises(SearchDataStructureError, match=r"data.*object"):
         load_search_data(MALFORMED_FIXTURE)
 
 
 # FormatCanary is a universal claim: *any* corpus deviating from the expected
-# shape must fail with a structural diagnostic before classification/embedding.
+# shape must fail with a structural diagnostic before the gate or embedding runs.
 # The fixture above samples one branch (non-object `data`); these parametrized
 # cases exercise every other structural guard in the loader so a theme-format
 # change that mutates any level of the contract trips the canary, not a silent
@@ -129,11 +143,3 @@ def test_loader_accepts_route_without_trailing_slash(tmp_path: Path) -> None:
     records = load_search_data(corpus)
 
     assert records[0].route == "/glossary"
-
-
-def test_classification_report() -> None:
-    report = render_report(evaluate_corpus(load_search_data(FIXTURE), suspicious_rate_limit=0.5))
-
-    assert "blog: total=4 legitimate_empty=1 suspicious_empty=0" in report
-    assert "treadmill: total=2 legitimate_empty=1 suspicious_empty=1" in report
-    assert "total: total=6 legitimate_empty=2 suspicious_empty=1" in report

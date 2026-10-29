@@ -67,15 +67,18 @@ clean:
     hugo --gc -s "{{hugo_dir}}"
 
 
-[doc('Build site image with podman (multi-arch by default; override e.g. `just hugo build linux/arm64`)')]
-build platforms="linux/amd64,linux/arm64":
-    @command -v podman >/dev/null || { echo "Podman not found"; exit 1; }
-    "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}" "{{platforms}}"
+[doc('Build the :debug site image for the native platform into the local store (override e.g. `just hugo build linux/amd64`). Uses docker, else podman; set AIMLBLING_ENGINE to choose')]
+build platform="":
+    "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}" build "{{platform}}"
 
 
-[doc('Run site container locally with podman (override host port: `just hugo run port=9000`)')]
-run port="8080":
-    @command -v podman >/dev/null || { echo "Podman not found"; exit 1; }
+[doc('Build the :debug site image for linux/amd64 and linux/arm64 and push it to ghcr.io (override e.g. `just hugo push linux/arm64`). Log in to ghcr.io first')]
+push platforms="linux/amd64,linux/arm64":
+    "{{root_dir}}/scripts/hugo_build_image.sh" "{{root_dir}}" "{{hugo_dir}}" push "{{platforms}}"
+
+
+[doc('Run the :debug site image locally (override host port: `just hugo run port=9000`). CLI selection matches `build`')]
+run port="8081":
     "{{root_dir}}/scripts/hugo_run_local.sh" "{{hugo_dir}}" "{{port}}"
 
 

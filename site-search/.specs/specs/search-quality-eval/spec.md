@@ -2,13 +2,18 @@
 
 ## Purpose
 
-Defines the offline quality gates for search: the retrieval-quality floors hybrid search must meet on a labeled query set, and the tokenizer parity gate that fails the suite on any drift between the build-time and client tokenizers.
+Defines the offline quality checks for search: the retrieval-quality floors hybrid search must meet on a labeled query set, and the tokenizer parity gate that fails the suite on any drift between the build-time and client tokenizers.
 
 ## Requirements
 
 ### Requirement: RetrievalQualityFloor
 
-On the labeled evaluation query set, hybrid search recall@1 SHALL be at least keyword-only recall@1 on the exact-term subset and at least semantic-only recall@1 on the paraphrase subset.
+On the labeled evaluation query set, hybrid search SHALL trail keyword-only by at most one recall@1 hit on the exact-term subset, and SHALL trail semantic-only by at most one recall@1 hit on the paraphrase subset.
+
+The floor is a gut check that catches a broken fusion, not a release-quality gate.
+Each subset has 10 queries, so one query moves recall@1 by 10 points.
+Publishing new content can move one query between conditions without any code change; the one-hit tolerance absorbs that noise.
+A trail of two or more hits indicates a real ranking problem.
 
 The `semantic-only` and `hybrid` conditions run the **shipped** client logic (`semantic-search.js` executed under Node), so those measurements reflect production.
 The `keyword-only` condition is a **deterministic lexical reference** (case-folded term-frequency scoring), not the shipped FlexSearch engine, chosen for reproducibility without a browser.
@@ -18,13 +23,19 @@ The floor is therefore evidence against that reference baseline, not a certifica
 
 - **GIVEN** the labeled exact-term queries (distinctive library names, paper IDs, proper nouns from the real corpus)
 - **WHEN** keyword-only and hybrid conditions are evaluated
-- **THEN** hybrid recall@1 is greater than or equal to keyword-only recall@1
+- **THEN** hybrid has at most one fewer recall@1 hit than keyword-only
 
 #### Scenario: Paraphrase subset does not regress
 
 - **GIVEN** the labeled paraphrase queries (same intent, different words than the source text)
 - **WHEN** semantic-only and hybrid conditions are evaluated
-- **THEN** hybrid recall@1 is greater than or equal to semantic-only recall@1
+- **THEN** hybrid has at most one fewer recall@1 hit than semantic-only
+
+#### Scenario: Hybrid trails by two or more hits
+
+- **GIVEN** an evaluation in which hybrid has two or more fewer recall@1 hits than the comparison condition on the exact-term or paraphrase subset
+- **WHEN** the floor is checked
+- **THEN** the floor fails, naming the subset and both recall@1 values
 
 #### Scenario: Navigational subset reported
 

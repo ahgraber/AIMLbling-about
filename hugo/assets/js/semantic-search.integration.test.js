@@ -3,30 +3,27 @@ const test = require("node:test")
 
 const { getHybridDisplayResults } = require("./semantic-search.js")
 
-function keywordData(route = "/both#keyword") {
-  const displayResults = [
-    {
-      id: "0_0",
-      route,
-      prefix: "Keyword > Both",
-      children: { title: "Keyword section", content: "keyword excerpt" },
-    },
-  ]
-  const candidates = [
+// Keyword page groups in the shape Hextra's search dialog renders, plus the
+// canonical `pageId` the fusion step joins on.
+function keywordGroups() {
+  return [
     {
       pageId: "/both",
-      route,
+      route: "/both",
       title: "Both",
-      heading: "Keyword section",
-      crumb: "Keyword > Both",
-      prefix: "Keyword > Both",
-      keywordRoute: route,
-      content: "keyword excerpt",
-      source: "keyword",
+      breadcrumbs: ["Keyword"],
+      matches: [
+        { route: "/both#keyword", title: "Keyword section", content: "keyword excerpt" },
+        { route: "/both#second", title: "Second section", content: "second excerpt" },
+      ],
     },
   ]
-  return { candidates, displayResults }
 }
+
+const pageBreadcrumbs = new Map([
+  ["/both", ["Keyword"]],
+  ["/semantic-only", ["Semantic"]],
+])
 
 function readyLoader(bestRoute = "/both#semantic") {
   return {
@@ -42,7 +39,6 @@ function readyLoader(bestRoute = "/both#semantic") {
           url: bestRoute,
           title: "Both semantic",
           heading: "Semantic section",
-          crumb: "Semantic > Both",
         },
         {
           chunk_id: "semantic-only",
@@ -50,7 +46,6 @@ function readyLoader(bestRoute = "/both#semantic") {
           url: "/semantic-only#best",
           title: "Semantic only",
           heading: "Best section",
-          crumb: "Semantic > Only",
         },
       ],
       tokenizerConfig: {
@@ -75,60 +70,49 @@ function readyLoader(bestRoute = "/both#semantic") {
   }
 }
 
-test("every non-ready state returns the exact keyword display array", () => {
+test("every non-ready state returns the exact keyword groups array", () => {
   for (const state of ["unavailable", "pending", "failed"]) {
-    const keyword = keywordData()
+    const groups = keywordGroups()
 
-    const results = getHybridDisplayResults(keyword.displayResults, keyword.candidates, "known", { state }, 20)
+    const results = getHybridDisplayResults(groups, "known", { state }, 20, pageBreadcrumbs)
 
-    assert.strictEqual(results, keyword.displayResults)
+    assert.strictEqual(results, groups)
   }
 })
 
-test("fully OOV queries return the exact keyword display array", () => {
-  const keyword = keywordData()
+test("fully OOV queries return the exact keyword groups array", () => {
+  const groups = keywordGroups()
 
-  const results = getHybridDisplayResults(keyword.displayResults, keyword.candidates, "unknown", readyLoader(), 20)
+  const results = getHybridDisplayResults(groups, "unknown", readyLoader(), 20, pageBreadcrumbs)
 
-  assert.strictEqual(results, keyword.displayResults)
+  assert.strictEqual(results, groups)
 })
 
-test("ready hybrid results keep the keyword-matched section and its highlighted excerpt for both-engine pages", () => {
-  const keyword = keywordData()
-
-  const results = getHybridDisplayResults(keyword.displayResults, keyword.candidates, "known", readyLoader(), 20)
+test("ready hybrid results show a both-engine page once, by its top keyword section and excerpt", () => {
+  const results = getHybridDisplayResults(keywordGroups(), "known", readyLoader(), 20, pageBreadcrumbs)
 
   assert.deepEqual(results[0], {
-    id: "hybrid_0",
-    route: "/both#keyword",
-    prefix: "Keyword > Both",
-    children: { title: "Keyword section", content: "keyword excerpt" },
-  })
-  assert.deepEqual(results[1], {
-    id: "hybrid_1",
-    route: "/semantic-only#best",
-    prefix: "Semantic > Only",
-    children: { title: "Best section" },
+    route: "/both",
+    title: "Both",
+    breadcrumbs: ["Keyword"],
+    matches: [{ route: "/both#keyword", title: "Keyword section", content: "keyword excerpt" }],
   })
 })
 
-test("ready hybrid results preserve a matching excerpt and honor the page cap", () => {
-  const keyword = keywordData()
+test("ready hybrid results show a semantic-only page by its best section, with breadcrumbs from the page map", () => {
+  const results = getHybridDisplayResults(keywordGroups(), "known", readyLoader(), 20, pageBreadcrumbs)
 
-  const results = getHybridDisplayResults(
-    keyword.displayResults,
-    keyword.candidates,
-    "known",
-    readyLoader("/both#keyword"),
-    1,
-  )
+  assert.deepEqual(results[1], {
+    route: "/semantic-only",
+    title: "Semantic only",
+    breadcrumbs: ["Semantic"],
+    matches: [{ route: "/semantic-only#best", title: "Best section" }],
+  })
+})
 
-  assert.deepEqual(results, [
-    {
-      id: "hybrid_0",
-      route: "/both#keyword",
-      prefix: "Keyword > Both",
-      children: { title: "Keyword section", content: "keyword excerpt" },
-    },
-  ])
+test("ready hybrid results honor the page cap", () => {
+  const results = getHybridDisplayResults(keywordGroups(), "known", readyLoader(), 1, pageBreadcrumbs)
+
+  assert.equal(results.length, 1)
+  assert.equal(results[0].route, "/both")
 })

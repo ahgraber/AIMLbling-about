@@ -1,22 +1,19 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 import sys
+from typing import TYPE_CHECKING
 
 from site_search.chunking import partition_body
 from site_search.embedding import StaticEmbedding, load_embedding_model
 from site_search.export import Chunk, export_artifacts
-from site_search.gate import (
-    DEFAULT_SUSPICIOUS_RATE_LIMIT,
-    EmptyKind,
-    GateResult,
-    evaluate_corpus,
-    render_report,
-)
-from site_search.loader import SearchDataStructureError, SearchRecord, load_search_corpus
+from site_search.gate import DEFAULT_EMPTY_RATE_LIMIT, GateResult, evaluate_corpus, render_report
+from site_search.loader import SearchDataStructureError, SearchRecord, load_search_data, section_location
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 
 class CorpusRejectedError(RuntimeError):
@@ -32,41 +29,10 @@ class BuildSummary:
     total_payload_size: int
 
 
-def _section_location(record: SearchRecord) -> tuple[str, str]:
-    if "#" in record.heading_key:
-        anchor, heading = record.heading_key.split("#", 1)
-    else:
-        anchor, heading = record.heading_key, ""
-    base_url = record.route if record.route == "/" else record.route.rstrip("/")
-    url = f"{base_url}#{anchor}" if anchor else base_url
-    return url, heading or record.title
-
-
-def _page_metadata(route: str, titles_by_route: Mapping[str, str]) -> tuple[str, str]:
-    page_id = route if route == "/" else route.rstrip("/")
-    route_parts = [part for part in route.split("/") if part and not part.startswith("#")]
-    crumb = ""
-    search_route = "/"
-    for index, route_part in enumerate(route_parts):
-        search_route += f"{route_part}/"
-        title = titles_by_route.get(search_route)
-        if title is None:
-            continue
-        if title == "_index":
-            title = " ".join(route_part.split("-"))
-        crumb += title
-        if index < len(route_parts) - 1:
-            crumb += " > "
-    return page_id, crumb
-
-
-def _chunks(
-    records: Sequence[SearchRecord], model: StaticEmbedding, titles_by_route: Mapping[str, str]
-) -> list[Chunk]:
+def _chunks(records: Sequence[SearchRecord], model: StaticEmbedding) -> list[Chunk]:
     chunks: list[Chunk] = []
     for record in records:
-        url, heading = _section_location(record)
-        page_id, crumb = _page_metadata(record.route, titles_by_route)
+        page_id, url, heading = section_location(record)
         context = record.title if heading == record.title else f"{record.title}\n{heading}"
         bodies = partition_body(
             record.fragment_text,
@@ -81,7 +47,6 @@ def _chunks(
                     url=url,
                     title=record.title,
                     heading=heading,
-                    crumb=crumb,
                     text=f"{context}\n\n{body}",
                 )
             )
@@ -93,22 +58,17 @@ def build_index(
     output: Path,
     *,
     model_factory: Callable[[], StaticEmbedding] = load_embedding_model,
-    suspicious_rate_limit: float = DEFAULT_SUSPICIOUS_RATE_LIMIT,
+    empty_rate_limit: float = DEFAULT_EMPTY_RATE_LIMIT,
 ) -> BuildSummary:
     """Validate a Hugo corpus and publish a semantic artifact set."""
-    corpus = load_search_corpus(search_data)
-    records = corpus.records
-    gate_result = evaluate_corpus(records, suspicious_rate_limit=suspicious_rate_limit)
+    records = load_search_data(search_data)
+    gate_result = evaluate_corpus(records, empty_rate_limit=empty_rate_limit)
     if not gate_result.passed:
         raise CorpusRejectedError(render_report(gate_result))
 
     model = model_factory()
-    chunks = _chunks(records, model, corpus.titles_by_route)
-    corpus_stats = {
-        "section_count": len(records),
-        "legitimate_empty_count": sum(item.kind is EmptyKind.LEGITIMATE for item in gate_result.records),
-        "suspicious_empty_count": gate_result.suspicious_count,
-    }
+    chunks = _chunks(records, model)
+    corpus_stats = {"section_count": len(records), "empty_count": gate_result.empty_count}
     export_result = export_artifacts(chunks, model, output, corpus_stats=corpus_stats)
     return BuildSummary(
         gate_result=gate_result,
