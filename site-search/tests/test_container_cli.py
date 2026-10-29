@@ -55,9 +55,18 @@ class Result:
     calls: list[Call]
 
 
+@dataclass
+class Sandbox:
+    """A throwaway repo root, the stub directory, and the tool directory PATH is limited to."""
+
+    repo: Path
+    tools: Path
+    stubs: Path
+    log: Path
+
+
 @pytest.fixture
-def sandbox(tmp_path: Path):
-    """A throwaway repo root, hugo dir, and a PATH limited to stubs plus required tools."""
+def sandbox(tmp_path: Path) -> Sandbox:
     repo = tmp_path / "repo"
     (repo / "hugo" / "docker").mkdir(parents=True)
     shutil.copy(ROOT / "hugo" / "docker" / "default.conf", repo / "hugo" / "docker" / "default.conf")
@@ -84,33 +93,32 @@ def sandbox(tmp_path: Path):
         check=True,
     )
 
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
+    tools = tmp_path / "tools"
+    tools.mkdir()
     for tool in TOOLS:
         found = shutil.which(tool)
         assert found, f"{tool} is required to run the image scripts"
-        (bin_dir / tool).symlink_to(found)
+        (tools / tool).symlink_to(found)
 
-    stub_dir = tmp_path / "stubs"
-    stub_dir.mkdir()
-    log = tmp_path / "calls.log"
-    return {"repo": repo, "bin": bin_dir, "stubs": stub_dir, "log": log}
+    stubs = tmp_path / "stubs"
+    stubs.mkdir()
+    return Sandbox(repo=repo, tools=tools, stubs=stubs, log=tmp_path / "calls.log")
 
 
-def install_stubs(sandbox: dict, *names: str) -> None:
+def install_stubs(sandbox: Sandbox, *names: str) -> None:
     for name in names:
-        stub = sandbox["stubs"] / name
+        stub = sandbox.stubs / name
         stub.write_text(STUB)
         stub.chmod(0o755)
 
 
-def run(sandbox: dict, script: Path, *args: str, **env: str) -> Result:
+def run(sandbox: Sandbox, script: Path, *args: str, **env: str) -> Result:
     bash = shutil.which("bash")
     assert bash
     environment = {
-        "PATH": f"{sandbox['stubs']}:{sandbox['bin']}",
-        "HOME": str(sandbox["repo"]),
-        "STUB_LOG": str(sandbox["log"]),
+        "PATH": f"{sandbox.stubs}:{sandbox.tools}",
+        "HOME": str(sandbox.repo),
+        "STUB_LOG": str(sandbox.log),
         **env,
     }
     # The exit status is asserted by each test, so a failing script must not raise here.
@@ -118,16 +126,16 @@ def run(sandbox: dict, script: Path, *args: str, **env: str) -> Result:
         [bash, str(script), *args], check=False, env=environment, capture_output=True, text=True
     )
     calls = []
-    if sandbox["log"].exists():
-        for block in sandbox["log"].read_text().split("---\n"):
+    if sandbox.log.exists():
+        for block in sandbox.log.read_text().split("---\n"):
             lines = block.splitlines()
             if lines:
                 calls.append(Call(argv=lines[:-1], pat=lines[-1].removeprefix("PAT=")))
     return Result(proc.returncode, proc.stderr, calls)
 
 
-def build(sandbox: dict, *args: str, **env: str) -> Result:
-    repo = sandbox["repo"]
+def build(sandbox: Sandbox, *args: str, **env: str) -> Result:
+    repo = sandbox.repo
     return run(sandbox, BUILD_SCRIPT, str(repo), str(repo / "hugo"), *args, **env)
 
 
@@ -138,7 +146,7 @@ def option(argv: list[str], flag: str) -> str | None:
 # --- CLI selection ---
 
 
-def test_selection__docker_and_podman_on_path__uses_docker(sandbox: dict) -> None:
+def test_selection__docker_and_podman_on_path__uses_docker(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker", "podman")
 
     result = build(sandbox, "build")
@@ -147,7 +155,7 @@ def test_selection__docker_and_podman_on_path__uses_docker(sandbox: dict) -> Non
     assert [call.argv[0] for call in result.calls] == ["docker"]
 
 
-def test_selection__only_podman_on_path__uses_podman(sandbox: dict) -> None:
+def test_selection__only_podman_on_path__uses_podman(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "podman")
 
     result = build(sandbox, "build")
@@ -156,7 +164,7 @@ def test_selection__only_podman_on_path__uses_podman(sandbox: dict) -> None:
     assert {call.argv[0] for call in result.calls} == {"podman"}
 
 
-def test_selection__aimlbling_engine_set__overrides_preference(sandbox: dict) -> None:
+def test_selection__aimlbling_engine_set__overrides_preference(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker", "podman")
 
     result = build(sandbox, "build", AIMLBLING_ENGINE="podman")
@@ -165,7 +173,7 @@ def test_selection__aimlbling_engine_set__overrides_preference(sandbox: dict) ->
     assert {call.argv[0] for call in result.calls} == {"podman"}
 
 
-def test_selection__unknown_engine__fails_without_calling_a_cli(sandbox: dict) -> None:
+def test_selection__unknown_engine__fails_without_calling_a_cli(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
 
     result = build(sandbox, "build", AIMLBLING_ENGINE="container")
@@ -178,7 +186,7 @@ def test_selection__unknown_engine__fails_without_calling_a_cli(sandbox: dict) -
 # --- docker backend ---
 
 
-def test_docker_build__no_platform__loads_native_image_without_platform_flag(sandbox: dict) -> None:
+def test_docker_build__no_platform__loads_native_image_without_platform_flag(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
 
     result = build(sandbox, "build")
@@ -190,11 +198,11 @@ def test_docker_build__no_platform__loads_native_image_without_platform_flag(san
     assert "--push" not in call.argv
     assert "--platform" not in call.argv
     assert option(call.argv, "--tag") == IMAGE
-    assert option(call.argv, "-f") == str(sandbox["repo"] / "hugo" / "docker" / "Dockerfile")
-    assert call.argv[-1] == str(sandbox["repo"])
+    assert option(call.argv, "-f") == str(sandbox.repo / "hugo" / "docker" / "Dockerfile")
+    assert call.argv[-1] == str(sandbox.repo)
 
 
-def test_docker_build__platform_given__loads_that_platform(sandbox: dict) -> None:
+def test_docker_build__platform_given__loads_that_platform(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
 
     result = build(sandbox, "build", "linux/amd64")
@@ -205,7 +213,7 @@ def test_docker_build__platform_given__loads_that_platform(sandbox: dict) -> Non
     assert "--load" in call.argv
 
 
-def test_docker_push__default_platforms__pushes_both_arches_without_loading(sandbox: dict) -> None:
+def test_docker_push__default_platforms__pushes_both_arches_without_loading(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
 
     result = build(sandbox, "push")
@@ -222,7 +230,7 @@ def test_docker_push__default_platforms__pushes_both_arches_without_loading(sand
 # --- build secret ---
 
 
-def test_secret__pat_unset__no_secret_flag(sandbox: dict) -> None:
+def test_secret__pat_unset__no_secret_flag(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
 
     result = build(sandbox, "build")
@@ -231,7 +239,7 @@ def test_secret__pat_unset__no_secret_flag(sandbox: dict) -> None:
     assert "--secret" not in call.argv
 
 
-def test_secret__pat_in_environment__passed_by_env_reference(sandbox: dict) -> None:
+def test_secret__pat_in_environment__passed_by_env_reference(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
 
     result = build(sandbox, "build", TREADMILL_PAT="from-env")
@@ -242,9 +250,9 @@ def test_secret__pat_in_environment__passed_by_env_reference(sandbox: dict) -> N
     assert not any("from-env" in arg for arg in call.argv)
 
 
-def test_secret__pat_in_dotenv__exported_to_the_cli(sandbox: dict) -> None:
+def test_secret__pat_in_dotenv__exported_to_the_cli(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
-    (sandbox["repo"] / ".env").write_text("TREADMILL_PAT=from-dotenv\n")
+    (sandbox.repo / ".env").write_text("TREADMILL_PAT=from-dotenv\n")
 
     result = build(sandbox, "build")
 
@@ -256,7 +264,7 @@ def test_secret__pat_in_dotenv__exported_to_the_cli(sandbox: dict) -> None:
 # --- podman backend ---
 
 
-def test_podman_build__native__tags_image_with_explicit_buildarch(sandbox: dict) -> None:
+def test_podman_build__native__tags_image_with_explicit_buildarch(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "podman")
 
     result = build(sandbox, "build")
@@ -269,7 +277,7 @@ def test_podman_build__native__tags_image_with_explicit_buildarch(sandbox: dict)
     assert "--manifest" not in call.argv
 
 
-def test_podman_build__manifest_left_by_push__removes_it_first(sandbox: dict) -> None:
+def test_podman_build__manifest_left_by_push__removes_it_first(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "podman")
 
     result = build(sandbox, "build", STUB_MANIFEST_EXISTS="1")
@@ -278,7 +286,17 @@ def test_podman_build__manifest_left_by_push__removes_it_first(sandbox: dict) ->
     assert [call.argv[1:3] for call in result.calls] == [["manifest", "rm"], ["build", "--format"]]
 
 
-def test_podman_push__default_platforms__builds_manifest_then_pushes_all(sandbox: dict) -> None:
+def test_podman_push__image_left_by_build__removes_it_before_the_manifest(sandbox: Sandbox) -> None:
+    install_stubs(sandbox, "podman")
+
+    result = build(sandbox, "push", STUB_IMAGE_EXISTS="1")
+
+    assert result.returncode == 0, result.stderr
+    assert [call.argv[1:3] for call in result.calls] == [["image", "rm"], ["build", "--format"], ["manifest", "push"]]
+    assert result.calls[0].argv[3] == IMAGE
+
+
+def test_podman_push__default_platforms__builds_manifest_then_pushes_all(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "podman")
 
     result = build(sandbox, "push")
@@ -305,7 +323,7 @@ def test_podman_push__default_platforms__builds_manifest_then_pushes_all(sandbox
     ],
 )
 def test_validation__bad_mode_or_platforms__fails_before_calling_a_cli(
-    sandbox: dict, args: tuple[str, ...], message: str
+    sandbox: Sandbox, args: tuple[str, ...], message: str
 ) -> None:
     install_stubs(sandbox, "docker")
 
@@ -319,11 +337,11 @@ def test_validation__bad_mode_or_platforms__fails_before_calling_a_cli(
 # --- run ---
 
 
-def test_run__default_port__maps_8081_to_container_8080_with_local_conf(sandbox: dict) -> None:
+def test_run__default_port__maps_8081_to_container_8080_with_local_conf(sandbox: Sandbox) -> None:
     install_stubs(sandbox, "docker")
-    conf_capture = sandbox["repo"] / "captured.conf"
+    conf_capture = sandbox.repo / "captured.conf"
 
-    result = run(sandbox, RUN_SCRIPT, str(sandbox["repo"] / "hugo"), STUB_CONF_COPY=str(conf_capture))
+    result = run(sandbox, RUN_SCRIPT, str(sandbox.repo / "hugo"), STUB_CONF_COPY=str(conf_capture))
 
     assert result.returncode == 0, result.stderr
     (call,) = result.calls
@@ -337,4 +355,4 @@ def test_run__default_port__maps_8081_to_container_8080_with_local_conf(sandbox:
     assert "listen 80;" not in conf
     assert "return 301 https://" not in conf
     assert "absolute_redirect off;" in conf
-    assert list((sandbox["repo"] / "hugo" / "docker").glob("default.local.conf.*")) == []
+    assert list((sandbox.repo / "hugo" / "docker").glob("default.local.conf.*")) == []
