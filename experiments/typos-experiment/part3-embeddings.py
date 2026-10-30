@@ -107,7 +107,7 @@ class SentEmbed:
 
         self.llm = AutoModelForCausalLM.from_pretrained(
             model_id,
-            torch_dtype=torch.bfloat16,
+            dtype=torch.bfloat16,
         )
         self.llm = self.llm.to(self.device)
         self.llm.eval()

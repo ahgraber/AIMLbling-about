@@ -69,7 +69,7 @@ for name, model_id in models.items():
     if not tokenizer.pad_token:
         tokenizer.pad_token = tokenizer.eos_token
 
-    llm = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16)
+    llm = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.bfloat16)
     llm = llm.to(device)
     llm.eval()
 

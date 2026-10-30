@@ -81,7 +81,7 @@ class Perplexity:
         if not self.tokenizer.pad_token:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        self.llm = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16)
+        self.llm = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.bfloat16)
         self.llm = self.llm.to(self.device)
         self.llm.eval()
 
@@ -242,7 +242,7 @@ class TinyMMLU:
         if not self.tokenizer.pad_token:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        self.llm = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16)
+        self.llm = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.bfloat16)
         self.llm = self.llm.to(self.device)
         self.llm.eval()
 
